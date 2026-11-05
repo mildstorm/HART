@@ -45,7 +45,8 @@ HART/
 │   ├── 04-open-questions.md      미확인 사항
 │   ├── 05-interface-pinouts.md   슬롯·게임 포트 핀 배치, 소프트스위치 주소
 │   ├── 06-next-steps.md          결선 확정 절차, 추가 촬영 가이드
-│   └── 07-back-trace-notes.md    뒷면 확대 사진 정합과 U64 핀맵
+│   ├── 07-back-trace-notes.md    뒷면 확대 사진 정합과 U64 핀맵
+│   └── 08-repair-log.md          화면 안 나옴 증상 수리 점검 기록
 ├── schematic/
 │   ├── apple2-clone-schematic.html  인터랙티브 블록 회로도 + 배치도 + 부품표
 │   └── src/                      HTML 생성 스크립트 (gen.py + 템플릿)
