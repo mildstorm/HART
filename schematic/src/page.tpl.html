@@ -1,0 +1,432 @@
+<title>Apple II 클론 보드 회로도</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap">
+<style>
+/* Layout: single technical sheet — title block, block schematic, placement map beside legend, BOM, reference pinouts. */
+:root{
+  --bg:#f2f4ef; --paper:#fbfcf9; --fg:#18201b; --muted:#56635a; --line:#c6cfc5; --grid:#e3e8e0;
+  --accent:#1f5a3a; --trace:#2d6a47;
+  --cpu:#c94a1f; --dec:#a87708; --ram:#2a72b0; --rom:#8a3fa6; --vid:#13897a;
+  --tim:#c42b78; --io:#4f8423; --z80:#7a5638; --exp:#5d6b7e; --unk:#8d969b;
+  --ok:#2f7a3e; --est:#a8660a;
+  --sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1511; --paper:#151d18; --fg:#e2eae4; --muted:#9aa89f; --line:#2f3c34; --grid:#1c2620;
+  --accent:#6fcf97; --trace:#57b37f;
+  --cpu:#ff7f50; --dec:#e3b341; --ram:#5aa9f0; --rom:#c58af0; --vid:#3fd0bb;
+  --tim:#f06aae; --io:#8fcc55; --z80:#c9a27c; --exp:#9fb0c6; --unk:#a7b0b5;
+  --ok:#6fcf7f; --est:#f0b45a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1511; --paper:#151d18; --fg:#e2eae4; --muted:#9aa89f; --line:#2f3c34; --grid:#1c2620;
+  --accent:#6fcf97; --trace:#57b37f;
+  --cpu:#ff7f50; --dec:#e3b341; --ram:#5aa9f0; --rom:#c58af0; --vid:#3fd0bb;
+  --tim:#f06aae; --io:#8fcc55; --z80:#c9a27c; --exp:#9fb0c6; --unk:#a7b0b5;
+  --ok:#6fcf7f; --est:#f0b45a; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:36px}
+h1,h2,h3{text-wrap:balance;line-height:1.25;margin:0}
+h1{font-size:1.9rem;font-weight:700}
+h2{font-size:1.25rem;font-weight:700;display:flex;gap:10px;align-items:baseline}
+h2 .no{font-family:var(--mono);font-size:.8rem;color:var(--accent);letter-spacing:.06em}
+p{margin:0;max-width:72ch}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.dim{color:var(--muted)}
+section{display:grid;gap:14px;min-width:0}
+
+/* title block, like a drawing's title block */
+.tblock{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;border-bottom:2px solid var(--fg);padding-bottom:16px}
+.tblock .eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.tb-table{border-collapse:collapse;font-family:var(--mono);font-size:.78rem}
+.tb-table td{border:1px solid var(--line);padding:3px 10px}
+.tb-table td:first-child{color:var(--muted)}
+@media (max-width:720px){.tblock{grid-template-columns:1fr}}
+
+.note{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--est);padding:14px 18px;display:grid;gap:8px;border-radius:4px}
+.note ul{margin:0;padding-left:1.2em}
+.figure{background:var(--paper);border:1px solid var(--line);border-radius:4px;overflow-x:auto}
+.figure svg{display:block}
+
+/* schematic drawing */
+.sch text{font-family:var(--mono);fill:var(--fg)}
+.sch .t-h{font-size:13px;font-weight:600}
+.sch .t-s{font-size:10.5px;fill:var(--muted)}
+.sch .t-bus{font-size:11px;font-weight:600;fill:var(--trace)}
+.sch .blk rect{stroke-width:1.6}
+.sch .bus{stroke:var(--trace);stroke-width:5;fill:none;stroke-linecap:round}
+.sch .sig{stroke:var(--fg);stroke-width:1.2;fill:none}
+.sch .sig.d{stroke-dasharray:5 4}
+.sch .dot{fill:var(--trace)}
+.sch .gridbg{fill:url(#g)}
+
+.b-cpu{--c:var(--cpu)} .b-dec{--c:var(--dec)} .b-ram{--c:var(--ram)} .b-rom{--c:var(--rom)} .b-vid{--c:var(--vid)}
+.b-tim{--c:var(--tim)} .b-io{--c:var(--io)} .b-z80{--c:var(--z80)} .b-exp{--c:var(--exp)} .b-unk{--c:var(--unk)}
+.sch .blk rect, .board .chip rect{fill:color-mix(in srgb,var(--c) 14%,var(--paper));stroke:var(--c)}
+
+/* placement map */
+.mapgrid{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:20px;align-items:start}
+@media (max-width:860px){.mapgrid{grid-template-columns:1fr}}
+.board .pcb{fill:color-mix(in srgb,var(--accent) 10%,var(--paper));stroke:var(--accent);stroke-width:2}
+.board .chip rect{stroke-width:1.4}
+.board .chip{cursor:pointer}
+.board .chip:hover rect,.board .chip:focus rect,.board .chip.on rect{stroke-width:3.5;fill:color-mix(in srgb,var(--c) 38%,var(--paper))}
+.board .chip:focus{outline:none}
+.board .chip.dimmed{opacity:.22}
+.board .lbl{font-family:var(--mono);font-size:12px;fill:var(--fg);text-anchor:middle;dominant-baseline:middle}
+.board .lbl.small{font-size:10px}
+.board .ref{font-weight:600;fill:var(--c)}
+.legend{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.legend li{display:flex;gap:8px;align-items:center;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:.9rem}
+.legend li:hover,.legend li.on{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;border:1.5px solid var(--c);background:color-mix(in srgb,var(--c) 30%,var(--paper));flex:none;margin-right:6px;vertical-align:-1px}
+.legend .sw{margin:0}
+.side{display:grid;gap:14px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+.detail{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:12px 14px;font-size:.9rem;min-height:110px}
+.detail .r{font-family:var(--mono);font-weight:600;font-size:1.05rem}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--paper)}
+table.bom{border-collapse:collapse;width:100%;font-size:.86rem}
+.bom th,.bom td{padding:6px 10px;border-bottom:1px solid var(--grid);text-align:left;vertical-align:top}
+.bom th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);position:sticky;top:0;background:var(--paper)}
+.bom tr.on td{background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.bom tr[hidden]{display:none}
+.conf{font-size:.75rem;font-weight:600;padding:1px 7px;border-radius:10px;border:1px solid currentColor;white-space:nowrap}
+.c-ok{color:var(--ok)} .c-est{color:var(--est)}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.filters button{font:inherit;font-size:.8rem;background:var(--paper);color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:3px 11px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.filters button:focus-visible,.legend li:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.pins{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+table.pin{border-collapse:collapse;font-family:var(--mono);font-size:.78rem;width:100%}
+.pin td{border:1px solid var(--grid);padding:2px 8px}
+.pin td:nth-child(odd){color:var(--muted);text-align:right;width:2.5em}
+ol.steps{margin:0;padding-left:1.4em;display:grid;gap:6px;max-width:80ch}
+@media (prefers-reduced-motion:no-preference){.board .chip rect{transition:fill .15s,stroke-width .15s}}
+</style>
+
+<div class="wrap">
+
+<header class="tblock">
+  <div style="display:grid;gap:6px;min-width:0">
+    <div class="eyebrow">Apple II 호환기 · 메인보드 리버스 엔지니어링</div>
+    <h1>Apple II 클론 보드 회로도</h1>
+    <p class="dim">사진 11장(앞면 7, 뒷면 4)에서 부품 표기를 판독하여 작성한 블록 회로도, 부품 배치도, 부품표입니다. 6502 메인 CPU에 Z80 서브시스템과 두 번째 6502가 함께 실장된 보드입니다.</p>
+  </div>
+  <table class="tb-table">
+    <tr><td>S/N</td><td>506267</td></tr>
+    <tr><td>IC</td><td>%%NIC%% 개</td></tr>
+    <tr><td>커넥터 등</td><td>%%NCONN%% 개</td></tr>
+    <tr><td>DRAM</td><td>MN4164 ×8 = 64KB</td></tr>
+    <tr><td>날짜 코드</td><td>8404 – 8509</td></tr>
+    <tr><td>REV</td><td>A · 사진 판독본</td></tr>
+  </table>
+</header>
+
+<div class="note">
+  <strong>이 도면의 범위</strong>
+  <ul>
+    <li><b>부품 식별과 위치</b>: 모든 IC 표기를 사진에서 판독했습니다. 표기가 지워진 칩은 <span class="conf c-est">추정</span>으로 표시했습니다.</li>
+    <li><b>블록 간 연결</b>: 부품 종류와 Apple II 표준 설계를 근거로 그렸습니다. 기능 블록 구성은 신뢰할 만하지만, 칩별 역할 일부는 추정입니다.</li>
+    <li><b>핀 단위 결선(넷리스트)은 사진만으로 확정할 수 없습니다.</b> 양면 기판이라 앞면 패턴 대부분이 IC 몸체 아래에 가려지고, 비아로 면을 오가는 신호를 사진 해상도로 추적하면 오류가 많습니다. 아래 5번의 측정 절차로 확정할 수 있습니다.</li>
+  </ul>
+</div>
+
+<section>
+  <h2><span class="no">01</span>시스템 블록 회로도</h2>
+  <p class="dim">굵은 선은 버스, 가는 선은 제어 신호, 점선은 결선 확인이 필요한 연결입니다.</p>
+  <div class="figure">
+  <svg class="sch" viewBox="0 0 1180 800" width="1180" height="800" role="img" aria-label="시스템 블록 회로도">
+    <defs><pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="var(--grid)" stroke-width="1"/></pattern>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--fg)"/></marker></defs>
+    <rect class="gridbg" x="0" y="0" width="1180" height="800"/>
+
+    <!-- buses -->
+    <path class="bus" d="M150 300H1110"/>
+    <text class="t-bus" x="1000" y="292">A0–A15 주소 버스</text>
+    <path class="bus" d="M150 360H1110"/>
+    <text class="t-bus" x="1000" y="352">D0–D7 데이터 버스</text>
+
+    <!-- Timing -->
+    <g class="blk b-tim"><rect x="20" y="20" width="250" height="120" rx="4"/>
+      <text class="t-h" x="32" y="42">클럭 / 타이밍</text>
+      <text class="t-s" x="32" y="62">X1 14.318MHz(+트리머) → U72 74LS04</text>
+      <text class="t-s" x="32" y="78">U75 74LS195 · U73/U49 74LS175</text>
+      <text class="t-s" x="32" y="94">U74 08 · U76 74LS109 · U61/62/78 74</text>
+      <text class="t-s" x="32" y="114">출력: 14M, 7M, 3.58M, Q3,</text>
+      <text class="t-s" x="32" y="130">Φ0/Φ1 (1.023MHz), RAS, CAS, AX</text>
+    </g>
+
+    <!-- Main CPU -->
+    <g class="blk b-cpu"><rect x="20" y="180" width="250" height="90" rx="4"/>
+      <text class="t-h" x="32" y="202">메인 CPU  U30 UM6502</text>
+      <text class="t-s" x="32" y="222">주소 버퍼 U31–U33 74LS367 ×3</text>
+      <text class="t-s" x="32" y="238">데이터 U29 74LS245</text>
+      <text class="t-s" x="32" y="256">IRQ · NMI · RES · RDY · R/W</text>
+    </g>
+    <path class="sig" d="M145 140V180" marker-end="url(#ar)"/><text class="t-s" x="152" y="164">Φ0</text>
+    <path class="sig" d="M90 270V300"/><circle class="dot" cx="90" cy="300" r="5"/>
+    <path class="sig" d="M200 270V360"/><circle class="dot" cx="200" cy="360" r="5"/>
+
+    <!-- Decode -->
+    <g class="blk b-dec"><rect x="300" y="20" width="270" height="140" rx="4"/>
+      <text class="t-h" x="312" y="42">주소 디코드 / 소프트스위치</text>
+      <text class="t-s" x="312" y="62">U22–U24 74LS138 ×3</text>
+      <text class="t-s" x="312" y="78">U21/U35/U77 74LS139 · U34 00 · U48 02</text>
+      <text class="t-s" x="312" y="94">PROM U36·U38·U50·U51 (82S129)</text>
+      <text class="t-s" x="312" y="110">U25 74LS259 비디오 소프트스위치</text>
+      <text class="t-s" x="312" y="130">출력: ROM CS, RAM 선택, $C0xx,</text>
+      <text class="t-s" x="312" y="146">I/O SELECT 1–7, DEVICE SELECT</text>
+    </g>
+    <path class="sig" d="M380 300V160" marker-end="url(#ar)"/><circle class="dot" cx="380" cy="300" r="5"/>
+
+    <!-- Slots -->
+    <g class="blk b-exp"><rect x="600" y="20" width="270" height="140" rx="4"/>
+      <text class="t-h" x="612" y="42">확장 슬롯 SL1–SL4 (50핀)</text>
+      <text class="t-s" x="612" y="62">확장 로직: U16 74LS323, U19 174,</text>
+      <text class="t-s" x="612" y="78">U20 74LS259, PROM U17/U18 "M"</text>
+      <text class="t-s" x="612" y="98">버스: A0–A15, D0–D7, R/W, Φ0/Φ1,</text>
+      <text class="t-s" x="612" y="114">Q3, 7M, IRQ, NMI, RES, RDY, DMA,</text>
+      <text class="t-s" x="612" y="130">INH, ±5V, ±12V</text>
+    </g>
+    <path class="sig" d="M570 120H600" marker-end="url(#ar)"/><text class="t-s" x="572" y="114">SEL</text>
+    <path class="sig" d="M680 160V300"/><circle class="dot" cx="680" cy="300" r="5"/>
+    <path class="sig" d="M760 160V360"/><circle class="dot" cx="760" cy="360" r="5"/>
+
+    <!-- Z80 -->
+    <g class="blk b-z80"><rect x="900" y="20" width="260" height="150" rx="4"/>
+      <text class="t-h" x="912" y="42">Z80 서브시스템  U2 Z80A</text>
+      <text class="t-s" x="912" y="62">U1 74LS373 · U4 74LS244</text>
+      <text class="t-s" x="912" y="78">U6/U7 74LS367 · U5 82S123</text>
+      <text class="t-s" x="912" y="94">U8 74LS163 · U9–U15 게이트/FF</text>
+      <text class="t-s" x="912" y="114">CP/M 카드(SoftCard) 방식 추정:</text>
+      <text class="t-s" x="912" y="130">DMA로 6502 정지 후 버스 점유,</text>
+      <text class="t-s" x="912" y="146">U5가 Z80→6502 주소 변환</text>
+    </g>
+    <path class="sig d" d="M960 170V300"/><circle class="dot" cx="960" cy="300" r="5"/>
+    <path class="sig d" d="M1040 170V360"/><circle class="dot" cx="1040" cy="360" r="5"/>
+    <path class="sig d" d="M1120 170V250H240V270" marker-end="url(#ar)"/><text class="t-s" x="880" y="244">DMA / RDY → 6502 정지</text>
+
+    <!-- ROM -->
+    <g class="blk b-rom"><rect x="300" y="420" width="220" height="110" rx="4"/>
+      <text class="t-h" x="312" y="442">시스템 ROM 16KB</text>
+      <text class="t-s" x="312" y="462">U45 2764 "C/D8"  $C000–$DFFF</text>
+      <text class="t-s" x="312" y="478">U46 2764 "EF5"   $E000–$FFFF</text>
+      <text class="t-s" x="312" y="494">U63 74LS245 버퍼</text>
+      <text class="t-s" x="312" y="514">(주소 범위는 라벨 기준 추정)</text>
+    </g>
+    <path class="sig" d="M350 300V420"/><path class="sig" d="M470 360V420"/>
+
+    <!-- DRAM -->
+    <g class="blk b-ram"><rect x="20" y="420" width="250" height="130" rx="4"/>
+      <text class="t-h" x="32" y="442">DRAM 64KB</text>
+      <text class="t-s" x="32" y="462">U39–U42, U52–U55 MN4164 ×8</text>
+      <text class="t-s" x="32" y="478">주소 MUX U43/44/56/57 74LS153</text>
+      <text class="t-s" x="32" y="494">CPU 주소 ↔ 비디오 주소,</text>
+      <text class="t-s" x="32" y="510">ROW/COL 멀티플렉싱 (MA0–MA7)</text>
+      <text class="t-s" x="32" y="530">Φ0=H: CPU, Φ0=L: 비디오 리프레시</text>
+    </g>
+    <path class="sig" d="M110 300V420"/><path class="sig" d="M230 360V420"/>
+    <path class="sig" d="M60 140V160H10V485H20" marker-end="url(#ar)"/><text class="t-s" x="12" y="400" transform="rotate(-90 12 400)">RAS/CAS/AX</text>
+
+    <!-- Video -->
+    <g class="blk b-vid"><rect x="20" y="600" width="560" height="180" rx="4"/>
+      <text class="t-h" x="32" y="622">비디오 생성부</text>
+      <text class="t-s" x="32" y="644">카운터 U82 74LS393 → 주소 MUX U47/58/59/79 74LS157, U80/81 74LS257</text>
+      <text class="t-s" x="32" y="662">데이터 래치 U66 74LS374 · U83 74LS174 · U69 74LS273</text>
+      <text class="t-s" x="32" y="680">문자 ROM U65 2764 "VD5" (40컬럼 추정) · U70 2764 "CHR P4" (한글/80컬럼 추정)</text>
+      <text class="t-s" x="32" y="698">SRAM U68 HM6116 2KB + U67 74LS245 (화면 버퍼 또는 폰트 RAM 추정)</text>
+      <text class="t-s" x="32" y="716">시프트: U71 74LS166 (도트 출력)</text>
+      <text class="t-s" x="32" y="734">출력: U85 74S153 · U84 00 → Q1 → J7 RCA / J6 RGB 5핀</text>
+      <text class="t-s" x="32" y="758">모드: U25 74LS259 (TEXT, MIXED, PAGE2, HIRES)</text>
+    </g>
+    <path class="sig" d="M145 550V600" marker-end="url(#ar)"/><text class="t-s" x="152" y="580">D0–D7 (비디오 읽기)</text>
+    <path class="sig" d="M610 690H580" marker-end="url(#ar)"/>
+
+    <!-- 2nd 6502 -->
+    <g class="blk b-unk"><rect x="560" y="420" width="250" height="110" rx="4" stroke-dasharray="6 4"/>
+      <text class="t-h" x="572" y="442">U64 UM6502 (두 번째)</text>
+      <text class="t-s" x="572" y="462">역할 미확인. 후보:</text>
+      <text class="t-s" x="572" y="478">· 80컬럼/한글 표시 전용 CPU</text>
+      <text class="t-s" x="572" y="494">· 예비/전환용 CPU 소켓</text>
+      <text class="t-s" x="572" y="514">핀 1(VSS), 40(RES), 37(Φ0) 측정 필요</text>
+    </g>
+    <path class="sig d" d="M610 530V690"/>
+    <path class="sig d" d="M700 360V420"/><path class="sig d" d="M640 300V420"/>
+
+    <!-- I/O -->
+    <g class="blk b-io"><rect x="850" y="420" width="310" height="230" rx="4"/>
+      <text class="t-h" x="862" y="442">내장 I/O</text>
+      <text class="t-s" x="862" y="464">게임 포트 J9 (16핀 DIP)</text>
+      <text class="t-s" x="872" y="480">U27 NE558 → PDL0–PDL3</text>
+      <text class="t-s" x="872" y="496">U28 74LS251 ← PB0–PB2, CASS IN</text>
+      <text class="t-s" x="872" y="512">AN0–AN3 ← U25 74LS259</text>
+      <text class="t-s" x="862" y="536">카세트</text>
+      <text class="t-s" x="872" y="552">J4 IN → U3 LM339 → U28 ($C060)</text>
+      <text class="t-s" x="872" y="568">J5 OUT ← U26 74LS74 토글 ($C020)</text>
+      <text class="t-s" x="862" y="592">스피커</text>
+      <text class="t-s" x="872" y="608">U26 74LS74 토글 ($C030) → Q2 → J8</text>
+      <text class="t-s" x="862" y="632">키보드  J2 헤더 추정 ($C000/$C010)</text>
+    </g>
+    <path class="sig" d="M900 300V420"/><path class="sig" d="M1100 360V420"/>
+    <path class="sig" d="M570 80H585V400H990V420" marker-end="url(#ar)"/><text class="t-s" x="880" y="394">$C0xx 선택</text>
+
+    <!-- Power -->
+    <g class="blk b-tim"><rect x="850" y="680" width="310" height="100" rx="4"/>
+      <text class="t-h" x="862" y="702">전원  J1 (5핀)</text>
+      <text class="t-s" x="862" y="722">+5V, +12V, −5V, −12V, GND 추정</text>
+      <text class="t-s" x="862" y="738">+12V: MN4164는 단일 +5V 소자이므로</text>
+      <text class="t-s" x="862" y="754">슬롯·카세트용으로만 쓰일 가능성</text>
+      <text class="t-s" x="862" y="770">디커플링: 각 IC 옆 세라믹 콘덴서</text>
+    </g>
+  </svg>
+  </div>
+</section>
+
+<section>
+  <h2><span class="no">02</span>부품 배치도</h2>
+  <p class="dim">앞면 기준, 슬롯이 위쪽입니다. 부품을 누르면 정보가 표시되고, 오른쪽 범례를 누르면 해당 블록만 강조됩니다. 점선 테두리는 표기 판독이 불확실한 부품입니다.</p>
+  <div class="mapgrid">
+    <div class="figure">
+      <svg class="board" viewBox="-10 -10 1010 1630" width="100%" style="min-width:560px;max-width:760px;margin:0 auto" role="img" aria-label="부품 배치도">
+        <path class="pcb" d="M0 0H1000V1600H0Z"/>
+        <text x="795" y="1585" class="lbl" style="fill:var(--muted)">Serial No. 506267</text>
+        %%BOARD%%
+      </svg>
+    </div>
+    <aside class="side">
+      <div class="detail" id="detail"><span class="dim">부품을 선택하세요.</span></div>
+      <ul class="legend" id="legend">%%LEGEND%%</ul>
+    </aside>
+  </div>
+</section>
+
+<section>
+  <h2><span class="no">03</span>부품표</h2>
+  <div class="filters" id="filters"></div>
+  <div class="tbl-wrap" style="max-height:640px;overflow:auto">
+    <table class="bom" id="bom">
+      <thead><tr><th>참조</th><th>부품</th><th>표기</th><th>블록</th><th>판독</th><th>기능 / 비고</th></tr></thead>
+      <tbody>%%ROWS%%</tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="no">04</span>표준 인터페이스 핀 배치</h2>
+  <p class="dim">Apple II 호환 커넥터의 표준 핀 배치입니다. 이 보드가 호환기인 이상 일치할 가능성이 높지만, 측정 시 기준점으로 쓰고 결과로 확정하세요.</p>
+  <div class="pins">
+    <div>
+      <h3 style="font-size:1rem;margin-bottom:8px">확장 슬롯 50핀 (SL1–SL4)</h3>
+      <table class="pin">
+        <tr><td>1</td><td>I/O SELECT</td><td>26</td><td>GND</td></tr>
+        <tr><td>2–17</td><td>A0–A15</td><td>27</td><td>DMA IN</td></tr>
+        <tr><td>18</td><td>R/W</td><td>28</td><td>INT IN</td></tr>
+        <tr><td>19</td><td>SYNC</td><td>29</td><td>NMI</td></tr>
+        <tr><td>20</td><td>I/O STROBE</td><td>30</td><td>IRQ</td></tr>
+        <tr><td>21</td><td>RDY</td><td>31</td><td>RES</td></tr>
+        <tr><td>22</td><td>DMA</td><td>32</td><td>INH</td></tr>
+        <tr><td>23</td><td>INT OUT</td><td>33</td><td>−12V</td></tr>
+        <tr><td>24</td><td>DMA OUT</td><td>34</td><td>−5V</td></tr>
+        <tr><td>25</td><td>+5V</td><td>35</td><td>COLOR REF</td></tr>
+        <tr><td>36</td><td>7M</td><td>37</td><td>Q3</td></tr>
+        <tr><td>38</td><td>Φ1</td><td>39</td><td>USER 1</td></tr>
+        <tr><td>40</td><td>Φ0</td><td>41</td><td>DEVICE SELECT</td></tr>
+        <tr><td>42–49</td><td>D7–D0</td><td>50</td><td>+12V</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3 style="font-size:1rem;margin-bottom:8px">게임 I/O 16핀 (J9)</h3>
+      <table class="pin">
+        <tr><td>1</td><td>+5V</td><td>16</td><td>NC</td></tr>
+        <tr><td>2</td><td>PB0</td><td>15</td><td>AN0</td></tr>
+        <tr><td>3</td><td>PB1</td><td>14</td><td>AN1</td></tr>
+        <tr><td>4</td><td>PB2</td><td>13</td><td>AN2</td></tr>
+        <tr><td>5</td><td>C040 STROBE</td><td>12</td><td>AN3</td></tr>
+        <tr><td>6</td><td>PDL0</td><td>11</td><td>PDL3</td></tr>
+        <tr><td>7</td><td>PDL2</td><td>10</td><td>PDL1</td></tr>
+        <tr><td>8</td><td>GND</td><td>9</td><td>NC</td></tr>
+      </table>
+      <h3 style="font-size:1rem;margin:18px 0 8px">주요 소프트스위치 주소</h3>
+      <table class="pin">
+        <tr><td>$C000</td><td>키보드 데이터</td><td>$C050/51</td><td>GR / TEXT</td></tr>
+        <tr><td>$C010</td><td>키 스트로브 해제</td><td>$C052/53</td><td>FULL / MIXED</td></tr>
+        <tr><td>$C020</td><td>카세트 출력</td><td>$C054/55</td><td>PAGE1 / 2</td></tr>
+        <tr><td>$C030</td><td>스피커</td><td>$C056/57</td><td>LORES / HIRES</td></tr>
+        <tr><td>$C060</td><td>카세트 입력</td><td>$C058–5F</td><td>AN0–AN3</td></tr>
+        <tr><td>$C061–63</td><td>PB0–PB2</td><td>$C064–67</td><td>PDL0–3</td></tr>
+        <tr><td>$C070</td><td>패들 타이머 리셋</td><td>$C080–8F</td><td>슬롯 0 (언어카드)</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="no">05</span>핀 단위 결선 확정 절차</h2>
+  <p>핀 단위 회로도를 완성하려면 테스터(도통 모드)로 넷을 확정해야 합니다. 아래 순서로 측정해 표로 주시면, 그 결과로 시트별 상세 회로도(KiCad 등)를 그릴 수 있습니다.</p>
+  <ol class="steps">
+    <li><b>전원 넷</b>: J1 각 핀과 U30 핀 8(+5V), 핀 21(GND), DRAM 핀 8/16의 도통을 확인합니다.</li>
+    <li><b>버스 기준점</b>: 슬롯 핀 2–17(A0–A15), 42–49(D7–D0)를 기준으로 각 IC 핀을 찍어 주소/데이터 버스에 연결된 핀을 표시합니다.</li>
+    <li><b>클럭 체인</b>: 슬롯 핀 36(7M), 37(Q3), 38(Φ1), 40(Φ0)에서 출발해 타이밍 블록(U72–U75, U49, U60–U62, U78)의 출력 핀을 찾습니다.</li>
+    <li><b>디코더 출력</b>: U22–U24 74LS138 출력(핀 7, 9–15)이 슬롯 핀 1, 41, ROM CE, U25/U26/U28 인에이블 중 어디로 가는지 기록합니다.</li>
+    <li><b>두 번째 6502(U64)</b>: 핀 37(Φ0 IN), 40(RES), 2(RDY), 34(R/W)가 어디에 연결되는지 확인하면 역할을 판단할 수 있습니다.</li>
+    <li><b>Z80 블록</b>: U2 핀 6(CLK), 26(RESET), 24(WAIT), 25(BUSRQ)와 슬롯 핀 22(DMA)·21(RDY) 사이 경로를 확인합니다.</li>
+    <li><b>PROM 덤프</b>: 82S123/82S129와 2764 4개를 롬 라이터로 읽으면 디코드 테이블과 펌웨어로 주소 맵을 확정할 수 있습니다.</li>
+  </ol>
+</section>
+
+</div>
+
+<script>
+(function(){
+  const blocks = {};
+  document.querySelectorAll('#legend li').forEach((li,i)=>{
+    const sw = li.querySelector('.sw'); const cls=[...sw.classList].find(c=>c.startsWith('b-'));
+    li.dataset.blk = cls; li.tabIndex=0; li.setAttribute('role','button');
+    blocks[cls]=li.textContent.trim();
+  });
+  const chips=[...document.querySelectorAll('.board .chip')];
+  const rows=[...document.querySelectorAll('#bom tbody tr')];
+  const detail=document.getElementById('detail');
+  const rowByRef={}; rows.forEach(r=>rowByRef[r.cells[0].textContent]=r);
+  let activeBlk=null;
+  function setBlk(cls){
+    activeBlk = (activeBlk===cls)?null:cls;
+    chips.forEach(c=>c.classList.toggle('dimmed', !!activeBlk && !c.classList.contains(activeBlk)));
+    document.querySelectorAll('#legend li').forEach(li=>li.classList.toggle('on', li.dataset.blk===activeBlk));
+  }
+  document.querySelectorAll('#legend li').forEach(li=>{
+    li.addEventListener('click',()=>setBlk(li.dataset.blk));
+    li.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setBlk(li.dataset.blk)}});
+  });
+  function pick(ref){
+    chips.forEach(c=>c.classList.toggle('on',c.dataset.ref===ref));
+    rows.forEach(r=>r.classList.toggle('on',r.cells[0].textContent===ref));
+    const r=rowByRef[ref]; if(!r) return;
+    detail.innerHTML='<div class="r">'+ref+' · '+r.cells[1].textContent+'</div>'+
+      '<div class="dim mono" style="font-size:.8rem">'+r.cells[2].textContent+'</div>'+
+      '<div style="margin-top:6px">'+r.cells[3].innerHTML+' '+r.cells[4].innerHTML+'</div>'+
+      '<div style="margin-top:6px">'+r.cells[5].textContent+'</div>';
+  }
+  chips.forEach(c=>{
+    c.addEventListener('click',()=>pick(c.dataset.ref));
+    c.addEventListener('keydown',e=>{if(e.key==='Enter'){pick(c.dataset.ref)}});
+  });
+  rows.forEach(r=>r.addEventListener('click',()=>pick(r.cells[0].textContent)));
+  // filters
+  const f=document.getElementById('filters');
+  const mk=(label,cls)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.blk=cls||'';b.setAttribute('aria-pressed',cls?'false':'true');f.appendChild(b);return b};
+  mk('전체','');
+  const names={}; document.querySelectorAll('#legend li').forEach(li=>names[li.dataset.blk]=li.textContent.trim());
+  Object.keys(names).forEach(k=>mk(names[k],k));
+  f.addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    f.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));
+    const k=b.dataset.blk;
+    rows.forEach(r=>{const cls=r.querySelector('td:nth-child(4) .sw').classList; r.hidden = !!k && !cls.contains(k);});
+  });
+})();
+</script>

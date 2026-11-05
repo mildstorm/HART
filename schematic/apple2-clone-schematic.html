@@ -1,0 +1,432 @@
+<title>Apple II 클론 보드 회로도</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans+KR:wght@400;600;700&display=swap">
+<style>
+/* Layout: single technical sheet — title block, block schematic, placement map beside legend, BOM, reference pinouts. */
+:root{
+  --bg:#f2f4ef; --paper:#fbfcf9; --fg:#18201b; --muted:#56635a; --line:#c6cfc5; --grid:#e3e8e0;
+  --accent:#1f5a3a; --trace:#2d6a47;
+  --cpu:#c94a1f; --dec:#a87708; --ram:#2a72b0; --rom:#8a3fa6; --vid:#13897a;
+  --tim:#c42b78; --io:#4f8423; --z80:#7a5638; --exp:#5d6b7e; --unk:#8d969b;
+  --ok:#2f7a3e; --est:#a8660a;
+  --sans:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Consolas,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1511; --paper:#151d18; --fg:#e2eae4; --muted:#9aa89f; --line:#2f3c34; --grid:#1c2620;
+  --accent:#6fcf97; --trace:#57b37f;
+  --cpu:#ff7f50; --dec:#e3b341; --ram:#5aa9f0; --rom:#c58af0; --vid:#3fd0bb;
+  --tim:#f06aae; --io:#8fcc55; --z80:#c9a27c; --exp:#9fb0c6; --unk:#a7b0b5;
+  --ok:#6fcf7f; --est:#f0b45a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1511; --paper:#151d18; --fg:#e2eae4; --muted:#9aa89f; --line:#2f3c34; --grid:#1c2620;
+  --accent:#6fcf97; --trace:#57b37f;
+  --cpu:#ff7f50; --dec:#e3b341; --ram:#5aa9f0; --rom:#c58af0; --vid:#3fd0bb;
+  --tim:#f06aae; --io:#8fcc55; --z80:#c9a27c; --exp:#9fb0c6; --unk:#a7b0b5;
+  --ok:#6fcf7f; --est:#f0b45a; color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.6}
+.wrap{max-width:1180px;margin:0 auto;padding-block:28px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:grid;gap:36px}
+h1,h2,h3{text-wrap:balance;line-height:1.25;margin:0}
+h1{font-size:1.9rem;font-weight:700}
+h2{font-size:1.25rem;font-weight:700;display:flex;gap:10px;align-items:baseline}
+h2 .no{font-family:var(--mono);font-size:.8rem;color:var(--accent);letter-spacing:.06em}
+p{margin:0;max-width:72ch}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.dim{color:var(--muted)}
+section{display:grid;gap:14px;min-width:0}
+
+/* title block, like a drawing's title block */
+.tblock{display:grid;grid-template-columns:1fr auto;gap:20px;align-items:end;border-bottom:2px solid var(--fg);padding-bottom:16px}
+.tblock .eyebrow{font-family:var(--mono);font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.tb-table{border-collapse:collapse;font-family:var(--mono);font-size:.78rem}
+.tb-table td{border:1px solid var(--line);padding:3px 10px}
+.tb-table td:first-child{color:var(--muted)}
+@media (max-width:720px){.tblock{grid-template-columns:1fr}}
+
+.note{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--est);padding:14px 18px;display:grid;gap:8px;border-radius:4px}
+.note ul{margin:0;padding-left:1.2em}
+.figure{background:var(--paper);border:1px solid var(--line);border-radius:4px;overflow-x:auto}
+.figure svg{display:block}
+
+/* schematic drawing */
+.sch text{font-family:var(--mono);fill:var(--fg)}
+.sch .t-h{font-size:13px;font-weight:600}
+.sch .t-s{font-size:10.5px;fill:var(--muted)}
+.sch .t-bus{font-size:11px;font-weight:600;fill:var(--trace)}
+.sch .blk rect{stroke-width:1.6}
+.sch .bus{stroke:var(--trace);stroke-width:5;fill:none;stroke-linecap:round}
+.sch .sig{stroke:var(--fg);stroke-width:1.2;fill:none}
+.sch .sig.d{stroke-dasharray:5 4}
+.sch .dot{fill:var(--trace)}
+.sch .gridbg{fill:url(#g)}
+
+.b-cpu{--c:var(--cpu)} .b-dec{--c:var(--dec)} .b-ram{--c:var(--ram)} .b-rom{--c:var(--rom)} .b-vid{--c:var(--vid)}
+.b-tim{--c:var(--tim)} .b-io{--c:var(--io)} .b-z80{--c:var(--z80)} .b-exp{--c:var(--exp)} .b-unk{--c:var(--unk)}
+.sch .blk rect, .board .chip rect{fill:color-mix(in srgb,var(--c) 14%,var(--paper));stroke:var(--c)}
+
+/* placement map */
+.mapgrid{display:grid;grid-template-columns:minmax(0,1fr) 260px;gap:20px;align-items:start}
+@media (max-width:860px){.mapgrid{grid-template-columns:1fr}}
+.board .pcb{fill:color-mix(in srgb,var(--accent) 10%,var(--paper));stroke:var(--accent);stroke-width:2}
+.board .chip rect{stroke-width:1.4}
+.board .chip{cursor:pointer}
+.board .chip:hover rect,.board .chip:focus rect,.board .chip.on rect{stroke-width:3.5;fill:color-mix(in srgb,var(--c) 38%,var(--paper))}
+.board .chip:focus{outline:none}
+.board .chip.dimmed{opacity:.22}
+.board .lbl{font-family:var(--mono);font-size:12px;fill:var(--fg);text-anchor:middle;dominant-baseline:middle}
+.board .lbl.small{font-size:10px}
+.board .ref{font-weight:600;fill:var(--c)}
+.legend{list-style:none;margin:0;padding:0;display:grid;gap:4px}
+.legend li{display:flex;gap:8px;align-items:center;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:.9rem}
+.legend li:hover,.legend li.on{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.sw{display:inline-block;width:12px;height:12px;border-radius:2px;border:1.5px solid var(--c);background:color-mix(in srgb,var(--c) 30%,var(--paper));flex:none;margin-right:6px;vertical-align:-1px}
+.legend .sw{margin:0}
+.side{display:grid;gap:14px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+.detail{background:var(--paper);border:1px solid var(--line);border-radius:4px;padding:12px 14px;font-size:.9rem;min-height:110px}
+.detail .r{font-family:var(--mono);font-weight:600;font-size:1.05rem}
+
+/* tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:4px;background:var(--paper)}
+table.bom{border-collapse:collapse;width:100%;font-size:.86rem}
+.bom th,.bom td{padding:6px 10px;border-bottom:1px solid var(--grid);text-align:left;vertical-align:top}
+.bom th{font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);position:sticky;top:0;background:var(--paper)}
+.bom tr.on td{background:color-mix(in srgb,var(--accent) 14%,transparent)}
+.bom tr[hidden]{display:none}
+.conf{font-size:.75rem;font-weight:600;padding:1px 7px;border-radius:10px;border:1px solid currentColor;white-space:nowrap}
+.c-ok{color:var(--ok)} .c-est{color:var(--est)}
+.filters{display:flex;flex-wrap:wrap;gap:6px}
+.filters button{font:inherit;font-size:.8rem;background:var(--paper);color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:3px 11px;cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.filters button:focus-visible,.legend li:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.pins{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:20px}
+table.pin{border-collapse:collapse;font-family:var(--mono);font-size:.78rem;width:100%}
+.pin td{border:1px solid var(--grid);padding:2px 8px}
+.pin td:nth-child(odd){color:var(--muted);text-align:right;width:2.5em}
+ol.steps{margin:0;padding-left:1.4em;display:grid;gap:6px;max-width:80ch}
+@media (prefers-reduced-motion:no-preference){.board .chip rect{transition:fill .15s,stroke-width .15s}}
+</style>
+
+<div class="wrap">
+
+<header class="tblock">
+  <div style="display:grid;gap:6px;min-width:0">
+    <div class="eyebrow">Apple II 호환기 · 메인보드 리버스 엔지니어링</div>
+    <h1>Apple II 클론 보드 회로도</h1>
+    <p class="dim">사진 11장(앞면 7, 뒷면 4)에서 부품 표기를 판독하여 작성한 블록 회로도, 부품 배치도, 부품표입니다. 6502 메인 CPU에 Z80 서브시스템과 두 번째 6502가 함께 실장된 보드입니다.</p>
+  </div>
+  <table class="tb-table">
+    <tr><td>S/N</td><td>506267</td></tr>
+    <tr><td>IC</td><td>85 개</td></tr>
+    <tr><td>커넥터 등</td><td>17 개</td></tr>
+    <tr><td>DRAM</td><td>MN4164 ×8 = 64KB</td></tr>
+    <tr><td>날짜 코드</td><td>8404 – 8509</td></tr>
+    <tr><td>REV</td><td>A · 사진 판독본</td></tr>
+  </table>
+</header>
+
+<div class="note">
+  <strong>이 도면의 범위</strong>
+  <ul>
+    <li><b>부품 식별과 위치</b>: 모든 IC 표기를 사진에서 판독했습니다. 표기가 지워진 칩은 <span class="conf c-est">추정</span>으로 표시했습니다.</li>
+    <li><b>블록 간 연결</b>: 부품 종류와 Apple II 표준 설계를 근거로 그렸습니다. 기능 블록 구성은 신뢰할 만하지만, 칩별 역할 일부는 추정입니다.</li>
+    <li><b>핀 단위 결선(넷리스트)은 사진만으로 확정할 수 없습니다.</b> 양면 기판이라 앞면 패턴 대부분이 IC 몸체 아래에 가려지고, 비아로 면을 오가는 신호를 사진 해상도로 추적하면 오류가 많습니다. 아래 5번의 측정 절차로 확정할 수 있습니다.</li>
+  </ul>
+</div>
+
+<section>
+  <h2><span class="no">01</span>시스템 블록 회로도</h2>
+  <p class="dim">굵은 선은 버스, 가는 선은 제어 신호, 점선은 결선 확인이 필요한 연결입니다.</p>
+  <div class="figure">
+  <svg class="sch" viewBox="0 0 1180 800" width="1180" height="800" role="img" aria-label="시스템 블록 회로도">
+    <defs><pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M20 0H0V20" fill="none" stroke="var(--grid)" stroke-width="1"/></pattern>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" fill="var(--fg)"/></marker></defs>
+    <rect class="gridbg" x="0" y="0" width="1180" height="800"/>
+
+    <!-- buses -->
+    <path class="bus" d="M150 300H1110"/>
+    <text class="t-bus" x="1000" y="292">A0–A15 주소 버스</text>
+    <path class="bus" d="M150 360H1110"/>
+    <text class="t-bus" x="1000" y="352">D0–D7 데이터 버스</text>
+
+    <!-- Timing -->
+    <g class="blk b-tim"><rect x="20" y="20" width="250" height="120" rx="4"/>
+      <text class="t-h" x="32" y="42">클럭 / 타이밍</text>
+      <text class="t-s" x="32" y="62">X1 14.318MHz(+트리머) → U72 74LS04</text>
+      <text class="t-s" x="32" y="78">U75 74LS195 · U73/U49 74LS175</text>
+      <text class="t-s" x="32" y="94">U74 08 · U76 74LS109 · U61/62/78 74</text>
+      <text class="t-s" x="32" y="114">출력: 14M, 7M, 3.58M, Q3,</text>
+      <text class="t-s" x="32" y="130">Φ0/Φ1 (1.023MHz), RAS, CAS, AX</text>
+    </g>
+
+    <!-- Main CPU -->
+    <g class="blk b-cpu"><rect x="20" y="180" width="250" height="90" rx="4"/>
+      <text class="t-h" x="32" y="202">메인 CPU  U30 UM6502</text>
+      <text class="t-s" x="32" y="222">주소 버퍼 U31–U33 74LS367 ×3</text>
+      <text class="t-s" x="32" y="238">데이터 U29 74LS245</text>
+      <text class="t-s" x="32" y="256">IRQ · NMI · RES · RDY · R/W</text>
+    </g>
+    <path class="sig" d="M145 140V180" marker-end="url(#ar)"/><text class="t-s" x="152" y="164">Φ0</text>
+    <path class="sig" d="M90 270V300"/><circle class="dot" cx="90" cy="300" r="5"/>
+    <path class="sig" d="M200 270V360"/><circle class="dot" cx="200" cy="360" r="5"/>
+
+    <!-- Decode -->
+    <g class="blk b-dec"><rect x="300" y="20" width="270" height="140" rx="4"/>
+      <text class="t-h" x="312" y="42">주소 디코드 / 소프트스위치</text>
+      <text class="t-s" x="312" y="62">U22–U24 74LS138 ×3</text>
+      <text class="t-s" x="312" y="78">U21/U35/U77 74LS139 · U34 00 · U48 02</text>
+      <text class="t-s" x="312" y="94">PROM U36·U38·U50·U51 (82S129)</text>
+      <text class="t-s" x="312" y="110">U25 74LS259 비디오 소프트스위치</text>
+      <text class="t-s" x="312" y="130">출력: ROM CS, RAM 선택, $C0xx,</text>
+      <text class="t-s" x="312" y="146">I/O SELECT 1–7, DEVICE SELECT</text>
+    </g>
+    <path class="sig" d="M380 300V160" marker-end="url(#ar)"/><circle class="dot" cx="380" cy="300" r="5"/>
+
+    <!-- Slots -->
+    <g class="blk b-exp"><rect x="600" y="20" width="270" height="140" rx="4"/>
+      <text class="t-h" x="612" y="42">확장 슬롯 SL1–SL4 (50핀)</text>
+      <text class="t-s" x="612" y="62">확장 로직: U16 74LS323, U19 174,</text>
+      <text class="t-s" x="612" y="78">U20 74LS259, PROM U17/U18 "M"</text>
+      <text class="t-s" x="612" y="98">버스: A0–A15, D0–D7, R/W, Φ0/Φ1,</text>
+      <text class="t-s" x="612" y="114">Q3, 7M, IRQ, NMI, RES, RDY, DMA,</text>
+      <text class="t-s" x="612" y="130">INH, ±5V, ±12V</text>
+    </g>
+    <path class="sig" d="M570 120H600" marker-end="url(#ar)"/><text class="t-s" x="572" y="114">SEL</text>
+    <path class="sig" d="M680 160V300"/><circle class="dot" cx="680" cy="300" r="5"/>
+    <path class="sig" d="M760 160V360"/><circle class="dot" cx="760" cy="360" r="5"/>
+
+    <!-- Z80 -->
+    <g class="blk b-z80"><rect x="900" y="20" width="260" height="150" rx="4"/>
+      <text class="t-h" x="912" y="42">Z80 서브시스템  U2 Z80A</text>
+      <text class="t-s" x="912" y="62">U1 74LS373 · U4 74LS244</text>
+      <text class="t-s" x="912" y="78">U6/U7 74LS367 · U5 82S123</text>
+      <text class="t-s" x="912" y="94">U8 74LS163 · U9–U15 게이트/FF</text>
+      <text class="t-s" x="912" y="114">CP/M 카드(SoftCard) 방식 추정:</text>
+      <text class="t-s" x="912" y="130">DMA로 6502 정지 후 버스 점유,</text>
+      <text class="t-s" x="912" y="146">U5가 Z80→6502 주소 변환</text>
+    </g>
+    <path class="sig d" d="M960 170V300"/><circle class="dot" cx="960" cy="300" r="5"/>
+    <path class="sig d" d="M1040 170V360"/><circle class="dot" cx="1040" cy="360" r="5"/>
+    <path class="sig d" d="M1120 170V250H240V270" marker-end="url(#ar)"/><text class="t-s" x="880" y="244">DMA / RDY → 6502 정지</text>
+
+    <!-- ROM -->
+    <g class="blk b-rom"><rect x="300" y="420" width="220" height="110" rx="4"/>
+      <text class="t-h" x="312" y="442">시스템 ROM 16KB</text>
+      <text class="t-s" x="312" y="462">U45 2764 "C/D8"  $C000–$DFFF</text>
+      <text class="t-s" x="312" y="478">U46 2764 "EF5"   $E000–$FFFF</text>
+      <text class="t-s" x="312" y="494">U63 74LS245 버퍼</text>
+      <text class="t-s" x="312" y="514">(주소 범위는 라벨 기준 추정)</text>
+    </g>
+    <path class="sig" d="M350 300V420"/><path class="sig" d="M470 360V420"/>
+
+    <!-- DRAM -->
+    <g class="blk b-ram"><rect x="20" y="420" width="250" height="130" rx="4"/>
+      <text class="t-h" x="32" y="442">DRAM 64KB</text>
+      <text class="t-s" x="32" y="462">U39–U42, U52–U55 MN4164 ×8</text>
+      <text class="t-s" x="32" y="478">주소 MUX U43/44/56/57 74LS153</text>
+      <text class="t-s" x="32" y="494">CPU 주소 ↔ 비디오 주소,</text>
+      <text class="t-s" x="32" y="510">ROW/COL 멀티플렉싱 (MA0–MA7)</text>
+      <text class="t-s" x="32" y="530">Φ0=H: CPU, Φ0=L: 비디오 리프레시</text>
+    </g>
+    <path class="sig" d="M110 300V420"/><path class="sig" d="M230 360V420"/>
+    <path class="sig" d="M60 140V160H10V485H20" marker-end="url(#ar)"/><text class="t-s" x="12" y="400" transform="rotate(-90 12 400)">RAS/CAS/AX</text>
+
+    <!-- Video -->
+    <g class="blk b-vid"><rect x="20" y="600" width="560" height="180" rx="4"/>
+      <text class="t-h" x="32" y="622">비디오 생성부</text>
+      <text class="t-s" x="32" y="644">카운터 U82 74LS393 → 주소 MUX U47/58/59/79 74LS157, U80/81 74LS257</text>
+      <text class="t-s" x="32" y="662">데이터 래치 U66 74LS374 · U83 74LS174 · U69 74LS273</text>
+      <text class="t-s" x="32" y="680">문자 ROM U65 2764 "VD5" (40컬럼 추정) · U70 2764 "CHR P4" (한글/80컬럼 추정)</text>
+      <text class="t-s" x="32" y="698">SRAM U68 HM6116 2KB + U67 74LS245 (화면 버퍼 또는 폰트 RAM 추정)</text>
+      <text class="t-s" x="32" y="716">시프트: U71 74LS166 (도트 출력)</text>
+      <text class="t-s" x="32" y="734">출력: U85 74S153 · U84 00 → Q1 → J7 RCA / J6 RGB 5핀</text>
+      <text class="t-s" x="32" y="758">모드: U25 74LS259 (TEXT, MIXED, PAGE2, HIRES)</text>
+    </g>
+    <path class="sig" d="M145 550V600" marker-end="url(#ar)"/><text class="t-s" x="152" y="580">D0–D7 (비디오 읽기)</text>
+    <path class="sig" d="M610 690H580" marker-end="url(#ar)"/>
+
+    <!-- 2nd 6502 -->
+    <g class="blk b-unk"><rect x="560" y="420" width="250" height="110" rx="4" stroke-dasharray="6 4"/>
+      <text class="t-h" x="572" y="442">U64 UM6502 (두 번째)</text>
+      <text class="t-s" x="572" y="462">역할 미확인. 후보:</text>
+      <text class="t-s" x="572" y="478">· 80컬럼/한글 표시 전용 CPU</text>
+      <text class="t-s" x="572" y="494">· 예비/전환용 CPU 소켓</text>
+      <text class="t-s" x="572" y="514">핀 1(VSS), 40(RES), 37(Φ0) 측정 필요</text>
+    </g>
+    <path class="sig d" d="M610 530V690"/>
+    <path class="sig d" d="M700 360V420"/><path class="sig d" d="M640 300V420"/>
+
+    <!-- I/O -->
+    <g class="blk b-io"><rect x="850" y="420" width="310" height="230" rx="4"/>
+      <text class="t-h" x="862" y="442">내장 I/O</text>
+      <text class="t-s" x="862" y="464">게임 포트 J9 (16핀 DIP)</text>
+      <text class="t-s" x="872" y="480">U27 NE558 → PDL0–PDL3</text>
+      <text class="t-s" x="872" y="496">U28 74LS251 ← PB0–PB2, CASS IN</text>
+      <text class="t-s" x="872" y="512">AN0–AN3 ← U25 74LS259</text>
+      <text class="t-s" x="862" y="536">카세트</text>
+      <text class="t-s" x="872" y="552">J4 IN → U3 LM339 → U28 ($C060)</text>
+      <text class="t-s" x="872" y="568">J5 OUT ← U26 74LS74 토글 ($C020)</text>
+      <text class="t-s" x="862" y="592">스피커</text>
+      <text class="t-s" x="872" y="608">U26 74LS74 토글 ($C030) → Q2 → J8</text>
+      <text class="t-s" x="862" y="632">키보드  J2 헤더 추정 ($C000/$C010)</text>
+    </g>
+    <path class="sig" d="M900 300V420"/><path class="sig" d="M1100 360V420"/>
+    <path class="sig" d="M570 80H585V400H990V420" marker-end="url(#ar)"/><text class="t-s" x="880" y="394">$C0xx 선택</text>
+
+    <!-- Power -->
+    <g class="blk b-tim"><rect x="850" y="680" width="310" height="100" rx="4"/>
+      <text class="t-h" x="862" y="702">전원  J1 (5핀)</text>
+      <text class="t-s" x="862" y="722">+5V, +12V, −5V, −12V, GND 추정</text>
+      <text class="t-s" x="862" y="738">+12V: MN4164는 단일 +5V 소자이므로</text>
+      <text class="t-s" x="862" y="754">슬롯·카세트용으로만 쓰일 가능성</text>
+      <text class="t-s" x="862" y="770">디커플링: 각 IC 옆 세라믹 콘덴서</text>
+    </g>
+  </svg>
+  </div>
+</section>
+
+<section>
+  <h2><span class="no">02</span>부품 배치도</h2>
+  <p class="dim">앞면 기준, 슬롯이 위쪽입니다. 부품을 누르면 정보가 표시되고, 오른쪽 범례를 누르면 해당 블록만 강조됩니다. 점선 테두리는 표기 판독이 불확실한 부품입니다.</p>
+  <div class="mapgrid">
+    <div class="figure">
+      <svg class="board" viewBox="-10 -10 1010 1630" width="100%" style="min-width:560px;max-width:760px;margin:0 auto" role="img" aria-label="부품 배치도">
+        <path class="pcb" d="M0 0H1000V1600H0Z"/>
+        <text x="795" y="1585" class="lbl" style="fill:var(--muted)">Serial No. 506267</text>
+        <g class="chip b-exp" data-ref="SL1" tabindex="0"><title>SL1 슬롯 커넥터 50핀 — Apple II 확장 슬롯 (번호 미확인)</title><rect x="60" y="0" width="60" height="480" rx="3"/><text x="90.0" y="240.0" class="lbl" transform="rotate(-90 90.0 240.0)">SL1 · 50-pin slot</text></g><g class="chip b-exp" data-ref="SL2" tabindex="0"><title>SL2 슬롯 커넥터 50핀 — </title><rect x="160" y="0" width="55" height="480" rx="3"/><text x="187.5" y="240.0" class="lbl" transform="rotate(-90 187.5 240.0)">SL2 · 50-pin slot</text></g><g class="chip b-exp" data-ref="SL3" tabindex="0"><title>SL3 슬롯 커넥터 50핀 — </title><rect x="255" y="0" width="60" height="480" rx="3"/><text x="285.0" y="240.0" class="lbl" transform="rotate(-90 285.0 240.0)">SL3 · 50-pin slot</text></g><g class="chip b-exp" data-ref="SL4" tabindex="0"><title>SL4 슬롯 커넥터 50핀 — </title><rect x="360" y="0" width="60" height="480" rx="3"/><text x="390.0" y="240.0" class="lbl" transform="rotate(-90 390.0 240.0)">SL4 · 50-pin slot</text></g><g class="chip b-tim" data-ref="J1" tabindex="0"><title>J1 전원 커넥터 5핀 — 외부 SMPS(한국산, 단자 FG·AC·+12V·+5V·GND·−5V·−12V)에서 5가닥(빨강·파랑·초록·주황·검정) 하네스로 입력. 레일 5개 확인, 핀 순서는 측정 필요</title><rect x="15" y="70" width="40" height="175" rx="3"/><text x="35.0" y="157.5" class="lbl" transform="rotate(-90 35.0 157.5)"><tspan class="ref" x="35.0" dy="-6">J1</tspan><tspan x="35.0" dy="16">전원 커넥터 5핀</tspan></text></g><g class="chip b-io" data-ref="J2" tabindex="0"><title>J2 핀 헤더 2×10 (직립) — 20핀. 키보드 커넥터 추정</title><rect x="25" y="260" width="35" height="180" rx="3"/><text x="42.5" y="350.0" class="lbl" transform="rotate(-90 42.5 350.0)"><tspan class="ref" x="42.5" dy="-6">J2</tspan><tspan x="42.5" dy="16">핀 헤더 2×10 (직립)</tspan></text></g><g class="chip b-io" data-ref="J3" tabindex="0"><title>J3 핀 헤더 2×10 (ㄱ자) — 20핀 라이트앵글. 용도 미확인 (프린터 등 외부 I/F 추정)</title><rect x="25" y="470" width="35" height="160" rx="3"/><text x="42.5" y="550.0" class="lbl" transform="rotate(-90 42.5 550.0)"><tspan class="ref" x="42.5" dy="-6">J3</tspan><tspan x="42.5" dy="16">핀 헤더 2×10 (ㄱ자)</tspan></text></g><g class="chip b-io" data-ref="J4" tabindex="0"><title>J4 3.5mm 잭 — 케이스 표기 &quot;CASS&#x27;T&quot;. 카세트 단자 (IN/OUT 구분은 측정 필요). 옆에 세라믹 콘덴서·저항</title><rect x="520" y="0" width="55" height="60" rx="3"/><text x="547.5" y="30.0" class="lbl" transform="rotate(-90 547.5 30.0)"><tspan class="ref" x="547.5" dy="-6">J4</tspan><tspan x="547.5" dy="16">3.5mm 잭</tspan></text></g><g class="chip b-io" data-ref="J5" tabindex="0"><title>J5 3.5mm 잭 — 케이스 표기 &quot;CASS&#x27;T&quot;. 카세트 단자 (IN/OUT 구분은 측정 필요). 옆에 세라믹 콘덴서</title><rect x="625" y="0" width="50" height="60" rx="3"/><text x="650.0" y="30.0" class="lbl" transform="rotate(-90 650.0 30.0)"><tspan class="ref" x="650.0" dy="-6">J5</tspan><tspan x="650.0" dy="16">3.5mm 잭</tspan></text></g><g class="chip b-vid" data-ref="J6" tabindex="0"><title>J6 RGB 출력 5핀 헤더 — 케이스 표기 &quot;RGB&quot;. 3개 핀에 직렬 저항: 주황-주황-노랑(330k?) ×2, 갈색-빨강-주황(12k?) ×1, 측정 필요. 핀 배치 미확인</title><rect x="720" y="0" width="80" height="35" rx="3"/><text x="760.0" y="13.5" class="lbl"><tspan class="ref">J6</tspan></text><text x="760.0" y="30.5" class="lbl">RGB 출력 5핀 헤더</text></g><g class="chip b-vid" data-ref="J7" tabindex="0"><title>J7 RCA 잭 — 케이스 표기 &quot;VIDEO&quot;. 컴포지트 비디오 출력</title><rect x="850" y="0" width="60" height="55" rx="3"/><text x="880.0" y="23.5" class="lbl small"><tspan class="ref">J7</tspan></text><text x="880.0" y="40.5" class="lbl small">RCA 잭</text></g><g class="chip b-vid" data-ref="Q1" tabindex="0"><title>Q1 트랜지스터 TO-92 — RCA 옆. 컴포지트 비디오 출력 버퍼(이미터 팔로워) 추정</title><rect x="930" y="65" width="35" height="40" rx="3" stroke-dasharray="6 4"/><text x="947.5" y="85.0" class="lbl" transform="rotate(-90 947.5 85.0)"><tspan class="ref" x="947.5" dy="-6">Q1</tspan><tspan x="947.5" dy="16">트랜지스터 TO-92</tspan></text></g><g class="chip b-io" data-ref="J8" tabindex="0"><title>J8 2핀 커넥터 — 스피커 추정 (옆에 트랜지스터 Q2와 저항 3개)</title><rect x="940" y="175" width="40" height="40" rx="3" stroke-dasharray="6 4"/><text x="960.0" y="191.0" class="lbl small"><tspan class="ref">J8</tspan></text><text x="960.0" y="208.0" class="lbl small">2핀 커넥터</text></g><g class="chip b-io" data-ref="Q2" tabindex="0"><title>Q2 트랜지스터 TO-92 — J8 옆. 스피커 구동 추정</title><rect x="905" y="245" width="35" height="40" rx="3" stroke-dasharray="6 4"/><text x="922.5" y="265.0" class="lbl" transform="rotate(-90 922.5 265.0)"><tspan class="ref" x="922.5" dy="-6">Q2</tspan><tspan x="922.5" dy="16">트랜지스터 TO-92</tspan></text></g><g class="chip b-io" data-ref="J9" tabindex="0"><title>J9 16핀 DIP 소켓 — 게임 I/O 포트 (Apple II J14 상당)</title><rect x="905" y="390" width="60" height="130" rx="3"/><text x="935.0" y="455.0" class="lbl" transform="rotate(-90 935.0 455.0)"><tspan class="ref" x="935.0" dy="-6">J9</tspan><tspan x="935.0" dy="16">16핀 DIP 소켓</tspan></text></g><g class="chip b-unk" data-ref="J10" tabindex="0"><title>J10 핀 헤더 2×8 (ㄱ자) — 16핀 라이트앵글. 옆에 미실장 패드 7개. 용도 미확인</title><rect x="555" y="1400" width="40" height="140" rx="3"/><text x="575.0" y="1470.0" class="lbl" transform="rotate(-90 575.0 1470.0)"><tspan class="ref" x="575.0" dy="-6">J10</tspan><tspan x="575.0" dy="16">핀 헤더 2×8 (ㄱ자)</tspan></text></g><g class="chip b-tim" data-ref="X1" tabindex="0"><title>X1 수정 발진자 + 트리머 콘덴서 — 소형 금속 캔 수정 + 세라믹 트리머 + 저항 2개(U64 아래 가로 배치) + U72 74LS04 = Apple II식 수정 발진 회로. 주파수 표기 미확인, 14.31818MHz 추정</title><rect x="15" y="1305" width="43" height="70" rx="3"/><text x="36.5" y="1340.0" class="lbl" transform="rotate(-90 36.5 1340.0)"><tspan class="ref" x="36.5" dy="-6">X1</tspan><tspan x="36.5" dy="16">수정 발진자 + 트리머 콘덴서</tspan></text></g><g class="chip b-z80" data-ref="U1" tabindex="0"><title>U1 74LS373 — Z80 주소/데이터 래치</title><rect x="435" y="55" width="60" height="160" rx="3"/><text x="465.0" y="135.0" class="lbl" transform="rotate(-90 465.0 135.0)"><tspan class="ref" x="465.0" dy="-6">U1</tspan><tspan x="465.0" dy="16">74LS373</tspan></text></g><g class="chip b-z80" data-ref="U2" tabindex="0"><title>U2 Z80A CPU — Z80A 4MHz급 (CP/M 카드 내장형 추정)</title><rect x="505" y="100" width="335" height="115" rx="3"/><text x="672.5" y="153.5" class="lbl"><tspan class="ref">U2</tspan></text><text x="672.5" y="170.5" class="lbl">Z80A</text></g><g class="chip b-io" data-ref="U3" tabindex="0"><title>U3 LM339 — 쿼드 컴퍼레이터: 카세트 입력 정형</title><rect x="855" y="115" width="50" height="125" rx="3"/><text x="880.0" y="177.5" class="lbl" transform="rotate(-90 880.0 177.5)"><tspan class="ref" x="880.0" dy="-6">U3</tspan><tspan x="880.0" dy="16">LM339</tspan></text></g><g class="chip b-z80" data-ref="U4" tabindex="0"><title>U4 74LS244 — Z80 버스 버퍼</title><rect x="440" y="225" width="55" height="130" rx="3"/><text x="467.5" y="290.0" class="lbl" transform="rotate(-90 467.5 290.0)"><tspan class="ref" x="467.5" dy="-6">U4</tspan><tspan x="467.5" dy="16">74LS244</tspan></text></g><g class="chip b-z80" data-ref="U5" tabindex="0"><title>U5 82S123 — 32×8 바이폴라 PROM: Z80↔6502 주소 변환 추정</title><rect x="510" y="225" width="50" height="130" rx="3"/><text x="535.0" y="290.0" class="lbl" transform="rotate(-90 535.0 290.0)"><tspan class="ref" x="535.0" dy="-6">U5</tspan><tspan x="535.0" dy="16">82S123</tspan></text></g><g class="chip b-z80" data-ref="U6" tabindex="0"><title>U6 74LS367 — Z80 주소 버퍼</title><rect x="575" y="225" width="55" height="130" rx="3"/><text x="602.5" y="290.0" class="lbl" transform="rotate(-90 602.5 290.0)"><tspan class="ref" x="602.5" dy="-6">U6</tspan><tspan x="602.5" dy="16">74LS367</tspan></text></g><g class="chip b-z80" data-ref="U7" tabindex="0"><title>U7 74LS367 — Z80 주소 버퍼</title><rect x="645" y="225" width="55" height="130" rx="3"/><text x="672.5" y="290.0" class="lbl" transform="rotate(-90 672.5 290.0)"><tspan class="ref" x="672.5" dy="-6">U7</tspan><tspan x="672.5" dy="16">74LS367</tspan></text></g><g class="chip b-z80" data-ref="U8" tabindex="0"><title>U8 74LS163 — 동기 카운터 (Z80 클럭/웨이트 생성 추정)</title><rect x="715" y="225" width="55" height="130" rx="3"/><text x="742.5" y="290.0" class="lbl" transform="rotate(-90 742.5 290.0)"><tspan class="ref" x="742.5" dy="-6">U8</tspan><tspan x="742.5" dy="16">74LS163</tspan></text></g><g class="chip b-z80" data-ref="U9" tabindex="0"><title>U9 74LS00 — NAND 게이트</title><rect x="780" y="225" width="50" height="130" rx="3"/><text x="805.0" y="290.0" class="lbl" transform="rotate(-90 805.0 290.0)"><tspan class="ref" x="805.0" dy="-6">U9</tspan><tspan x="805.0" dy="16">74LS00</tspan></text></g><g class="chip b-z80" data-ref="U10" tabindex="0"><title>U10 74LS05 — 오픈컬렉터 인버터 (DMA/RES 라인 구동 추정)</title><rect x="445" y="400" width="55" height="125" rx="3"/><text x="472.5" y="462.5" class="lbl" transform="rotate(-90 472.5 462.5)"><tspan class="ref" x="472.5" dy="-6">U10</tspan><tspan x="472.5" dy="16">74LS05</tspan></text></g><g class="chip b-z80" data-ref="U11" tabindex="0"><title>U11 74LS04 — 인버터</title><rect x="515" y="400" width="55" height="125" rx="3"/><text x="542.5" y="462.5" class="lbl" transform="rotate(-90 542.5 462.5)"><tspan class="ref" x="542.5" dy="-6">U11</tspan><tspan x="542.5" dy="16">74LS04</tspan></text></g><g class="chip b-z80" data-ref="U12" tabindex="0"><title>U12 74LS74 — D-FF</title><rect x="580" y="400" width="55" height="125" rx="3"/><text x="607.5" y="462.5" class="lbl" transform="rotate(-90 607.5 462.5)"><tspan class="ref" x="607.5" dy="-6">U12</tspan><tspan x="607.5" dy="16">74LS74</tspan></text></g><g class="chip b-z80" data-ref="U13" tabindex="0"><title>U13 74LS32 — OR 게이트</title><rect x="650" y="400" width="55" height="125" rx="3"/><text x="677.5" y="462.5" class="lbl" transform="rotate(-90 677.5 462.5)"><tspan class="ref" x="677.5" dy="-6">U13</tspan><tspan x="677.5" dy="16">74LS32</tspan></text></g><g class="chip b-z80" data-ref="U14" tabindex="0"><title>U14 74LS74 — D-FF</title><rect x="715" y="400" width="55" height="125" rx="3"/><text x="742.5" y="462.5" class="lbl" transform="rotate(-90 742.5 462.5)"><tspan class="ref" x="742.5" dy="-6">U14</tspan><tspan x="742.5" dy="16">74LS74</tspan></text></g><g class="chip b-z80" data-ref="U15" tabindex="0"><title>U15 74LS10 — 3입력 NAND</title><rect x="780" y="400" width="55" height="125" rx="3"/><text x="807.5" y="462.5" class="lbl" transform="rotate(-90 807.5 462.5)"><tspan class="ref" x="807.5" dy="-6">U15</tspan><tspan x="807.5" dy="16">74LS10</tspan></text></g><g class="chip b-exp" data-ref="U16" tabindex="0"><title>U16 74LS323 — 8비트 3-state 시프트/저장 레지스터</title><rect x="85" y="505" width="60" height="125" rx="3"/><text x="115.0" y="567.5" class="lbl" transform="rotate(-90 115.0 567.5)"><tspan class="ref" x="115.0" dy="-6">U16</tspan><tspan x="115.0" dy="16">74LS323</tspan></text></g><g class="chip b-exp" data-ref="U17" tabindex="0"><title>U17 82S129 — 16핀, 표기 형식이 U38 N82S129N과 동일 → 82S129 유력</title><rect x="155" y="505" width="60" height="125" rx="3" stroke-dasharray="6 4"/><text x="185.0" y="567.5" class="lbl" transform="rotate(-90 185.0 567.5)"><tspan class="ref" x="185.0" dy="-6">U17</tspan><tspan x="185.0" dy="16">82S129</tspan></text></g><g class="chip b-exp" data-ref="U18" tabindex="0"><title>U18 PROM — 82S129 계열 프로그램 PROM (라벨 M)</title><rect x="225" y="505" width="55" height="125" rx="3" stroke-dasharray="6 4"/><text x="252.5" y="567.5" class="lbl" transform="rotate(-90 252.5 567.5)"><tspan class="ref" x="252.5" dy="-6">U18</tspan><tspan x="252.5" dy="16">PROM</tspan></text></g><g class="chip b-exp" data-ref="U19" tabindex="0"><title>U19 74LS174 — 6비트 D-FF 래치</title><rect x="290" y="505" width="55" height="125" rx="3"/><text x="317.5" y="567.5" class="lbl" transform="rotate(-90 317.5 567.5)"><tspan class="ref" x="317.5" dy="-6">U19</tspan><tspan x="317.5" dy="16">74LS174</tspan></text></g><g class="chip b-exp" data-ref="U20" tabindex="0"><title>U20 74LS259 — 8비트 어드레서블 래치 (뱅크/모드 스위치 추정)</title><rect x="355" y="505" width="55" height="125" rx="3"/><text x="382.5" y="567.5" class="lbl" transform="rotate(-90 382.5 567.5)"><tspan class="ref" x="382.5" dy="-6">U20</tspan><tspan x="382.5" dy="16">74LS259</tspan></text></g><g class="chip b-dec" data-ref="U21" tabindex="0"><title>U21 74LS139 — 듀얼 2→4 디코더</title><rect x="445" y="560" width="55" height="130" rx="3"/><text x="472.5" y="625.0" class="lbl" transform="rotate(-90 472.5 625.0)"><tspan class="ref" x="472.5" dy="-6">U21</tspan><tspan x="472.5" dy="16">74LS139</tspan></text></g><g class="chip b-dec" data-ref="U22" tabindex="0"><title>U22 74LS138 — 3→8 디코더 (I/O SELECT 추정)</title><rect x="510" y="560" width="55" height="130" rx="3"/><text x="537.5" y="625.0" class="lbl" transform="rotate(-90 537.5 625.0)"><tspan class="ref" x="537.5" dy="-6">U22</tspan><tspan x="537.5" dy="16">74LS138</tspan></text></g><g class="chip b-dec" data-ref="U23" tabindex="0"><title>U23 74LS138 — 3→8 디코더 (DEVICE SELECT 추정)</title><rect x="580" y="560" width="55" height="130" rx="3"/><text x="607.5" y="625.0" class="lbl" transform="rotate(-90 607.5 625.0)"><tspan class="ref" x="607.5" dy="-6">U23</tspan><tspan x="607.5" dy="16">74LS138</tspan></text></g><g class="chip b-dec" data-ref="U24" tabindex="0"><title>U24 74LS138 — 3→8 디코더 ($C0xx 내부 I/O 추정)</title><rect x="645" y="560" width="55" height="130" rx="3"/><text x="672.5" y="625.0" class="lbl" transform="rotate(-90 672.5 625.0)"><tspan class="ref" x="672.5" dy="-6">U24</tspan><tspan x="672.5" dy="16">74LS138</tspan></text></g><g class="chip b-dec" data-ref="U25" tabindex="0"><title>U25 74LS259 — 소프트스위치 래치 (TEXT/MIXED/PAGE2/HIRES·AN0-3, Apple II F14 상당)</title><rect x="715" y="560" width="55" height="130" rx="3"/><text x="742.5" y="625.0" class="lbl" transform="rotate(-90 742.5 625.0)"><tspan class="ref" x="742.5" dy="-6">U25</tspan><tspan x="742.5" dy="16">74LS259</tspan></text></g><g class="chip b-io" data-ref="U26" tabindex="0"><title>U26 74LS74 — D-FF (스피커/카세트 출력 토글 추정)</title><rect x="785" y="560" width="50" height="130" rx="3"/><text x="810.0" y="625.0" class="lbl" transform="rotate(-90 810.0 625.0)"><tspan class="ref" x="810.0" dy="-6">U26</tspan><tspan x="810.0" dy="16">74LS74</tspan></text></g><g class="chip b-io" data-ref="U27" tabindex="0"><title>U27 NE558 — 쿼드 타이머: 패들 PDL0-3 (Apple II H13 상당)</title><rect x="845" y="560" width="60" height="130" rx="3"/><text x="875.0" y="625.0" class="lbl" transform="rotate(-90 875.0 625.0)"><tspan class="ref" x="875.0" dy="-6">U27</tspan><tspan x="875.0" dy="16">NE558</tspan></text></g><g class="chip b-io" data-ref="U28" tabindex="0"><title>U28 74LS251 — 8→1 MUX: 버튼/패들/카세트IN 읽기 (Apple II H14 상당)</title><rect x="915" y="560" width="55" height="130" rx="3"/><text x="942.5" y="625.0" class="lbl" transform="rotate(-90 942.5 625.0)"><tspan class="ref" x="942.5" dy="-6">U28</tspan><tspan x="942.5" dy="16">74LS251</tspan></text></g><g class="chip b-cpu" data-ref="U29" tabindex="0"><title>U29 74LS245 — 메인 CPU 데이터 버스 트랜시버</title><rect x="20" y="680" width="60" height="155" rx="3"/><text x="50.0" y="757.5" class="lbl" transform="rotate(-90 50.0 757.5)"><tspan class="ref" x="50.0" dy="-6">U29</tspan><tspan x="50.0" dy="16">74LS245</tspan></text></g><g class="chip b-cpu" data-ref="U30" tabindex="0"><title>U30 UM6502 — 메인 CPU (1.023MHz)</title><rect x="85" y="680" width="335" height="105" rx="3"/><text x="252.5" y="728.5" class="lbl"><tspan class="ref">U30</tspan></text><text x="252.5" y="745.5" class="lbl">UM6502</text></g><g class="chip b-cpu" data-ref="U31" tabindex="0"><title>U31 74LS367 — 주소 버스 버퍼 (Apple II 8T97 대체)</title><rect x="445" y="710" width="55" height="125" rx="3"/><text x="472.5" y="772.5" class="lbl" transform="rotate(-90 472.5 772.5)"><tspan class="ref" x="472.5" dy="-6">U31</tspan><tspan x="472.5" dy="16">74LS367</tspan></text></g><g class="chip b-cpu" data-ref="U32" tabindex="0"><title>U32 74LS367 — 주소 버스 버퍼</title><rect x="515" y="710" width="55" height="125" rx="3"/><text x="542.5" y="772.5" class="lbl" transform="rotate(-90 542.5 772.5)"><tspan class="ref" x="542.5" dy="-6">U32</tspan><tspan x="542.5" dy="16">74LS367</tspan></text></g><g class="chip b-cpu" data-ref="U33" tabindex="0"><title>U33 74LS367 — 주소 버스 버퍼</title><rect x="580" y="710" width="55" height="125" rx="3"/><text x="607.5" y="772.5" class="lbl" transform="rotate(-90 607.5 772.5)"><tspan class="ref" x="607.5" dy="-6">U33</tspan><tspan x="607.5" dy="16">74LS367</tspan></text></g><g class="chip b-dec" data-ref="U34" tabindex="0"><title>U34 74LS00 — NAND</title><rect x="650" y="710" width="55" height="125" rx="3"/><text x="677.5" y="772.5" class="lbl" transform="rotate(-90 677.5 772.5)"><tspan class="ref" x="677.5" dy="-6">U34</tspan><tspan x="677.5" dy="16">74LS00</tspan></text></g><g class="chip b-dec" data-ref="U35" tabindex="0"><title>U35 74LS139 — 듀얼 2→4 디코더</title><rect x="715" y="710" width="55" height="125" rx="3"/><text x="742.5" y="772.5" class="lbl" transform="rotate(-90 742.5 772.5)"><tspan class="ref" x="742.5" dy="-6">U35</tspan><tspan x="742.5" dy="16">74LS139</tspan></text></g><g class="chip b-dec" data-ref="U36" tabindex="0"><title>U36 82S129 — 256×4 PROM (디코드용)</title><rect x="780" y="710" width="55" height="125" rx="3" stroke-dasharray="6 4"/><text x="807.5" y="772.5" class="lbl" transform="rotate(-90 807.5 772.5)"><tspan class="ref" x="807.5" dy="-6">U36</tspan><tspan x="807.5" dy="16">82S129</tspan></text></g><g class="chip b-dec" data-ref="U37" tabindex="0"><title>U37 74LS174 — 6비트 래치</title><rect x="845" y="710" width="60" height="125" rx="3"/><text x="875.0" y="772.5" class="lbl" transform="rotate(-90 875.0 772.5)"><tspan class="ref" x="875.0" dy="-6">U37</tspan><tspan x="875.0" dy="16">74LS174</tspan></text></g><g class="chip b-dec" data-ref="U38" tabindex="0"><title>U38 82S129 — 256×4 PROM (디코드용)</title><rect x="915" y="710" width="55" height="125" rx="3"/><text x="942.5" y="772.5" class="lbl" transform="rotate(-90 942.5 772.5)"><tspan class="ref" x="942.5" dy="-6">U38</tspan><tspan x="942.5" dy="16">82S129</tspan></text></g><g class="chip b-ram" data-ref="U39" tabindex="0"><title>U39 MN4164 — 64K×1 DRAM, D0 추정</title><rect x="20" y="870" width="55" height="130" rx="3"/><text x="47.5" y="935.0" class="lbl" transform="rotate(-90 47.5 935.0)"><tspan class="ref" x="47.5" dy="-6">U39</tspan><tspan x="47.5" dy="16">MN4164</tspan></text></g><g class="chip b-ram" data-ref="U40" tabindex="0"><title>U40 MN4164 — 64K×1 DRAM</title><rect x="85" y="870" width="55" height="130" rx="3"/><text x="112.5" y="935.0" class="lbl" transform="rotate(-90 112.5 935.0)"><tspan class="ref" x="112.5" dy="-6">U40</tspan><tspan x="112.5" dy="16">MN4164</tspan></text></g><g class="chip b-ram" data-ref="U41" tabindex="0"><title>U41 MN4164 — 64K×1 DRAM</title><rect x="150" y="870" width="60" height="130" rx="3"/><text x="180.0" y="935.0" class="lbl" transform="rotate(-90 180.0 935.0)"><tspan class="ref" x="180.0" dy="-6">U41</tspan><tspan x="180.0" dy="16">MN4164</tspan></text></g><g class="chip b-ram" data-ref="U42" tabindex="0"><title>U42 MN4164 — 64K×1 DRAM</title><rect x="220" y="870" width="60" height="130" rx="3"/><text x="250.0" y="935.0" class="lbl" transform="rotate(-90 250.0 935.0)"><tspan class="ref" x="250.0" dy="-6">U42</tspan><tspan x="250.0" dy="16">MN4164</tspan></text></g><g class="chip b-ram" data-ref="U43" tabindex="0"><title>U43 74LS153 — DRAM 주소 MUX (CPU/비디오 × ROW/COL)</title><rect x="285" y="870" width="55" height="130" rx="3"/><text x="312.5" y="935.0" class="lbl" transform="rotate(-90 312.5 935.0)"><tspan class="ref" x="312.5" dy="-6">U43</tspan><tspan x="312.5" dy="16">74LS153</tspan></text></g><g class="chip b-ram" data-ref="U44" tabindex="0"><title>U44 74LS153 — DRAM 주소 MUX</title><rect x="350" y="870" width="55" height="130" rx="3"/><text x="377.5" y="935.0" class="lbl" transform="rotate(-90 377.5 935.0)"><tspan class="ref" x="377.5" dy="-6">U44</tspan><tspan x="377.5" dy="16">74LS153</tspan></text></g><g class="chip b-rom" data-ref="U45" tabindex="0"><title>U45 2764 EPROM — $C000–$DFFF 영역 추정 (라벨 C/D)</title><rect x="425" y="870" width="85" height="240" rx="3"/><text x="467.5" y="986.0" class="lbl"><tspan class="ref">U45</tspan></text><text x="467.5" y="1003.0" class="lbl">2764</text></g><g class="chip b-rom" data-ref="U46" tabindex="0"><title>U46 2764 EPROM — $E000–$FFFF 모니터/Applesoft 추정 (라벨 EF)</title><rect x="545" y="870" width="90" height="240" rx="3"/><text x="590.0" y="986.0" class="lbl"><tspan class="ref">U46</tspan></text><text x="590.0" y="1003.0" class="lbl">2764</text></g><g class="chip b-vid" data-ref="U47" tabindex="0"><title>U47 74LS157 — 2→1 MUX (비디오 주소)</title><rect x="650" y="870" width="55" height="130" rx="3"/><text x="677.5" y="935.0" class="lbl" transform="rotate(-90 677.5 935.0)"><tspan class="ref" x="677.5" dy="-6">U47</tspan><tspan x="677.5" dy="16">74LS157</tspan></text></g><g class="chip b-dec" data-ref="U48" tabindex="0"><title>U48 74LS02 — NOR</title><rect x="720" y="870" width="55" height="130" rx="3"/><text x="747.5" y="935.0" class="lbl" transform="rotate(-90 747.5 935.0)"><tspan class="ref" x="747.5" dy="-6">U48</tspan><tspan x="747.5" dy="16">74LS02</tspan></text></g><g class="chip b-tim" data-ref="U49" tabindex="0"><title>U49 74LS175 — 쿼드 D-FF</title><rect x="785" y="870" width="55" height="130" rx="3"/><text x="812.5" y="935.0" class="lbl" transform="rotate(-90 812.5 935.0)"><tspan class="ref" x="812.5" dy="-6">U49</tspan><tspan x="812.5" dy="16">74LS175</tspan></text></g><g class="chip b-dec" data-ref="U50" tabindex="0"><title>U50 82S129 — 256×4 PROM</title><rect x="850" y="870" width="55" height="130" rx="3" stroke-dasharray="6 4"/><text x="877.5" y="935.0" class="lbl" transform="rotate(-90 877.5 935.0)"><tspan class="ref" x="877.5" dy="-6">U50</tspan><tspan x="877.5" dy="16">82S129</tspan></text></g><g class="chip b-dec" data-ref="U51" tabindex="0"><title>U51 82S129 — 256×4 PROM</title><rect x="915" y="870" width="55" height="130" rx="3" stroke-dasharray="6 4"/><text x="942.5" y="935.0" class="lbl" transform="rotate(-90 942.5 935.0)"><tspan class="ref" x="942.5" dy="-6">U51</tspan><tspan x="942.5" dy="16">82S129</tspan></text></g><g class="chip b-ram" data-ref="U52" tabindex="0"><title>U52 MN4164 — 64K×1 DRAM</title><rect x="20" y="1035" width="55" height="135" rx="3"/><text x="47.5" y="1102.5" class="lbl" transform="rotate(-90 47.5 1102.5)"><tspan class="ref" x="47.5" dy="-6">U52</tspan><tspan x="47.5" dy="16">MN4164</tspan></text></g><g class="chip b-ram" data-ref="U53" tabindex="0"><title>U53 MN4164 — 64K×1 DRAM</title><rect x="85" y="1035" width="55" height="135" rx="3"/><text x="112.5" y="1102.5" class="lbl" transform="rotate(-90 112.5 1102.5)"><tspan class="ref" x="112.5" dy="-6">U53</tspan><tspan x="112.5" dy="16">MN4164</tspan></text></g><g class="chip b-ram" data-ref="U54" tabindex="0"><title>U54 MN4164 — 64K×1 DRAM</title><rect x="150" y="1035" width="60" height="135" rx="3"/><text x="180.0" y="1102.5" class="lbl" transform="rotate(-90 180.0 1102.5)"><tspan class="ref" x="180.0" dy="-6">U54</tspan><tspan x="180.0" dy="16">MN4164</tspan></text></g><g class="chip b-ram" data-ref="U55" tabindex="0"><title>U55 MN4164 — 64K×1 DRAM, D7 추정</title><rect x="220" y="1035" width="60" height="135" rx="3"/><text x="250.0" y="1102.5" class="lbl" transform="rotate(-90 250.0 1102.5)"><tspan class="ref" x="250.0" dy="-6">U55</tspan><tspan x="250.0" dy="16">MN4164</tspan></text></g><g class="chip b-ram" data-ref="U56" tabindex="0"><title>U56 74LS153 — DRAM 주소 MUX</title><rect x="285" y="1035" width="55" height="135" rx="3"/><text x="312.5" y="1102.5" class="lbl" transform="rotate(-90 312.5 1102.5)"><tspan class="ref" x="312.5" dy="-6">U56</tspan><tspan x="312.5" dy="16">74LS153</tspan></text></g><g class="chip b-ram" data-ref="U57" tabindex="0"><title>U57 74LS153 — DRAM 주소 MUX</title><rect x="350" y="1035" width="55" height="135" rx="3"/><text x="377.5" y="1102.5" class="lbl" transform="rotate(-90 377.5 1102.5)"><tspan class="ref" x="377.5" dy="-6">U57</tspan><tspan x="377.5" dy="16">74LS153</tspan></text></g><g class="chip b-vid" data-ref="U58" tabindex="0"><title>U58 74LS157 — 2→1 MUX</title><rect x="650" y="1035" width="55" height="135" rx="3"/><text x="677.5" y="1102.5" class="lbl" transform="rotate(-90 677.5 1102.5)"><tspan class="ref" x="677.5" dy="-6">U58</tspan><tspan x="677.5" dy="16">74LS157</tspan></text></g><g class="chip b-vid" data-ref="U59" tabindex="0"><title>U59 74LS157 — 2→1 MUX</title><rect x="715" y="1035" width="55" height="135" rx="3"/><text x="742.5" y="1102.5" class="lbl" transform="rotate(-90 742.5 1102.5)"><tspan class="ref" x="742.5" dy="-6">U59</tspan><tspan x="742.5" dy="16">74LS157</tspan></text></g><g class="chip b-tim" data-ref="U60" tabindex="0"><title>U60 74LS00 — NAND</title><rect x="785" y="1035" width="55" height="135" rx="3"/><text x="812.5" y="1102.5" class="lbl" transform="rotate(-90 812.5 1102.5)"><tspan class="ref" x="812.5" dy="-6">U60</tspan><tspan x="812.5" dy="16">74LS00</tspan></text></g><g class="chip b-tim" data-ref="U61" tabindex="0"><title>U61 74LS74 — D-FF</title><rect x="850" y="1035" width="55" height="135" rx="3"/><text x="877.5" y="1102.5" class="lbl" transform="rotate(-90 877.5 1102.5)"><tspan class="ref" x="877.5" dy="-6">U61</tspan><tspan x="877.5" dy="16">74LS74</tspan></text></g><g class="chip b-tim" data-ref="U62" tabindex="0"><title>U62 74LS74 — D-FF</title><rect x="915" y="1035" width="55" height="135" rx="3"/><text x="942.5" y="1102.5" class="lbl" transform="rotate(-90 942.5 1102.5)"><tspan class="ref" x="942.5" dy="-6">U62</tspan><tspan x="942.5" dy="16">74LS74</tspan></text></g><g class="chip b-rom" data-ref="U63" tabindex="0"><title>U63 74LS245 — ROM/내부 데이터 버스 트랜시버</title><rect x="425" y="1120" width="155" height="55" rx="3"/><text x="502.5" y="1143.5" class="lbl"><tspan class="ref">U63</tspan></text><text x="502.5" y="1160.5" class="lbl">74LS245</text></g><g class="chip b-unk" data-ref="U64" tabindex="0"><title>U64 UM6502 — 두 번째 6502. 역할은 결선 확인 필요 (보조 CPU / 예비 소켓 가능성)</title><rect x="15" y="1185" width="335" height="115" rx="3"/><text x="182.5" y="1238.5" class="lbl"><tspan class="ref">U64</tspan></text><text x="182.5" y="1255.5" class="lbl">UM6502</text></g><g class="chip b-vid" data-ref="U65" tabindex="0"><title>U65 2764 EPROM — 비디오(문자) ROM 추정</title><rect x="365" y="1185" width="95" height="240" rx="3"/><text x="412.5" y="1301.0" class="lbl"><tspan class="ref">U65</tspan></text><text x="412.5" y="1318.0" class="lbl">2764</text></g><g class="chip b-vid" data-ref="U66" tabindex="0"><title>U66 74LS374 — 비디오 데이터 래치</title><rect x="480" y="1205" width="55" height="165" rx="3"/><text x="507.5" y="1287.5" class="lbl" transform="rotate(-90 507.5 1287.5)"><tspan class="ref" x="507.5" dy="-6">U66</tspan><tspan x="507.5" dy="16">74LS374</tspan></text></g><g class="chip b-vid" data-ref="U67" tabindex="0"><title>U67 74LS245 — 6116 데이터 버스 트랜시버</title><rect x="545" y="1205" width="55" height="165" rx="3"/><text x="572.5" y="1287.5" class="lbl" transform="rotate(-90 572.5 1287.5)"><tspan class="ref" x="572.5" dy="-6">U67</tspan><tspan x="572.5" dy="16">74LS245</tspan></text></g><g class="chip b-vid" data-ref="U68" tabindex="0"><title>U68 HM6116LP-3 — 2K×8 SRAM: 80컬럼 화면 버퍼 또는 한글 폰트 RAM 추정</title><rect x="610" y="1190" width="100" height="230" rx="3" stroke-dasharray="6 4"/><text x="660.0" y="1301.0" class="lbl"><tspan class="ref">U68</tspan></text><text x="660.0" y="1318.0" class="lbl">HM6116</text></g><g class="chip b-vid" data-ref="U69" tabindex="0"><title>U69 74LS273 — 8비트 D-FF 래치 (클리어 포함). 비디오 데이터/속성 래치 추정</title><rect x="725" y="1205" width="55" height="165" rx="3"/><text x="752.5" y="1287.5" class="lbl" transform="rotate(-90 752.5 1287.5)"><tspan class="ref" x="752.5" dy="-6">U69</tspan><tspan x="752.5" dy="16">74LS273</tspan></text></g><g class="chip b-vid" data-ref="U70" tabindex="0"><title>U70 2764 EPROM — 문자 발생 ROM (한글/80컬럼용 추정)</title><rect x="795" y="1155" width="95" height="235" rx="3"/><text x="842.5" y="1268.5" class="lbl"><tspan class="ref">U70</tspan></text><text x="842.5" y="1285.5" class="lbl">2764</text></g><g class="chip b-vid" data-ref="U71" tabindex="0"><title>U71 74LS166 — 8비트 병렬→직렬 시프트 (도트 출력)</title><rect x="910" y="1230" width="55" height="145" rx="3"/><text x="937.5" y="1302.5" class="lbl" transform="rotate(-90 937.5 1302.5)"><tspan class="ref" x="937.5" dy="-6">U71</tspan><tspan x="937.5" dy="16">74LS166</tspan></text></g><g class="chip b-tim" data-ref="U72" tabindex="0"><title>U72 74LS04 — X1·트리머·저항 2개와 붙어 있음 → 14.318MHz 발진 인버터 (배치로 확인)</title><rect x="60" y="1320" width="125" height="55" rx="3"/><text x="122.5" y="1343.5" class="lbl"><tspan class="ref">U72</tspan></text><text x="122.5" y="1360.5" class="lbl">74LS04</text></g><g class="chip b-tim" data-ref="U73" tabindex="0"><title>U73 74LS175 — 타이밍 래치</title><rect x="200" y="1320" width="130" height="55" rx="3"/><text x="265.0" y="1343.5" class="lbl"><tspan class="ref">U73</tspan></text><text x="265.0" y="1360.5" class="lbl">74LS175</text></g><g class="chip b-tim" data-ref="U74" tabindex="0"><title>U74 74LS08 — AND</title><rect x="25" y="1400" width="55" height="150" rx="3"/><text x="52.5" y="1475.0" class="lbl" transform="rotate(-90 52.5 1475.0)"><tspan class="ref" x="52.5" dy="-6">U74</tspan><tspan x="52.5" dy="16">74LS08</tspan></text></g><g class="chip b-tim" data-ref="U75" tabindex="0"><title>U75 74LS195 — 4비트 시프트: 마스터 타이밍 (Apple II D2 상당)</title><rect x="90" y="1400" width="60" height="150" rx="3"/><text x="120.0" y="1475.0" class="lbl" transform="rotate(-90 120.0 1475.0)"><tspan class="ref" x="120.0" dy="-6">U75</tspan><tspan x="120.0" dy="16">74LS195</tspan></text></g><g class="chip b-tim" data-ref="U76" tabindex="0"><title>U76 74LS109 — 듀얼 JK 플립플롭: 타이밍 분주/동기 추정</title><rect x="160" y="1400" width="55" height="150" rx="3"/><text x="187.5" y="1475.0" class="lbl" transform="rotate(-90 187.5 1475.0)"><tspan class="ref" x="187.5" dy="-6">U76</tspan><tspan x="187.5" dy="16">74LS109</tspan></text></g><g class="chip b-dec" data-ref="U77" tabindex="0"><title>U77 74LS139 — 듀얼 2→4 디코더</title><rect x="225" y="1400" width="60" height="150" rx="3"/><text x="255.0" y="1475.0" class="lbl" transform="rotate(-90 255.0 1475.0)"><tspan class="ref" x="255.0" dy="-6">U77</tspan><tspan x="255.0" dy="16">74LS139</tspan></text></g><g class="chip b-tim" data-ref="U78" tabindex="0"><title>U78 74LS74 — D-FF</title><rect x="295" y="1400" width="55" height="150" rx="3"/><text x="322.5" y="1475.0" class="lbl" transform="rotate(-90 322.5 1475.0)"><tspan class="ref" x="322.5" dy="-6">U78</tspan><tspan x="322.5" dy="16">74LS74</tspan></text></g><g class="chip b-vid" data-ref="U79" tabindex="0"><title>U79 74LS157 — 2→1 MUX</title><rect x="360" y="1400" width="55" height="150" rx="3"/><text x="387.5" y="1475.0" class="lbl" transform="rotate(-90 387.5 1475.0)"><tspan class="ref" x="387.5" dy="-6">U79</tspan><tspan x="387.5" dy="16">74LS157</tspan></text></g><g class="chip b-vid" data-ref="U80" tabindex="0"><title>U80 74LS257 — 3-state 2→1 MUX</title><rect x="420" y="1400" width="60" height="150" rx="3"/><text x="450.0" y="1475.0" class="lbl" transform="rotate(-90 450.0 1475.0)"><tspan class="ref" x="450.0" dy="-6">U80</tspan><tspan x="450.0" dy="16">74LS257</tspan></text></g><g class="chip b-vid" data-ref="U81" tabindex="0"><title>U81 74LS257 — 3-state 2→1 MUX</title><rect x="620" y="1400" width="60" height="150" rx="3"/><text x="650.0" y="1475.0" class="lbl" transform="rotate(-90 650.0 1475.0)"><tspan class="ref" x="650.0" dy="-6">U81</tspan><tspan x="650.0" dy="16">74LS257</tspan></text></g><g class="chip b-vid" data-ref="U82" tabindex="0"><title>U82 74LS393 — 듀얼 4비트 카운터: 비디오 H/V 카운터 추정</title><rect x="690" y="1400" width="55" height="150" rx="3"/><text x="717.5" y="1475.0" class="lbl" transform="rotate(-90 717.5 1475.0)"><tspan class="ref" x="717.5" dy="-6">U82</tspan><tspan x="717.5" dy="16">74LS393</tspan></text></g><g class="chip b-vid" data-ref="U83" tabindex="0"><title>U83 74LS174 — 6비트 래치</title><rect x="760" y="1400" width="55" height="150" rx="3"/><text x="787.5" y="1475.0" class="lbl" transform="rotate(-90 787.5 1475.0)"><tspan class="ref" x="787.5" dy="-6">U83</tspan><tspan x="787.5" dy="16">74LS174</tspan></text></g><g class="chip b-vid" data-ref="U84" tabindex="0"><title>U84 74LS00 — NAND</title><rect x="825" y="1400" width="55" height="150" rx="3"/><text x="852.5" y="1475.0" class="lbl" transform="rotate(-90 852.5 1475.0)"><tspan class="ref" x="852.5" dy="-6">U84</tspan><tspan x="852.5" dy="16">74LS00</tspan></text></g><g class="chip b-vid" data-ref="U85" tabindex="0"><title>U85 74S153 — 고속 4→1 MUX: 비디오 출력 선택</title><rect x="890" y="1400" width="60" height="150" rx="3"/><text x="920.0" y="1475.0" class="lbl" transform="rotate(-90 920.0 1475.0)"><tspan class="ref" x="920.0" dy="-6">U85</tspan><tspan x="920.0" dy="16">74S153</tspan></text></g>
+      </svg>
+    </div>
+    <aside class="side">
+      <div class="detail" id="detail"><span class="dim">부품을 선택하세요.</span></div>
+      <ul class="legend" id="legend"><li><span class="sw b-cpu"></span>메인 CPU / 버스</li><li><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</li><li><span class="sw b-ram"></span>DRAM 64KB + 주소 MUX</li><li><span class="sw b-rom"></span>시스템 ROM</li><li><span class="sw b-vid"></span>비디오 / 문자발생</li><li><span class="sw b-tim"></span>클럭 / 타이밍</li><li><span class="sw b-io"></span>I/O (게임·카세트·스피커)</li><li><span class="sw b-z80"></span>Z80 서브시스템</li><li><span class="sw b-exp"></span>슬롯 / 확장 로직</li><li><span class="sw b-unk"></span>역할 미확인</li></ul>
+    </aside>
+  </div>
+</section>
+
+<section>
+  <h2><span class="no">03</span>부품표</h2>
+  <div class="filters" id="filters"></div>
+  <div class="tbl-wrap" style="max-height:640px;overflow:auto">
+    <table class="bom" id="bom">
+      <thead><tr><th>참조</th><th>부품</th><th>표기</th><th>블록</th><th>판독</th><th>기능 / 비고</th></tr></thead>
+      <tbody><tr data-blk="z80"><td class="mono">U1</td><td>74LS373</td><td class="mono dim">8450D8</td><td><span class="sw b-z80"></span>Z80 서브시스템</td><td><span class="conf c-ok">확인</span></td><td>Z80 주소/데이터 래치</td></tr><tr data-blk="z80"><td class="mono">U2</td><td>Z80A CPU</td><td class="mono dim">SHARP LH0080A</td><td><span class="sw b-z80"></span>Z80 서브시스템</td><td><span class="conf c-ok">확인</span></td><td>Z80A 4MHz급 (CP/M 카드 내장형 추정)</td></tr><tr data-blk="io"><td class="mono">U3</td><td>LM339</td><td class="mono dim">NS M8420</td><td><span class="sw b-io"></span>I/O (게임·카세트·스피커)</td><td><span class="conf c-ok">확인</span></td><td>쿼드 컴퍼레이터: 카세트 입력 정형</td></tr><tr data-blk="z80"><td class="mono">U4</td><td>74LS244</td><td class="mono dim">8448C5</td><td><span class="sw b-z80"></span>Z80 서브시스템</td><td><span class="conf c-ok">확인</span></td><td>Z80 버스 버퍼</td></tr><tr data-blk="z80"><td class="mono">U5</td><td>82S123</td><td class="mono dim">N82S123N</td><td><span class="sw b-z80"></span>Z80 서브시스템</td><td><span class="conf c-ok">확인</span></td><td>32×8 바이폴라 PROM: Z80↔6502 주소 변환 추정</td></tr><tr data-blk="z80"><td class="mono">U6</td><td>74LS367</td><td class="mono dim">8445E4</td><td><span class="sw b-z80"></span>Z80 서브시스템</td><td><span class="conf c-ok">확인</span></td><td>Z80 주소 버퍼</td></tr><tr data-blk="z80"><td class="mono">U7</td><td>74LS367</td><td class="mono dim">8445E4</td><td><span class="sw b-z80"></span>Z80 서브시스템</td><td><span class="conf c-ok">확인</span></td><td>Z80 주소 버퍼</td></tr><tr data-blk="z80"><td class="mono">U8</td><td>74LS163</td><td class="mono dim">8501D2</td><td><span class="sw b-z80"></span>Z80 서브시스템</td><td><span class="conf c-ok">확인</span></td><td>동기 카운터 (Z80 클럭/웨이트 생성 추정)</td></tr><tr data-blk="z80"><td class="mono">U9</td><td>74LS00</td><td class="mono dim">8501C2</td><td><span class="sw b-z80"></span>Z80 서브시스템</td><td><span class="conf c-ok">확인</span></td><td>NAND 게이트</td></tr><tr data-blk="z80"><td class="mono">U10</td><td>74LS05</td><td class="mono dim">8432D0</td><td><span class="sw b-z80"></span>Z80 서브시스템</td><td><span class="conf c-ok">확인</span></td><td>오픈컬렉터 인버터 (DMA/RES 라인 구동 추정)</td></tr><tr data-blk="z80"><td class="mono">U11</td><td>74LS04</td><td class="mono dim">5050C0</td><td><span class="sw b-z80"></span>Z80 서브시스템</td><td><span class="conf c-ok">확인</span></td><td>인버터</td></tr><tr data-blk="z80"><td class="mono">U12</td><td>74LS74</td><td class="mono dim">74LS74A</td><td><span class="sw b-z80"></span>Z80 서브시스템</td><td><span class="conf c-ok">확인</span></td><td>D-FF</td></tr><tr data-blk="z80"><td class="mono">U13</td><td>74LS32</td><td class="mono dim">8435D1</td><td><span class="sw b-z80"></span>Z80 서브시스템</td><td><span class="conf c-ok">확인</span></td><td>OR 게이트</td></tr><tr data-blk="z80"><td class="mono">U14</td><td>74LS74</td><td class="mono dim">74LS74A</td><td><span class="sw b-z80"></span>Z80 서브시스템</td><td><span class="conf c-ok">확인</span></td><td>D-FF</td></tr><tr data-blk="z80"><td class="mono">U15</td><td>74LS10</td><td class="mono dim">8438D0</td><td><span class="sw b-z80"></span>Z80 서브시스템</td><td><span class="conf c-ok">확인</span></td><td>3입력 NAND</td></tr><tr data-blk="exp"><td class="mono">U16</td><td>74LS323</td><td class="mono dim">8432B0</td><td><span class="sw b-exp"></span>슬롯 / 확장 로직</td><td><span class="conf c-ok">확인</span></td><td>8비트 3-state 시프트/저장 레지스터</td></tr><tr data-blk="exp"><td class="mono">U17</td><td>82S129</td><td class="mono dim">Signetics 형식 · N82S1…/S (흐림)</td><td><span class="sw b-exp"></span>슬롯 / 확장 로직</td><td><span class="conf c-est">추정</span></td><td>16핀, 표기 형식이 U38 N82S129N과 동일 → 82S129 유력</td></tr><tr data-blk="exp"><td class="mono">U18</td><td>PROM</td><td class="mono dim">N8…9 · 라벨 &quot;M&quot;</td><td><span class="sw b-exp"></span>슬롯 / 확장 로직</td><td><span class="conf c-est">추정</span></td><td>82S129 계열 프로그램 PROM (라벨 M)</td></tr><tr data-blk="exp"><td class="mono">U19</td><td>74LS174</td><td class="mono dim">MB74LS174</td><td><span class="sw b-exp"></span>슬롯 / 확장 로직</td><td><span class="conf c-ok">확인</span></td><td>6비트 D-FF 래치</td></tr><tr data-blk="exp"><td class="mono">U20</td><td>74LS259</td><td class="mono dim">5050C1</td><td><span class="sw b-exp"></span>슬롯 / 확장 로직</td><td><span class="conf c-ok">확인</span></td><td>8비트 어드레서블 래치 (뱅크/모드 스위치 추정)</td></tr><tr data-blk="dec"><td class="mono">U21</td><td>74LS139</td><td class="mono dim">8502D0</td><td><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</td><td><span class="conf c-ok">확인</span></td><td>듀얼 2→4 디코더</td></tr><tr data-blk="dec"><td class="mono">U22</td><td>74LS138</td><td class="mono dim">8450C5</td><td><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</td><td><span class="conf c-ok">확인</span></td><td>3→8 디코더 (I/O SELECT 추정)</td></tr><tr data-blk="dec"><td class="mono">U23</td><td>74LS138</td><td class="mono dim">8450C5</td><td><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</td><td><span class="conf c-ok">확인</span></td><td>3→8 디코더 (DEVICE SELECT 추정)</td></tr><tr data-blk="dec"><td class="mono">U24</td><td>74LS138</td><td class="mono dim">8450C5</td><td><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</td><td><span class="conf c-ok">확인</span></td><td>3→8 디코더 ($C0xx 내부 I/O 추정)</td></tr><tr data-blk="dec"><td class="mono">U25</td><td>74LS259</td><td class="mono dim">5050C1</td><td><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</td><td><span class="conf c-ok">확인</span></td><td>소프트스위치 래치 (TEXT/MIXED/PAGE2/HIRES·AN0-3, Apple II F14 상당)</td></tr><tr data-blk="io"><td class="mono">U26</td><td>74LS74</td><td class="mono dim">74LS74A</td><td><span class="sw b-io"></span>I/O (게임·카세트·스피커)</td><td><span class="conf c-ok">확인</span></td><td>D-FF (스피커/카세트 출력 토글 추정)</td></tr><tr data-blk="io"><td class="mono">U27</td><td>NE558</td><td class="mono dim">NE558N VV8441</td><td><span class="sw b-io"></span>I/O (게임·카세트·스피커)</td><td><span class="conf c-ok">확인</span></td><td>쿼드 타이머: 패들 PDL0-3 (Apple II H13 상당)</td></tr><tr data-blk="io"><td class="mono">U28</td><td>74LS251</td><td class="mono dim">8444D0</td><td><span class="sw b-io"></span>I/O (게임·카세트·스피커)</td><td><span class="conf c-ok">확인</span></td><td>8→1 MUX: 버튼/패들/카세트IN 읽기 (Apple II H14 상당)</td></tr><tr data-blk="cpu"><td class="mono">U29</td><td>74LS245</td><td class="mono dim">8502E3</td><td><span class="sw b-cpu"></span>메인 CPU / 버스</td><td><span class="conf c-ok">확인</span></td><td>메인 CPU 데이터 버스 트랜시버</td></tr><tr data-blk="cpu"><td class="mono">U30</td><td>UM6502</td><td class="mono dim">UM6502 8404</td><td><span class="sw b-cpu"></span>메인 CPU / 버스</td><td><span class="conf c-ok">확인</span></td><td>메인 CPU (1.023MHz)</td></tr><tr data-blk="cpu"><td class="mono">U31</td><td>74LS367</td><td class="mono dim">8445E4</td><td><span class="sw b-cpu"></span>메인 CPU / 버스</td><td><span class="conf c-ok">확인</span></td><td>주소 버스 버퍼 (Apple II 8T97 대체)</td></tr><tr data-blk="cpu"><td class="mono">U32</td><td>74LS367</td><td class="mono dim">8445E4</td><td><span class="sw b-cpu"></span>메인 CPU / 버스</td><td><span class="conf c-ok">확인</span></td><td>주소 버스 버퍼</td></tr><tr data-blk="cpu"><td class="mono">U33</td><td>74LS367</td><td class="mono dim">8445E4</td><td><span class="sw b-cpu"></span>메인 CPU / 버스</td><td><span class="conf c-ok">확인</span></td><td>주소 버스 버퍼</td></tr><tr data-blk="dec"><td class="mono">U34</td><td>74LS00</td><td class="mono dim">8501C2</td><td><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</td><td><span class="conf c-ok">확인</span></td><td>NAND</td></tr><tr data-blk="dec"><td class="mono">U35</td><td>74LS139</td><td class="mono dim">8502D0</td><td><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</td><td><span class="conf c-ok">확인</span></td><td>듀얼 2→4 디코더</td></tr><tr data-blk="dec"><td class="mono">U36</td><td>82S129</td><td class="mono dim">N82S129N · 라벨 &quot;3&quot;</td><td><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</td><td><span class="conf c-est">추정</span></td><td>256×4 PROM (디코드용)</td></tr><tr data-blk="dec"><td class="mono">U37</td><td>74LS174</td><td class="mono dim">MB74LS174 8424</td><td><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</td><td><span class="conf c-ok">확인</span></td><td>6비트 래치</td></tr><tr data-blk="dec"><td class="mono">U38</td><td>82S129</td><td class="mono dim">N82S129N K8509</td><td><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</td><td><span class="conf c-ok">확인</span></td><td>256×4 PROM (디코드용)</td></tr><tr data-blk="ram"><td class="mono">U39</td><td>MN4164</td><td class="mono dim">MN4164P-25</td><td><span class="sw b-ram"></span>DRAM 64KB + 주소 MUX</td><td><span class="conf c-ok">확인</span></td><td>64K×1 DRAM, D0 추정</td></tr><tr data-blk="ram"><td class="mono">U40</td><td>MN4164</td><td class="mono dim">MN4164P-25</td><td><span class="sw b-ram"></span>DRAM 64KB + 주소 MUX</td><td><span class="conf c-ok">확인</span></td><td>64K×1 DRAM</td></tr><tr data-blk="ram"><td class="mono">U41</td><td>MN4164</td><td class="mono dim">MN4164P-25</td><td><span class="sw b-ram"></span>DRAM 64KB + 주소 MUX</td><td><span class="conf c-ok">확인</span></td><td>64K×1 DRAM</td></tr><tr data-blk="ram"><td class="mono">U42</td><td>MN4164</td><td class="mono dim">MN4164P-25</td><td><span class="sw b-ram"></span>DRAM 64KB + 주소 MUX</td><td><span class="conf c-ok">확인</span></td><td>64K×1 DRAM</td></tr><tr data-blk="ram"><td class="mono">U43</td><td>74LS153</td><td class="mono dim">8449D0</td><td><span class="sw b-ram"></span>DRAM 64KB + 주소 MUX</td><td><span class="conf c-ok">확인</span></td><td>DRAM 주소 MUX (CPU/비디오 × ROW/COL)</td></tr><tr data-blk="ram"><td class="mono">U44</td><td>74LS153</td><td class="mono dim">8449D0</td><td><span class="sw b-ram"></span>DRAM 64KB + 주소 MUX</td><td><span class="conf c-ok">확인</span></td><td>DRAM 주소 MUX</td></tr><tr data-blk="rom"><td class="mono">U45</td><td>2764 EPROM</td><td class="mono dim">NEC D2764D · 라벨 &quot;C/D8&quot;</td><td><span class="sw b-rom"></span>시스템 ROM</td><td><span class="conf c-ok">확인</span></td><td>$C000–$DFFF 영역 추정 (라벨 C/D)</td></tr><tr data-blk="rom"><td class="mono">U46</td><td>2764 EPROM</td><td class="mono dim">NEC D2764D · 라벨 &quot;EF5&quot;</td><td><span class="sw b-rom"></span>시스템 ROM</td><td><span class="conf c-ok">확인</span></td><td>$E000–$FFFF 모니터/Applesoft 추정 (라벨 EF)</td></tr><tr data-blk="vid"><td class="mono">U47</td><td>74LS157</td><td class="mono dim">8450E1</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>2→1 MUX (비디오 주소)</td></tr><tr data-blk="dec"><td class="mono">U48</td><td>74LS02</td><td class="mono dim">8442D1</td><td><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</td><td><span class="conf c-ok">확인</span></td><td>NOR</td></tr><tr data-blk="tim"><td class="mono">U49</td><td>74LS175</td><td class="mono dim">5070D0</td><td><span class="sw b-tim"></span>클럭 / 타이밍</td><td><span class="conf c-ok">확인</span></td><td>쿼드 D-FF</td></tr><tr data-blk="dec"><td class="mono">U50</td><td>82S129</td><td class="mono dim">N82S…509 · 라벨 &quot;1&quot;</td><td><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</td><td><span class="conf c-est">추정</span></td><td>256×4 PROM</td></tr><tr data-blk="dec"><td class="mono">U51</td><td>82S129</td><td class="mono dim">N82S…509 · 라벨 &quot;2&quot;</td><td><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</td><td><span class="conf c-est">추정</span></td><td>256×4 PROM</td></tr><tr data-blk="ram"><td class="mono">U52</td><td>MN4164</td><td class="mono dim">MN4164P-25</td><td><span class="sw b-ram"></span>DRAM 64KB + 주소 MUX</td><td><span class="conf c-ok">확인</span></td><td>64K×1 DRAM</td></tr><tr data-blk="ram"><td class="mono">U53</td><td>MN4164</td><td class="mono dim">MN4164P-25</td><td><span class="sw b-ram"></span>DRAM 64KB + 주소 MUX</td><td><span class="conf c-ok">확인</span></td><td>64K×1 DRAM</td></tr><tr data-blk="ram"><td class="mono">U54</td><td>MN4164</td><td class="mono dim">MN4164P-25</td><td><span class="sw b-ram"></span>DRAM 64KB + 주소 MUX</td><td><span class="conf c-ok">확인</span></td><td>64K×1 DRAM</td></tr><tr data-blk="ram"><td class="mono">U55</td><td>MN4164</td><td class="mono dim">MN4164P-25</td><td><span class="sw b-ram"></span>DRAM 64KB + 주소 MUX</td><td><span class="conf c-ok">확인</span></td><td>64K×1 DRAM, D7 추정</td></tr><tr data-blk="ram"><td class="mono">U56</td><td>74LS153</td><td class="mono dim">8449D0</td><td><span class="sw b-ram"></span>DRAM 64KB + 주소 MUX</td><td><span class="conf c-ok">확인</span></td><td>DRAM 주소 MUX</td></tr><tr data-blk="ram"><td class="mono">U57</td><td>74LS153</td><td class="mono dim">8449D0</td><td><span class="sw b-ram"></span>DRAM 64KB + 주소 MUX</td><td><span class="conf c-ok">확인</span></td><td>DRAM 주소 MUX</td></tr><tr data-blk="vid"><td class="mono">U58</td><td>74LS157</td><td class="mono dim">8450E1</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>2→1 MUX</td></tr><tr data-blk="vid"><td class="mono">U59</td><td>74LS157</td><td class="mono dim">8450E1</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>2→1 MUX</td></tr><tr data-blk="tim"><td class="mono">U60</td><td>74LS00</td><td class="mono dim">8501C2</td><td><span class="sw b-tim"></span>클럭 / 타이밍</td><td><span class="conf c-ok">확인</span></td><td>NAND</td></tr><tr data-blk="tim"><td class="mono">U61</td><td>74LS74</td><td class="mono dim">74LS74A</td><td><span class="sw b-tim"></span>클럭 / 타이밍</td><td><span class="conf c-ok">확인</span></td><td>D-FF</td></tr><tr data-blk="tim"><td class="mono">U62</td><td>74LS74</td><td class="mono dim">74LS74AP</td><td><span class="sw b-tim"></span>클럭 / 타이밍</td><td><span class="conf c-ok">확인</span></td><td>D-FF</td></tr><tr data-blk="rom"><td class="mono">U63</td><td>74LS245</td><td class="mono dim">8502E3</td><td><span class="sw b-rom"></span>시스템 ROM</td><td><span class="conf c-ok">확인</span></td><td>ROM/내부 데이터 버스 트랜시버</td></tr><tr data-blk="unk"><td class="mono">U64</td><td>UM6502</td><td class="mono dim">UM6502 8404</td><td><span class="sw b-unk"></span>역할 미확인</td><td><span class="conf c-ok">확인</span></td><td>두 번째 6502. 역할은 결선 확인 필요 (보조 CPU / 예비 소켓 가능성)</td></tr><tr data-blk="vid"><td class="mono">U65</td><td>2764 EPROM</td><td class="mono dim">NEC D2764D · 라벨 &quot;VD5&quot;</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>비디오(문자) ROM 추정</td></tr><tr data-blk="vid"><td class="mono">U66</td><td>74LS374</td><td class="mono dim">8445DD</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>비디오 데이터 래치</td></tr><tr data-blk="vid"><td class="mono">U67</td><td>74LS245</td><td class="mono dim">8502E3</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>6116 데이터 버스 트랜시버</td></tr><tr data-blk="vid"><td class="mono">U68</td><td>HM6116LP-3</td><td class="mono dim">Hitachi 8505</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-est">추정</span></td><td>2K×8 SRAM: 80컬럼 화면 버퍼 또는 한글 폰트 RAM 추정</td></tr><tr data-blk="vid"><td class="mono">U69</td><td>74LS273</td><td class="mono dim">8452D0 M74LS273P</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>8비트 D-FF 래치 (클리어 포함). 비디오 데이터/속성 래치 추정</td></tr><tr data-blk="vid"><td class="mono">U70</td><td>2764 EPROM</td><td class="mono dim">라벨 &quot;CHR P4&quot;</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>문자 발생 ROM (한글/80컬럼용 추정)</td></tr><tr data-blk="vid"><td class="mono">U71</td><td>74LS166</td><td class="mono dim">8502C3</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>8비트 병렬→직렬 시프트 (도트 출력)</td></tr><tr data-blk="tim"><td class="mono">U72</td><td>74LS04</td><td class="mono dim">5050C0</td><td><span class="sw b-tim"></span>클럭 / 타이밍</td><td><span class="conf c-ok">확인</span></td><td>X1·트리머·저항 2개와 붙어 있음 → 14.318MHz 발진 인버터 (배치로 확인)</td></tr><tr data-blk="tim"><td class="mono">U73</td><td>74LS175</td><td class="mono dim">8451D2</td><td><span class="sw b-tim"></span>클럭 / 타이밍</td><td><span class="conf c-ok">확인</span></td><td>타이밍 래치</td></tr><tr data-blk="tim"><td class="mono">U74</td><td>74LS08</td><td class="mono dim">8451C0</td><td><span class="sw b-tim"></span>클럭 / 타이밍</td><td><span class="conf c-ok">확인</span></td><td>AND</td></tr><tr data-blk="tim"><td class="mono">U75</td><td>74LS195</td><td class="mono dim">8445C0</td><td><span class="sw b-tim"></span>클럭 / 타이밍</td><td><span class="conf c-ok">확인</span></td><td>4비트 시프트: 마스터 타이밍 (Apple II D2 상당)</td></tr><tr data-blk="tim"><td class="mono">U76</td><td>74LS109</td><td class="mono dim">8449D1 M74LS109AP</td><td><span class="sw b-tim"></span>클럭 / 타이밍</td><td><span class="conf c-ok">확인</span></td><td>듀얼 JK 플립플롭: 타이밍 분주/동기 추정</td></tr><tr data-blk="dec"><td class="mono">U77</td><td>74LS139</td><td class="mono dim">8502D0</td><td><span class="sw b-dec"></span>주소 디코드 / 소프트스위치</td><td><span class="conf c-ok">확인</span></td><td>듀얼 2→4 디코더</td></tr><tr data-blk="tim"><td class="mono">U78</td><td>74LS74</td><td class="mono dim">74LS74A</td><td><span class="sw b-tim"></span>클럭 / 타이밍</td><td><span class="conf c-ok">확인</span></td><td>D-FF</td></tr><tr data-blk="vid"><td class="mono">U79</td><td>74LS157</td><td class="mono dim">8450E1</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>2→1 MUX</td></tr><tr data-blk="vid"><td class="mono">U80</td><td>74LS257</td><td class="mono dim">503000</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>3-state 2→1 MUX</td></tr><tr data-blk="vid"><td class="mono">U81</td><td>74LS257</td><td class="mono dim">503000</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>3-state 2→1 MUX</td></tr><tr data-blk="vid"><td class="mono">U82</td><td>74LS393</td><td class="mono dim">8451C1</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>듀얼 4비트 카운터: 비디오 H/V 카운터 추정</td></tr><tr data-blk="vid"><td class="mono">U83</td><td>74LS174</td><td class="mono dim">MB74LS174</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>6비트 래치</td></tr><tr data-blk="vid"><td class="mono">U84</td><td>74LS00</td><td class="mono dim">8501C2</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>NAND</td></tr><tr data-blk="vid"><td class="mono">U85</td><td>74S153</td><td class="mono dim">TI SN74S153N</td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>고속 4→1 MUX: 비디오 출력 선택</td></tr><tr data-blk="exp"><td class="mono">SL1</td><td>슬롯 커넥터 50핀</td><td class="mono dim">Woo Young PBC22-50DA-2.54DS</td><td><span class="sw b-exp"></span>슬롯 / 확장 로직</td><td><span class="conf c-ok">확인</span></td><td>Apple II 확장 슬롯 (번호 미확인)</td></tr><tr data-blk="exp"><td class="mono">SL2</td><td>슬롯 커넥터 50핀</td><td class="mono dim">Woo Young PBC22-50DA-2.54DS</td><td><span class="sw b-exp"></span>슬롯 / 확장 로직</td><td><span class="conf c-ok">확인</span></td><td></td></tr><tr data-blk="exp"><td class="mono">SL3</td><td>슬롯 커넥터 50핀</td><td class="mono dim">Woo Young PBC22-50DA-2.54DS</td><td><span class="sw b-exp"></span>슬롯 / 확장 로직</td><td><span class="conf c-ok">확인</span></td><td></td></tr><tr data-blk="exp"><td class="mono">SL4</td><td>슬롯 커넥터 50핀</td><td class="mono dim">Woo Young PBC22-50DA-2.54DS</td><td><span class="sw b-exp"></span>슬롯 / 확장 로직</td><td><span class="conf c-ok">확인</span></td><td></td></tr><tr data-blk="tim"><td class="mono">J1</td><td>전원 커넥터 5핀</td><td class="mono dim"></td><td><span class="sw b-tim"></span>클럭 / 타이밍</td><td><span class="conf c-ok">확인</span></td><td>외부 SMPS(한국산, 단자 FG·AC·+12V·+5V·GND·−5V·−12V)에서 5가닥(빨강·파랑·초록·주황·검정) 하네스로 입력. 레일 5개 확인, 핀 순서는 측정 필요</td></tr><tr data-blk="io"><td class="mono">J2</td><td>핀 헤더 2×10 (직립)</td><td class="mono dim"></td><td><span class="sw b-io"></span>I/O (게임·카세트·스피커)</td><td><span class="conf c-ok">확인</span></td><td>20핀. 키보드 커넥터 추정</td></tr><tr data-blk="io"><td class="mono">J3</td><td>핀 헤더 2×10 (ㄱ자)</td><td class="mono dim"></td><td><span class="sw b-io"></span>I/O (게임·카세트·스피커)</td><td><span class="conf c-ok">확인</span></td><td>20핀 라이트앵글. 용도 미확인 (프린터 등 외부 I/F 추정)</td></tr><tr data-blk="io"><td class="mono">J4</td><td>3.5mm 잭</td><td class="mono dim"></td><td><span class="sw b-io"></span>I/O (게임·카세트·스피커)</td><td><span class="conf c-ok">확인</span></td><td>케이스 표기 &quot;CASS&#x27;T&quot;. 카세트 단자 (IN/OUT 구분은 측정 필요). 옆에 세라믹 콘덴서·저항</td></tr><tr data-blk="io"><td class="mono">J5</td><td>3.5mm 잭</td><td class="mono dim"></td><td><span class="sw b-io"></span>I/O (게임·카세트·스피커)</td><td><span class="conf c-ok">확인</span></td><td>케이스 표기 &quot;CASS&#x27;T&quot;. 카세트 단자 (IN/OUT 구분은 측정 필요). 옆에 세라믹 콘덴서</td></tr><tr data-blk="vid"><td class="mono">J6</td><td>RGB 출력 5핀 헤더</td><td class="mono dim"></td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>케이스 표기 &quot;RGB&quot;. 3개 핀에 직렬 저항: 주황-주황-노랑(330k?) ×2, 갈색-빨강-주황(12k?) ×1, 측정 필요. 핀 배치 미확인</td></tr><tr data-blk="vid"><td class="mono">J7</td><td>RCA 잭</td><td class="mono dim"></td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-ok">확인</span></td><td>케이스 표기 &quot;VIDEO&quot;. 컴포지트 비디오 출력</td></tr><tr data-blk="vid"><td class="mono">Q1</td><td>트랜지스터 TO-92</td><td class="mono dim"></td><td><span class="sw b-vid"></span>비디오 / 문자발생</td><td><span class="conf c-est">추정</span></td><td>RCA 옆. 컴포지트 비디오 출력 버퍼(이미터 팔로워) 추정</td></tr><tr data-blk="io"><td class="mono">J8</td><td>2핀 커넥터</td><td class="mono dim"></td><td><span class="sw b-io"></span>I/O (게임·카세트·스피커)</td><td><span class="conf c-est">추정</span></td><td>스피커 추정 (옆에 트랜지스터 Q2와 저항 3개)</td></tr><tr data-blk="io"><td class="mono">Q2</td><td>트랜지스터 TO-92</td><td class="mono dim"></td><td><span class="sw b-io"></span>I/O (게임·카세트·스피커)</td><td><span class="conf c-est">추정</span></td><td>J8 옆. 스피커 구동 추정</td></tr><tr data-blk="io"><td class="mono">J9</td><td>16핀 DIP 소켓</td><td class="mono dim"></td><td><span class="sw b-io"></span>I/O (게임·카세트·스피커)</td><td><span class="conf c-ok">확인</span></td><td>게임 I/O 포트 (Apple II J14 상당)</td></tr><tr data-blk="unk"><td class="mono">J10</td><td>핀 헤더 2×8 (ㄱ자)</td><td class="mono dim"></td><td><span class="sw b-unk"></span>역할 미확인</td><td><span class="conf c-ok">확인</span></td><td>16핀 라이트앵글. 옆에 미실장 패드 7개. 용도 미확인</td></tr><tr data-blk="tim"><td class="mono">X1</td><td>수정 발진자 + 트리머 콘덴서</td><td class="mono dim"></td><td><span class="sw b-tim"></span>클럭 / 타이밍</td><td><span class="conf c-ok">확인</span></td><td>소형 금속 캔 수정 + 세라믹 트리머 + 저항 2개(U64 아래 가로 배치) + U72 74LS04 = Apple II식 수정 발진 회로. 주파수 표기 미확인, 14.31818MHz 추정</td></tr></tbody>
+    </table>
+  </div>
+</section>
+
+<section>
+  <h2><span class="no">04</span>표준 인터페이스 핀 배치</h2>
+  <p class="dim">Apple II 호환 커넥터의 표준 핀 배치입니다. 이 보드가 호환기인 이상 일치할 가능성이 높지만, 측정 시 기준점으로 쓰고 결과로 확정하세요.</p>
+  <div class="pins">
+    <div>
+      <h3 style="font-size:1rem;margin-bottom:8px">확장 슬롯 50핀 (SL1–SL4)</h3>
+      <table class="pin">
+        <tr><td>1</td><td>I/O SELECT</td><td>26</td><td>GND</td></tr>
+        <tr><td>2–17</td><td>A0–A15</td><td>27</td><td>DMA IN</td></tr>
+        <tr><td>18</td><td>R/W</td><td>28</td><td>INT IN</td></tr>
+        <tr><td>19</td><td>SYNC</td><td>29</td><td>NMI</td></tr>
+        <tr><td>20</td><td>I/O STROBE</td><td>30</td><td>IRQ</td></tr>
+        <tr><td>21</td><td>RDY</td><td>31</td><td>RES</td></tr>
+        <tr><td>22</td><td>DMA</td><td>32</td><td>INH</td></tr>
+        <tr><td>23</td><td>INT OUT</td><td>33</td><td>−12V</td></tr>
+        <tr><td>24</td><td>DMA OUT</td><td>34</td><td>−5V</td></tr>
+        <tr><td>25</td><td>+5V</td><td>35</td><td>COLOR REF</td></tr>
+        <tr><td>36</td><td>7M</td><td>37</td><td>Q3</td></tr>
+        <tr><td>38</td><td>Φ1</td><td>39</td><td>USER 1</td></tr>
+        <tr><td>40</td><td>Φ0</td><td>41</td><td>DEVICE SELECT</td></tr>
+        <tr><td>42–49</td><td>D7–D0</td><td>50</td><td>+12V</td></tr>
+      </table>
+    </div>
+    <div>
+      <h3 style="font-size:1rem;margin-bottom:8px">게임 I/O 16핀 (J9)</h3>
+      <table class="pin">
+        <tr><td>1</td><td>+5V</td><td>16</td><td>NC</td></tr>
+        <tr><td>2</td><td>PB0</td><td>15</td><td>AN0</td></tr>
+        <tr><td>3</td><td>PB1</td><td>14</td><td>AN1</td></tr>
+        <tr><td>4</td><td>PB2</td><td>13</td><td>AN2</td></tr>
+        <tr><td>5</td><td>C040 STROBE</td><td>12</td><td>AN3</td></tr>
+        <tr><td>6</td><td>PDL0</td><td>11</td><td>PDL3</td></tr>
+        <tr><td>7</td><td>PDL2</td><td>10</td><td>PDL1</td></tr>
+        <tr><td>8</td><td>GND</td><td>9</td><td>NC</td></tr>
+      </table>
+      <h3 style="font-size:1rem;margin:18px 0 8px">주요 소프트스위치 주소</h3>
+      <table class="pin">
+        <tr><td>$C000</td><td>키보드 데이터</td><td>$C050/51</td><td>GR / TEXT</td></tr>
+        <tr><td>$C010</td><td>키 스트로브 해제</td><td>$C052/53</td><td>FULL / MIXED</td></tr>
+        <tr><td>$C020</td><td>카세트 출력</td><td>$C054/55</td><td>PAGE1 / 2</td></tr>
+        <tr><td>$C030</td><td>스피커</td><td>$C056/57</td><td>LORES / HIRES</td></tr>
+        <tr><td>$C060</td><td>카세트 입력</td><td>$C058–5F</td><td>AN0–AN3</td></tr>
+        <tr><td>$C061–63</td><td>PB0–PB2</td><td>$C064–67</td><td>PDL0–3</td></tr>
+        <tr><td>$C070</td><td>패들 타이머 리셋</td><td>$C080–8F</td><td>슬롯 0 (언어카드)</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section>
+  <h2><span class="no">05</span>핀 단위 결선 확정 절차</h2>
+  <p>핀 단위 회로도를 완성하려면 테스터(도통 모드)로 넷을 확정해야 합니다. 아래 순서로 측정해 표로 주시면, 그 결과로 시트별 상세 회로도(KiCad 등)를 그릴 수 있습니다.</p>
+  <ol class="steps">
+    <li><b>전원 넷</b>: J1 각 핀과 U30 핀 8(+5V), 핀 21(GND), DRAM 핀 8/16의 도통을 확인합니다.</li>
+    <li><b>버스 기준점</b>: 슬롯 핀 2–17(A0–A15), 42–49(D7–D0)를 기준으로 각 IC 핀을 찍어 주소/데이터 버스에 연결된 핀을 표시합니다.</li>
+    <li><b>클럭 체인</b>: 슬롯 핀 36(7M), 37(Q3), 38(Φ1), 40(Φ0)에서 출발해 타이밍 블록(U72–U75, U49, U60–U62, U78)의 출력 핀을 찾습니다.</li>
+    <li><b>디코더 출력</b>: U22–U24 74LS138 출력(핀 7, 9–15)이 슬롯 핀 1, 41, ROM CE, U25/U26/U28 인에이블 중 어디로 가는지 기록합니다.</li>
+    <li><b>두 번째 6502(U64)</b>: 핀 37(Φ0 IN), 40(RES), 2(RDY), 34(R/W)가 어디에 연결되는지 확인하면 역할을 판단할 수 있습니다.</li>
+    <li><b>Z80 블록</b>: U2 핀 6(CLK), 26(RESET), 24(WAIT), 25(BUSRQ)와 슬롯 핀 22(DMA)·21(RDY) 사이 경로를 확인합니다.</li>
+    <li><b>PROM 덤프</b>: 82S123/82S129와 2764 4개를 롬 라이터로 읽으면 디코드 테이블과 펌웨어로 주소 맵을 확정할 수 있습니다.</li>
+  </ol>
+</section>
+
+</div>
+
+<script>
+(function(){
+  const blocks = {};
+  document.querySelectorAll('#legend li').forEach((li,i)=>{
+    const sw = li.querySelector('.sw'); const cls=[...sw.classList].find(c=>c.startsWith('b-'));
+    li.dataset.blk = cls; li.tabIndex=0; li.setAttribute('role','button');
+    blocks[cls]=li.textContent.trim();
+  });
+  const chips=[...document.querySelectorAll('.board .chip')];
+  const rows=[...document.querySelectorAll('#bom tbody tr')];
+  const detail=document.getElementById('detail');
+  const rowByRef={}; rows.forEach(r=>rowByRef[r.cells[0].textContent]=r);
+  let activeBlk=null;
+  function setBlk(cls){
+    activeBlk = (activeBlk===cls)?null:cls;
+    chips.forEach(c=>c.classList.toggle('dimmed', !!activeBlk && !c.classList.contains(activeBlk)));
+    document.querySelectorAll('#legend li').forEach(li=>li.classList.toggle('on', li.dataset.blk===activeBlk));
+  }
+  document.querySelectorAll('#legend li').forEach(li=>{
+    li.addEventListener('click',()=>setBlk(li.dataset.blk));
+    li.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();setBlk(li.dataset.blk)}});
+  });
+  function pick(ref){
+    chips.forEach(c=>c.classList.toggle('on',c.dataset.ref===ref));
+    rows.forEach(r=>r.classList.toggle('on',r.cells[0].textContent===ref));
+    const r=rowByRef[ref]; if(!r) return;
+    detail.innerHTML='<div class="r">'+ref+' · '+r.cells[1].textContent+'</div>'+
+      '<div class="dim mono" style="font-size:.8rem">'+r.cells[2].textContent+'</div>'+
+      '<div style="margin-top:6px">'+r.cells[3].innerHTML+' '+r.cells[4].innerHTML+'</div>'+
+      '<div style="margin-top:6px">'+r.cells[5].textContent+'</div>';
+  }
+  chips.forEach(c=>{
+    c.addEventListener('click',()=>pick(c.dataset.ref));
+    c.addEventListener('keydown',e=>{if(e.key==='Enter'){pick(c.dataset.ref)}});
+  });
+  rows.forEach(r=>r.addEventListener('click',()=>pick(r.cells[0].textContent)));
+  // filters
+  const f=document.getElementById('filters');
+  const mk=(label,cls)=>{const b=document.createElement('button');b.type='button';b.textContent=label;b.dataset.blk=cls||'';b.setAttribute('aria-pressed',cls?'false':'true');f.appendChild(b);return b};
+  mk('전체','');
+  const names={}; document.querySelectorAll('#legend li').forEach(li=>names[li.dataset.blk]=li.textContent.trim());
+  Object.keys(names).forEach(k=>mk(names[k],k));
+  f.addEventListener('click',e=>{
+    const b=e.target.closest('button'); if(!b) return;
+    f.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false'));
+    const k=b.dataset.blk;
+    rows.forEach(r=>{const cls=r.querySelector('td:nth-child(4) .sw').classList; r.hidden = !!k && !cls.contains(k);});
+  });
+})();
+</script>
