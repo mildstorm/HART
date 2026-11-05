@@ -237,7 +237,7 @@ ol.steps{margin:0;padding-left:1.4em;display:grid;gap:6px;max-width:80ch}
       <text class="t-h" x="32" y="622">비디오 생성부</text>
       <text class="t-s" x="32" y="644">카운터 U82 74LS393 → 주소 MUX U47/58/59/79 74LS157, U80/81 74LS257</text>
       <text class="t-s" x="32" y="662">데이터 래치 U66 74LS374 · U83 74LS174 · U69 74LS273</text>
-      <text class="t-s" x="32" y="680">문자 ROM U65 2764 "VD5" (40컬럼 추정) · U70 2764 "CHR P4" (한글/80컬럼 추정)</text>
+      <text class="t-s" x="32" y="680">U65 2764 "VD5" (U64 버스, 확인) · U70 2764 "CHR P4" (한글/80컬럼 추정)</text>
       <text class="t-s" x="32" y="698">SRAM U68 HM6116 2KB + U67 74LS245 (화면 버퍼 또는 폰트 RAM 추정)</text>
       <text class="t-s" x="32" y="716">시프트: U71 74LS166 (도트 출력)</text>
       <text class="t-s" x="32" y="734">출력: U85 74S153 · U84 00 → Q1 → J7 RCA / J6 RGB 5핀</text>
@@ -249,10 +249,10 @@ ol.steps{margin:0;padding-left:1.4em;display:grid;gap:6px;max-width:80ch}
     <!-- 2nd 6502 -->
     <g class="blk b-unk"><rect x="560" y="420" width="250" height="110" rx="4" stroke-dasharray="6 4"/>
       <text class="t-h" x="572" y="442">U64 UM6502 (두 번째)</text>
-      <text class="t-s" x="572" y="462">역할 미확인. 후보:</text>
-      <text class="t-s" x="572" y="478">· 80컬럼/한글 표시 전용 CPU</text>
-      <text class="t-s" x="572" y="494">· 예비/전환용 CPU 소켓</text>
-      <text class="t-s" x="572" y="514">핀 1(VSS), 40(RES), 37(Φ0) 측정 필요</text>
+      <text class="t-s" x="572" y="462">한글 폰트 처리 전용 CPU</text>
+      <text class="t-s" x="572" y="478">U30·Z80과 별도로 독립 동작</text>
+      <text class="t-s" x="572" y="494">(2026-11-06 측정 확인)</text>
+      <text class="t-s" x="572" y="514">비디오 블록 연결 경로는 미확인</text>
     </g>
     <path class="sig d" d="M610 530V690"/>
     <path class="sig d" d="M700 360V420"/><path class="sig d" d="M640 300V420"/>
@@ -372,7 +372,7 @@ ol.steps{margin:0;padding-left:1.4em;display:grid;gap:6px;max-width:80ch}
     <li><b>버스 기준점</b>: 슬롯 핀 2–17(A0–A15), 42–49(D7–D0)를 기준으로 각 IC 핀을 찍어 주소/데이터 버스에 연결된 핀을 표시합니다.</li>
     <li><b>클럭 체인</b>: 슬롯 핀 36(7M), 37(Q3), 38(Φ1), 40(Φ0)에서 출발해 타이밍 블록(U72–U75, U49, U60–U62, U78)의 출력 핀을 찾습니다.</li>
     <li><b>디코더 출력</b>: U22–U24 74LS138 출력(핀 7, 9–15)이 슬롯 핀 1, 41, ROM CE, U25/U26/U28 인에이블 중 어디로 가는지 기록합니다.</li>
-    <li><b>두 번째 6502(U64)</b>: 핀 37(Φ0 IN), 40(RES), 2(RDY), 34(R/W)가 어디에 연결되는지 확인하면 역할을 판단할 수 있습니다.</li>
+    <li><b>두 번째 6502(U64)</b>: 한글 폰트 처리 전용으로 독립 동작함을 확인했습니다 (2026-11-06). 핀별 결선은 넷리스트로 정리할 예정입니다.</li>
     <li><b>Z80 블록</b>: U2 핀 6(CLK), 26(RESET), 24(WAIT), 25(BUSRQ)와 슬롯 핀 22(DMA)·21(RDY) 사이 경로를 확인합니다.</li>
     <li><b>PROM 덤프</b>: 82S123/82S129와 2764 4개를 롬 라이터로 읽으면 디코드 테이블과 펌웨어로 주소 맵을 확정할 수 있습니다.</li>
   </ol>

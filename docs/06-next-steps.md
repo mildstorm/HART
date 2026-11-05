@@ -22,13 +22,12 @@
 
 ## 측정 결과 기록 형식
 
-`data/netlist.csv`에 아래 형식으로 기록하면 KiCad 회로도로 옮기기 쉽습니다.
+[`data/netlist.csv`](../data/netlist.csv)에 아래 형식으로 기록하면 KiCad 회로도로 옮기기 쉽습니다. `result`에는 도통 / 불통 / 다름 등을, 핀을 특정하지 못했으면 핀 칸에 `-`를 적습니다.
 
 ```csv
-net,from_ref,from_pin,to_ref,to_pin,note
-A0,U30,9,SL1,2,
-A0,U30,9,U39,5,DRAM MUX 경유 여부 확인
-PHI0,SL1,40,U30,37,
+net,from_ref,from_pin,to_ref,to_pin,result,date,note
+A0,U30,9,SL1,2,도통,2026-11-06,
+D7,U30,26,U64,26,불통,2026-11-06,데이터 버스 분리
 ```
 
 ## 권장 저장소 확장
