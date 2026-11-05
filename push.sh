@@ -4,7 +4,7 @@
 #   이후:   bash push.sh "커밋 메시지"
 set -e
 cd "$(dirname "$0")"
-REMOTE=https://github.com/mildstorm/HART.git
+REMOTE=git@github.com:mildstorm/HART.git
 
 if [ ! -d .git ]; then
   git init
