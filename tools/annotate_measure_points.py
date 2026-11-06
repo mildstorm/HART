@@ -14,7 +14,7 @@ YEL = (255, 220, 0)
 CYAN = (0, 200, 255)
 WHITE = (255, 255, 255)
 
-W, H = 1760, 2080
+W, H = 1760, 2560
 cv = Image.new("RGB", (W, H), WHITE)
 d = ImageDraw.Draw(cv)
 
@@ -153,6 +153,39 @@ yy = ys + 50
 for t, b in lines:
     d.text((tx, yy), t, font=font(19, b), fill=RED if t.startswith("주의") else BLK)
     yy += 30
+
+# ---------- J1 power connector ----------
+j1_pins = [175, 280, 350, 418, 483]  # orig y, x ~ 62
+obox(30, 130, 110, 520, (255, 120, 0), 4)
+label(d, O(115, 120), "J1 전원", 16, anchor="lb", bg=(255, 170, 80))
+
+yj = 2090
+d.line((20, yj - 15, W - 20, yj - 15), fill=BLK, width=2)
+d.text((20, yj), "⑤ J1 전원 커넥터 (왼쪽 위, 5핀) — 핀별 전압은 아직 확인 안 됨", font=font(24, True), fill=BLK)
+MJ = inset((0, 120, 200, 540), 1.0, (40, yj + 45))
+for i, y in enumerate(j1_pins):
+    cx, cy = MJ(62, y)
+    d.ellipse((cx-10, cy-10, cx+10, cy+10), outline=RED, width=3)
+    label(d, (cx + 170, cy), f"J1-{'abcde'[i]}:  ?  V", 18, bg=WHITE, anchor="lm")
+    d.line((cx + 12, cy, cx + 150, cy), fill=RED, width=2)
+jt = [
+    ("하네스 선 색 → 전압 (PSU 단자에서 확인, 2026-11-06)", True),
+    ("  빨강 = +12V   주황 = +5V   검정 = GND(0V)", False),
+    ("  파랑 = -5V    초록 = -12V", False),
+    ("  ※ 빨강이 +5V가 아니라 +12V임에 주의", True),
+    ("", False),
+    ("확정 방법 (둘 중 하나)", True),
+    ("  1) 커넥터를 꽂은 채로 J1-a부터 e까지 선 색을 읽는다", False),
+    ("  2) 전원 켜고 검정 프로브 U72 핀 7, 빨강 프로브로", False),
+    ("     J1 각 핀 DC 전압 (커넥터 뺀 상태면 PSU 쪽 단자를 잴 것)", False),
+    ("", False),
+    ("하네스 사진(225533)의 하우징 선 순서는 검정·빨강·파랑·초록·주황", False),
+    ("으로 보이지만, 보드에 어느 방향으로 꽂히는지 확인 안 됨.", False),
+]
+yy2 = yj + 55
+for t, b in jt:
+    d.text((520, yy2), t, font=font(19, b), fill=RED if t.startswith("  ※") else BLK)
+    yy2 += 30
 
 cv.save(OUT, quality=92)
 print(cv.size, yy)
