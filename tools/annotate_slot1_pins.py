@@ -28,7 +28,7 @@ def label(xy, text, sz=17, fg=BLK, bg=WHITE, anchor="mm", bold=True):
 
 d.text((20, 12), "슬롯1 핀 번호 (정면, 슬롯이 위쪽)", font=font(32, True), fill=BLK)
 d.text((20, 56), "Apple II 표준 배치: 1↔50, 25↔26 마주 봄. 1번은 본체 앞쪽(키보드 쪽) = 사진 아래쪽 (위쪽 가장자리에 VIDEO·RGB 단자 = 뒤쪽).\n"
-       "좌우 어느 줄이 26–50인지는 자료로 확인 안 됨 → 그림은 '왼쪽 줄 = 26–50'인 경우. 0단계 측정으로 반드시 확인.",
+       "측정 확인(2026-11-07): 슬롯 4개 모두 왼쪽 줄 맨 아래 = +12V = 50번 → 왼쪽 줄 = 26–50, 오른쪽 줄 = 25–1. 슬롯 2–4도 같은 배치.",
        font=font(17), fill=BLK)
 
 # --- small locator ---
@@ -79,14 +79,11 @@ tx, ty = 20, 520
 lines = [
     ("측정 순서 (검정 프로브 = U72 핀 7)", True, BLK),
     ("", False, BLK),
-    ("0. 확인 (DC): 아래쪽 두 모서리 중 +12V인 쪽 = 50", True, GRN),
-    ("   왼쪽 아래가 +12V → 이 그림 그대로", False, BLK),
-    ("   오른쪽 아래가 +12V → 좌우 줄을 바꿔 읽기", False, BLK),
-    ("   (핀 40 = 오른쪽 줄 위에서 15번째)", False, BLK),
-    ("   위쪽 모서리가 +12V → 멈추고 알려 줄 것", False, BLK),
+    ("0. 확인 완료: 왼쪽 줄 맨 아래 = +12V (50번)", True, GRN),
+    ("   슬롯 4개 모두 같음 (2026-11-07 측정)", False, BLK),
     ("", False, BLK),
     ("1. 핀 40 (Φ0) Hz", True, RED),
-    ("   50번 줄 위에서 15번째 (아래에서 11번째)", False, BLK),
+    ("   왼쪽 줄 위에서 15번째 (아래에서 11번째)", False, BLK),
     ("   정상 1.023MHz", False, BLK),
     ("", False, BLK),
     ("2. 핀 35 (3.58M) Hz", True, ORG),
@@ -94,11 +91,11 @@ lines = [
     ("   연결되는 핀이라 이 슬롯은 아무것도 안 나올 수 있음", False, BLK),
     ("", False, BLK),
     ("3. 핀 36 (7M) Hz", True, BLUE),
-    ("   50번 줄 위에서 11번째 / 정상 약 7.16MHz", False, BLK),
+    ("   왼쪽 줄 위에서 11번째 / 정상 약 7.16MHz", False, BLK),
     ("", False, BLK),
     ("주의: 핀 35·36·40은 서로 가까움.", True, RED),
     ("프로브가 이웃 핀에 같이 닿지 않게.", False, RED),
-    ("핀 50(+12V)은 맨 아래 모서리 중 하나.", False, RED),
+    ("핀 50(+12V)은 왼쪽 줄 맨 아래.", False, RED),
 ]
 for t, b, c in lines:
     d.text((tx, ty), t, font=font(19, b), fill=c)
