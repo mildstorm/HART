@@ -1,7 +1,7 @@
 """슬롯1 50핀 번호 그림 생성.
 사용: python tools/annotate_slot1_pins.py photos/overview/front/202813_front-flat_layout-ref.jpg analysis/slot1_pins.jpg
-배치 근거: 사용자 표시(2026-11-07) 위쪽 왼쪽 GND, 위쪽 오른쪽 +5V, 아래 왼쪽 +12V,
-왼쪽 줄 위에서 8·9번째 -12V·-5V → 왼쪽 줄 = 26(위)~50(아래), 오른쪽 줄 = 25(위)~1(아래).
+배치 근거: Apple II 표준(1↔50, 25↔26 마주 봄, 1번은 본체 앞쪽). 사진 위쪽 가장자리가 뒤쪽(VIDEO·RGB 단자).
+좌우 줄은 자료로 미확인 → 왼쪽 줄 = 26(위)~50(아래), 오른쪽 줄 = 25(위)~1(아래)인 경우로 그림. 측정으로 확인 필요.
 """
 import sys
 from PIL import Image, ImageDraw, ImageFont
@@ -16,7 +16,7 @@ BLK, WHITE = (0, 0, 0), (255, 255, 255)
 RED, ORG, BLUE = (220, 20, 20), (255, 130, 0), (0, 110, 230)
 GRN, GRAY, YEL = (0, 150, 60), (120, 120, 120), (255, 220, 0)
 
-W, H = 1500, 1260
+W, H = 1500, 1300
 cv = Image.new("RGB", (W, H), WHITE)
 d = ImageDraw.Draw(cv)
 
@@ -27,8 +27,9 @@ def label(xy, text, sz=17, fg=BLK, bg=WHITE, anchor="mm", bold=True):
     d.text(xy, text, font=f, fill=fg, anchor=anchor)
 
 d.text((20, 12), "슬롯1 핀 번호 (정면, 슬롯이 위쪽)", font=font(32, True), fill=BLK)
-d.text((20, 56), "사용자 표시(위 왼쪽 GND, 위 오른쪽 +5V, 아래 왼쪽 +12V)를 기준으로 Apple II 슬롯 배치를 적용",
-       font=font(18), fill=BLK)
+d.text((20, 56), "Apple II 표준 배치: 1↔50, 25↔26 마주 봄. 1번은 본체 앞쪽(키보드 쪽) = 사진 아래쪽 (위쪽 가장자리에 VIDEO·RGB 단자 = 뒤쪽).\n"
+       "좌우 어느 줄이 26–50인지는 자료로 확인 안 됨 → 그림은 '왼쪽 줄 = 26–50'인 경우. 0단계 측정으로 반드시 확인.",
+       font=font(17), fill=BLK)
 
 # --- small locator ---
 loc = src.crop((0, 0, 1060, 1100)).resize((318, 330))
@@ -41,7 +42,7 @@ d.text((20, 438), "빨간 박스 = 슬롯1\n(왼쪽 끝 슬롯)", font=font(17, 
 X0, Y0, X1, Y1 = 120, 40, 245, 975
 sc = 1.18
 im = src.crop((X0, Y0, X1, Y1)).resize((int((X1-X0)*sc), int((Y1-Y0)*sc)), Image.LANCZOS)
-ax, ay = 640, 110
+ax, ay = 640, 145
 cv.paste(im, (ax, ay))
 d.rectangle((ax-1, ay-1, ax+im.size[0], ay+im.size[1]), outline=BLK, width=2)
 def M(x, y):
@@ -78,23 +79,26 @@ tx, ty = 20, 520
 lines = [
     ("측정 순서 (검정 프로브 = U72 핀 7)", True, BLK),
     ("", False, BLK),
-    ("0. 확인: 왼쪽 줄 맨 아래(50) = 약 +12V", True, GRN),
-    ("   왼쪽 줄 맨 위(26) = 0V, 오른쪽 줄 맨 위(25) = 약 +5V", False, BLK),
-    ("   → 다르면 멈추고 알려 줄 것", False, BLK),
+    ("0. 확인 (DC): 아래쪽 두 모서리 중 +12V인 쪽 = 50", True, GRN),
+    ("   왼쪽 아래가 +12V → 이 그림 그대로", False, BLK),
+    ("   오른쪽 아래가 +12V → 좌우 줄을 바꿔 읽기", False, BLK),
+    ("   (핀 40 = 오른쪽 줄 위에서 15번째)", False, BLK),
+    ("   위쪽 모서리가 +12V → 멈추고 알려 줄 것", False, BLK),
     ("", False, BLK),
     ("1. 핀 40 (Φ0) Hz", True, RED),
-    ("   왼쪽 줄 위에서 15번째 (아래에서 11번째)", False, BLK),
+    ("   50번 줄 위에서 15번째 (아래에서 11번째)", False, BLK),
     ("   정상 1.023MHz", False, BLK),
     ("", False, BLK),
     ("2. 핀 35 (3.58M) Hz", True, ORG),
-    ("   왼쪽 줄 위에서 10번째 / 정상 약 3.58MHz", False, BLK),
+    ("   위에서 10번째 / 약 3.58MHz. 단 표준에서 슬롯 7에만", False, BLK),
+    ("   연결되는 핀이라 이 슬롯은 아무것도 안 나올 수 있음", False, BLK),
     ("", False, BLK),
     ("3. 핀 36 (7M) Hz", True, BLUE),
-    ("   왼쪽 줄 위에서 11번째 / 정상 약 7.16MHz", False, BLK),
+    ("   50번 줄 위에서 11번째 / 정상 약 7.16MHz", False, BLK),
     ("", False, BLK),
     ("주의: 핀 35·36·40은 서로 가까움.", True, RED),
     ("프로브가 이웃 핀에 같이 닿지 않게.", False, RED),
-    ("핀 50(+12V)은 맨 아래 왼쪽 모서리.", False, RED),
+    ("핀 50(+12V)은 맨 아래 모서리 중 하나.", False, RED),
 ]
 for t, b, c in lines:
     d.text((tx, ty), t, font=font(19, b), fill=c)
