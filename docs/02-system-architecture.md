@@ -21,6 +21,7 @@ flowchart LR
   DEC --> ROM["시스템 ROM<br/>2764 C/D8, EF5"]
   DEC --> IO["내장 I/O<br/>게임 포트, 카세트, 스피커"]
   DEC --> SLOT["확장 슬롯 ×4"]
+  DEC --> FDC["내장 FDD 컨트롤러<br/>U16-U20 → J2/J3"]
   AB --> RAM["DRAM 64KB<br/>MN4164×8, MUX 74LS153×4"]
   RAM <--> DB
   ROM --> DB
@@ -45,7 +46,8 @@ flowchart LR
 | 클럭/타이밍 | X1 + 트리머 콘덴서, U72 74LS04, U73/U49 74LS175, U75 74LS195, U76 74LS109, U74 74LS08, U60/U61/U62/U78 | 14.31818MHz(추정)에서 7M, 3.58M, Q3, Φ0/Φ1, RAS/CAS 생성 |
 | 주소 디코드 | U21/U35/U77 74LS139, U22–U24 74LS138, U34 74LS00, U48 74LS02, U36/U38/U50/U51 82S129, U25 74LS259 | ROM CS, C0xx 내부 I/O, I/O SELECT, DEVICE SELECT |
 | 내장 I/O | U27 NE558, U28 74LS251, U3 LM339, U26 74LS74, Q2, J4/J5/J8/J9 | 게임 포트(Apple II H13/H14 상당), 카세트(3.5mm 잭 ×2, 케이스 표기 CASSETTE), 스피커(J8, Q2 구동) |
-| 확장 | SL1–SL4, U16 74LS323, U17/U18 PROM, U19 74LS174, U20 74LS259 | 보조 로직 역할 미확인 (언어카드 또는 프린터 I/F 추정) |
+| 확장 슬롯 | SL1–SL4 | 50핀 ×4 |
+| 내장 FDD 컨트롤러 | U16 74LS323, U17/U18 PROM, U19 74LS174, U20 74LS259, J2·J3 (20핀 ×2) | Apple Disk II 컨트롤러 카드와 같은 칩 구성. J2·J3 = 드라이브 1·2 단자 (사용자 확인 2026-11-07). 어느 슬롯 번호로 동작하는지(보통 6), 핀 1 방향은 미확인 |
 | 전원 | J1 5핀 | +5V, GND, ±12V, −5V 추정 |
 
 ## 측정으로 확인한 결선 (2026-11-07 수리 중)
