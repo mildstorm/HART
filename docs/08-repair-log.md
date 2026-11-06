@@ -28,7 +28,7 @@ X1 → U72 (발진) ─┬→ U64 클럭: 1.9V (정상)
 
 ### 0. 지금 할 일 (U30 핀 37 = 3.585MHz 측정 이후)
 
-측정 위치 그림: [`analysis/measure_points.jpg`](../analysis/measure_points.jpg) (U30·U64 핀 번호, U72 핀 7 GND, 슬롯 모서리 A–D). 생성 스크립트 [`tools/annotate_measure_points.py`](../tools/annotate_measure_points.py)
+측정 위치 그림(U30·U64 핀 번호, U72 핀 7 GND, J1 위치) 생성 스크립트: [`tools/annotate_measure_points.py`](../tools/annotate_measure_points.py). 출력 이미지는 저장소에서 제거함 (2026-11-07)
 
 슬롯1 50핀 번호 그림: [`analysis/slot1_pins.jpg`](../analysis/slot1_pins.jpg). 사용자 표시(2026-11-07: 위 왼쪽 GND, 위 오른쪽 +5V, 아래 왼쪽 +12V)를 기준으로 왼쪽 줄 = 26(위)→50(아래), 오른쪽 줄 = 25(위)→1(아래). 핀 40(Φ0)은 왼쪽 줄 위에서 15번째. J1은 위에서부터 GND, +12V, −5V, −12V, +5V (사용자 표시)
 
