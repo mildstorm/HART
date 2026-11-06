@@ -28,6 +28,8 @@ X1 → U72 (발진) ─┬→ U64 클럭: 1.9V (정상)
 
 ### 0. 지금 할 일 (U30 핀 37 = 3.585MHz 측정 이후)
 
+측정 위치 그림: [`analysis/measure_points.jpg`](../analysis/measure_points.jpg) (U30·U64 핀 번호, U72 핀 7 GND, 슬롯 모서리 A–D). 생성 스크립트 [`tools/annotate_measure_points.py`](../tools/annotate_measure_points.py)
+
 | 순서 | 측정 | 방법 | 정상 / 판정 |
 | --- | --- | --- | --- |
 | 0-1 | 슬롯 핀 40 (Φ0, 50번에서 11번째) | 전원 켜고 Hz | 1.023MHz면 박자는 만들어지고 있음 → U30까지 가는 길이 문제 |
