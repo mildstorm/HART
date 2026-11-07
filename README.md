@@ -70,6 +70,10 @@ S/N 506267 Apple II 호환 메인보드의 사진, 부품 분석, 회로도를 �
 
 ### 키보드 단자 (키보드 납땜면, 번호는 [`analysis/kbd_measure_simple.jpg`](analysis/kbd_measure_simple.jpg) 기준)
 
+뒷면 전체와 칩·단자 번호·RESET 위치를 한 장에: [`analysis/kbd_solder_overview.jpg`](analysis/kbd_solder_overview.jpg)
+
+![키보드 뒷면 전체와 칩·단자 번호](analysis/kbd_solder_overview.jpg)
+
 | 단자 | 역할 | 상태 |
 | --- | --- | --- |
 | 16 | GND | 확인 |
