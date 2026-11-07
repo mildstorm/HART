@@ -14,6 +14,11 @@
 **2026-11-07 키보드 단자 J10**: 키보드 케이블이 J10(2×8 라이트앵글 핀헤더)에 꽂혀 있던 것을 확인 → **J10 = 키보드 단자 확정**. 사진: [`photos/keyboard/20261107_131132_J10-header_connector-unplugged.jpg`](../photos/keyboard/20261107_131132_J10-header_connector-unplugged.jpg)(J10과 뽑은 커넥터), [`photos/keyboard/20261107_133005_connector-wiring-side.jpg`](../photos/keyboard/20261107_133005_connector-wiring-side.jpg)·[`photos/keyboard/20261107_141505_connector-back-unused-pins.jpg`](../photos/keyboard/20261107_141505_connector-back-unused-pins.jpg)(커넥터 뒷면 배선).
 - 케이블 쪽 커넥터: 2×8, **방향 돌기(키) 없음** → 거꾸로 꽂힐 수 있음. 전선을 한 가닥씩 핀에 연결하고 각각 수축튜브, 흰 케이블타이로 묶음(수작업 배선으로 보임). 16칸 중 일부는 전선이 없어 **핀만 뒤로 튀어나와 있음**(원래 구조, 이상 아님).
 - 메인보드 J10 **케이스 반대쪽 끝 2핀 = GND**: 전원 끈 상태에서 슬롯1 핀 26(GND)과 테스터 통전 확인 (사용자 측정). 위치 = **케이스(뒤판) 반대쪽 끝**, 위에서 본 사진에서 아래쪽 끝 한 쌍(핀헤더 받침이 넓은 쪽). 케이스 쪽 끝 2핀은 미확인. 위치 표시: [`analysis/j10_gnd_pins_zoom.jpg`](../analysis/j10_gnd_pins_zoom.jpg), [`analysis/j10_gnd_pins_overview.jpg`](../analysis/j10_gnd_pins_overview.jpg). 정품 Apple II 키보드 배치(1번 +5V, 8번 GND)와 다름 → 이 보드 고유 배치로 보임.
+- **뒷면 사진 판독** (뒷면 212435를 앞면 좌표로 옮겨 봄): [`analysis/j10_keyboard_back.jpg`](../analysis/j10_keyboard_back.jpg), 도구 [`tools/annotate_j10_keyboard.py`](../tools/annotate_j10_keyboard.py). 행 1 = GND 끝, 행 8 = 케이스 쪽 끝. 열 A = SIP·U80 쪽, 열 B = U81 쪽.
+    - 행8 열B: 뒷면 선이 보드 가장자리 선으로 내려가고 같은 선에 U81 핀 16(Vcc)이 붙음 → **+5V 추정** (U81 핀 번호는 칩 글자 방향으로 판단, 측정 필요).
+    - J10 옆 미실장 구멍 7개(J10 행과 같은 간격, 7행 자리만 없음) → 다른 키보드용 단자 자리 추정.
+    - 미실장 구멍 열 옆 검은 SIP 9핀 → 저항 어레이(키보드 데이터선 풀업) 추정. 옆의 U80·U81 74LS257이 키보드 데이터를 데이터 버스로 읽는 칩일 가능성.
+    - 나머지 13핀은 대부분 앞면 선으로 나가는데 앞면은 핀헤더 몸체가 가려서 사진으로 판독 불가 → 측정으로 확정.
 - 다시 꽂을 때 방향: 케이블 커넥터 양 끝의 2칸끼리 통전 시험 → 서로 통하는 쪽(키보드 안 GND 묶음)을 J10 GND 쪽에 맞춤. 나머지 핀 배치(+5V·RESET·데이터·STROBE)는 미확인.
 
 **2026-11-07 간헐 증상**: 껐다 켜면 **가끔 까만 화면으로 멈춤**, 다른 때는 정상 부팅. 후보: (1) 껐다 바로 켜서 리셋 콘덴서가 덜 방전 → 전원 켤 때 리셋 펄스 부족 (2) 아직 남은 소켓 접촉 불량 (3) +5V 여유 부족(4.8V, 하한 근처). 확인: 까만 화면일 때 RESET/Ctrl+RESET 반응, 10초 이상 끈 뒤 켜기, 정상·불량 때 +5V 비교, 동작 중 칩 가볍게 두드리기.
