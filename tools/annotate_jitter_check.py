@@ -46,8 +46,7 @@ label((LM + im.width + 20, TOP + 330), "③ 전원 들어오는 곳 (J1)", ORG, 
 d.text((LM + im.width + 20, TOP + 375), "케이블 꽉 꽂혔는지, 전원부(SMPS)\n겉면이 뜨거운지 손등으로", font=F(20), fill=BLK, spacing=6)
 
 # ④ 비디오 칩 영역 U65–U71, U80–U82
-rect(362, 1180, 1005, 1440, MAG)
-rect(415, 1395, 750, 1555, MAG, 4)
+rect(362, 1170, 1005, 1620, MAG)  # 비디오 칩 10개(U65–U71, U80–U82)를 사각형 하나로
 label((LM + im.width + 20, TOP + 1240), "④ 비디오 쪽 칩", MAG, 26, P(1005, 1300))
 d.text((LM + im.width + 20, TOP + 1285), "U65 VD5 · U66 · U67 · U68 6116\n· U69 · U70 CHR P4 · U71\n아래 줄 U80–U82\n뜨거운 칩 찾기, 볼펜으로 톡톡", font=F(20), fill=BLK, spacing=6)
 
