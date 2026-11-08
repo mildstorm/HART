@@ -208,5 +208,39 @@ for i, (t, c) in enumerate([
 ]):
     d.text((20, y + i * 40), t, font=F(21), fill=c)
 cv = full
+
+# --- 맨 아래: T1 트리머 (14MHz 발진, 2026-11-09 건드리자 켜짐 = 접촉 불량 유력) 앞면·뒷면 ---
+FX, FY = 0, 2700
+bx, by = f2b(FX + W0 / 2, FY + H0 / 2)
+BX, BY = int(bx) - W0 // 2, int(by) - H0 // 2
+fcrop = fr.crop((FX, FY, FX + W0, FY + H0)).resize((int(W0 * K), int(H0 * K)), Image.LANCZOS)
+bcrop = bk.crop((BX, BY, BX + W0, BY + H0)).resize((int(W0 * K), int(H0 * K)), Image.LANCZOS)
+full = Image.new("RGB", (cv.width, cv.height + SEC + fcrop.height + 260), "white")
+full.paste(cv, (0, 0))
+oy = cv.height + SEC
+full.paste(fcrop, (20, oy)); full.paste(bcrop, (40 + fcrop.width, oy))
+d = ImageDraw.Draw(full)
+d.line((0, cv.height + 10, cv.width, cv.height + 10), fill=(180, 180, 180), width=3)
+d.text((20, cv.height + 20), "T1 트리머 (14MHz 발진, U72 왼쪽): 왼쪽 = 앞면, 오른쪽 = 뒷면", font=F(28), fill=BLK)
+d.text((20, cv.height + 56), "2026-11-09 안 켜질 때 건드리자 바로 켜짐 → 접촉 불량 유력. 뒷면 위치는 앞·뒷면 정합 + 사진 판독", font=F(20), fill=RED)
+def fp(x, y): return 20 + (x - FX) * K, oy + (y - FY) * K
+def bp(x, y): return 40 + fcrop.width + (x - BX) * K, oy + (y - BY) * K
+cx, cy = fp(83, 2857); r = 70 * K / 2
+d.ellipse((cx - r, cy - r, cx + r, cy + r), outline=ORG, width=6)
+d.text((cx - 20, cy + r + 6), "T1", font=F(26), fill=ORG)
+ux, uy = fp(300, 2840); d.text((ux, uy), "U72", font=F(24), fill=GRY)
+for (x, y), lab in (((2026, 2769), "①"), ((1979, 2843), "②"), ((2069, 2849), "③")):
+    px, py = bp(x, y)
+    d.ellipse((px - 22, py - 22, px + 22, py + 22), outline=ORG, width=6)
+    d.text((px + 24, py - 30), lab, font=F(26), fill=ORG)
+y = oy + fcrop.height + 14
+for i, (t, c) in enumerate([
+    ("뒷면 주황 ①②③ = 트리머 다리 납땜점 (사진 판독, 추정). 큰 둥근 납땜 2개 + 위쪽 1개", ORG),
+    ("볼 것: 납땜 둘레에 동그랗게 금 간 곳, 납이 들뜬 곳 → 있으면 인두로 다시 녹이기", BLK),
+    ("도통 확인 (전원 끔): 앞면 트리머 다리 ↔ 뒷면 ①②③ 삐 → 위치 확인", BLK),
+    ("앞면: 트리머 돌리기 전 현재 위치 표시. 접점 세정제 + 좌우로 몇 번 돌렸다 원위치", BLK),
+]):
+    d.text((20, y + i * 40), t, font=F(21), fill=c)
+cv = full
 cv.save(OUT, quality=88)
 print(cv.size)
