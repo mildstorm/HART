@@ -29,8 +29,8 @@ terms = [
 ]
 
 board = ImageOps.exif_transpose(Image.open("photos/overview/front/202813_front-flat_layout-ref.jpg")).convert("RGB")
-board = board.resize((board.width // 2, board.height // 2), Image.LANCZOS).crop((0, 0, 520, 520))  # 왼쪽 위: J1·슬롯1
-board = board.resize((780, 780), Image.LANCZOS)
+board = board.resize((board.width // 2, board.height // 2), Image.LANCZOS).crop((0, 0, 520, 700))  # 왼쪽 위: J1·슬롯1·J2·J3
+board = board.resize((780, 1050), Image.LANCZOS)
 S = 780 / 520
 BX, BY = 20 + 820 + 40 + 560, 120
 
@@ -79,6 +79,36 @@ for py, col, lab in J1PINS:
     d.rectangle((lx - 8, cy - 22 + t, lx + (r - l) + 8, cy - 22 + b + 8), fill=col)
     d.text((lx, cy - 22), lab, font=F(30), fill=WHT if col != ORG else BLK)
 d.text((BX - 330, B(0, 89)[1] - 70), "J1 핀 (위→아래)", font=F(26), fill=BLK)
+
+# FDD 단자 J2(위)·J3(아래), 2×10. 오른쪽 아래 = 1번 = GND (사용자 측정 2026-11-08).
+# 번호: 오른쪽 줄 아래→위 1,3,…,19 / 왼쪽 줄 아래→위 2,4,…,20 (Disk II 표준 배치 가정, 1·3·5·7 GND)
+FDD = {"J2": ((34, 48.5), [294, 311, 327.5, 344, 361, 379, 395, 412.5, 431, 448.5]),
+       "J3": ((34, 50), [499, 517.5, 535, 552.5, 570, 587.5, 605, 621.5, 639, 657.5])}
+PUR = (150, 0, 180)
+for name, ((xl, xr), rows) in FDD.items():
+    for k, ry in enumerate(reversed(rows)):  # 아래부터
+        odd, even = 2 * k + 1, 2 * k + 2
+        for x, no, side in ((xr, odd, 1), (xl, even, -1)):
+            cx, cy = B(x, ry)
+            col = BLK if no in (1, 3, 5, 7) else PUR
+            d.ellipse((cx - 7, cy - 7, cx + 7, cy + 7), outline=col, width=3)
+            t = str(no)
+            l, tt, r, b = d.textbbox((0, 0), t, font=F(15))
+            tx0 = cx + 10 if side > 0 else cx - 10 - (r - l)
+            d.rectangle((tx0 - 2, cy - 9, tx0 + (r - l) + 2, cy + 9), fill=WHT)
+            d.text((tx0, cy - 10), t, font=F(15), fill=col)
+    cx, cy = B(xr, rows[-1])
+    d.ellipse((cx - 13, cy - 13, cx + 13, cy + 13), outline=RED, width=5)
+    lab, lab2 = f"{name} FDD 단자 (20핀)", "오른쪽 아래 = 1번 GND"
+    l, tt, r, b = d.textbbox((0, 0), lab2, font=F(22))
+    lx = BX - 40 - (r - l)
+    ly = B(0, (rows[0] + rows[-1]) / 2)[1] - 20
+    d.rectangle((lx - 8, ly - 6, lx + (r - l) + 8, ly + 66), fill=PUR)
+    d.text((lx, ly - 2), lab, font=F(22), fill=WHT)
+    d.text((lx, ly + 30), lab2, font=F(22), fill=WHT)
+    ly += 20
+    d.line((lx + (r - l) + 8, ly + 14, B(xl, rows[0])[0] - 30, ly + 14), fill=PUR, width=3)
+    d.line((B(xl, rows[0])[0] - 30, ly + 14, cx - 13, cy), fill=RED, width=3)
 
 # 제목·표
 d.text((20, 14), "전원 기준 그림 — SMPS 단자, 선 색, 보드에서 재는 곳", font=F(40), fill=BLK)
