@@ -59,11 +59,11 @@ d.line((0, cv.height + 10, cv.width, cv.height + 10), fill=(180, 180, 180), widt
 d.text((20, cv.height + 20), "C2 확대 (STC 22µF 16V 탄탈, LM339·트랜지스터 C1815 옆) — 재는 곳", font=F(30), fill=BLK)
 ZP = lambda x, y: (20 + (x - 300) * ZS, oy + (y - 250) * ZS)
 BLU = (30, 90, 230)
-for (x, y), lab in (((705, 770), "다리 A"), ((822, 846), "다리 B")):
+for (x, y), lab in (((705, 770), "다리 A (-)"), ((822, 846), "다리 B (+)")):
     cx, cy = ZP(x, y)
     d.ellipse((cx - 22, cy - 22, cx + 22, cy + 22), outline=BLU, width=6)
     l, t, r, b = d.textbbox((0, 0), lab, font=F(24))
-    tx = cx - (r - l) - 40 if lab.endswith("A") else cx + 34
+    tx = cx - (r - l) - 40 if "A" in lab else cx + 34
     d.rectangle((tx - 6, cy - 18 + t, tx + (r - l) + 6, cy - 18 + b + 6), fill=BLU)
     d.text((tx, cy - 18), lab, font=F(24), fill="white")
 y = oy + z.height + 16
@@ -115,7 +115,7 @@ for (x, y) in ((1900, 266), (1802, 266)):
 d.text(fp(1790, 300), "LM339 맨 위 핀 (기준)", font=F(20), fill=GRN2)
 # 뒷면: C2 다리 납땜점 2개 (몸통 아래 패드, 정합 사진에서 판독)
 BLU = (30, 90, 230)
-legs = [(BX + 565 / 4, BY + 380 / 4, "다리 ①"), (BX + 700 / 4, BY + 380 / 4, "다리 ②")]
+legs = [(BX + 565 / 4, BY + 380 / 4, "① +"), (BX + 700 / 4, BY + 380 / 4, "② -")]
 for x, y, lab in legs:
     px, py = bp(x, y)
     d.ellipse((px - 22, py - 22, px + 22, py + 22), outline=BLU, width=6)
@@ -124,7 +124,7 @@ qx, qy = bp(*f2b(1882, 208))
 d.text((qx - 20, qy - 70), "C2 자리", font=F(22), fill=RED)
 y = oy + fcrop.height + 14
 for i, (t, c) in enumerate([
-    ("파랑 ①·② = 뒷면 C2 다리 납땜점 (도통으로 확인: 앞면 다리 A = 뒷면 ②, 앞면 다리 B = 뒷면 ①). 극성은 아직 모름", BLU),
+    ("파랑 ①·② = 뒷면 C2 다리 납땜점 (도통 확인: 앞면 A = 뒷면 ②, 앞면 B = 뒷면 ①). 극성: ① = +, ② = - (몸통 + 표시, 육안 확인)", BLU),
     ("극성 먼저 (전원 켜고, DC V): 검정 = 슬롯 26번(GND), 빨강 = ① 다음 ② → 전압 높은 쪽 = +다리, 낮은(0V) 쪽 = -다리", RED),
     ("Ω 잴 때 (전원 끄고): 빨간 프로브 = +다리, 검정 프로브 = -다리 (테스터 Ω 모드에서 빨강이 + 쪽). 반대로 대도 고장나진 않음", RED),
     ("뒷면에서 재기: ① ↔ ② Ω(단락 확인), ①·② 각각 ↔ U30 40번 도통(리셋 연결 확인, 극성 무관)", BLK),
