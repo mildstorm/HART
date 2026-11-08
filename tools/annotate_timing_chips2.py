@@ -22,7 +22,7 @@ def label(xy, text, sz=18, fg=BLK, bg=WHITE, anchor="mm", bold=True):
     d.text(xy, text, font=f, fill=fg, anchor=anchor)
 
 d.text((20, 12), "나머지 타이밍 칩: U78, U60, U61, U62 (정면, 슬롯이 위쪽)", font=font(30, True), fill=BLK)
-d.text((20, 54), "U30 핀 37(CPU 박자 입력)이 어느 칩 출력에 붙어 있는지 찾기 위한 그림. 도통 측정은 반드시 전원 끄고.", font=font(18), fill=BLK)
+d.text((20, 54), "U30 핀 37(CPU 클럭 입력)이 어느 칩 출력에 붙어 있는지 찾기 위한 그림. 도통 측정은 반드시 전원 끄고.", font=font(18), fill=BLK)
 
 # overview
 s = 0.20
