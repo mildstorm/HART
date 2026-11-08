@@ -173,6 +173,10 @@ photos/
 | --- | --- |
 | case/20261108_171356_J1-power-connector_wired.jpg | 보드 J1에 꽂힌 SMPS 5가닥 (검정·빨강·파랑·초록·주황), 아래에 SMPS 라벨 "DAE HAN ENGINEERING". 전압 표시는 analysis/power_reference.jpg |
 
+| case/20261108_171641_FDD-cables-J2-J3_in-case.jpg | 케이스 안 보드, J2·J3에 꽂힌 FDD 리본 케이블 2개(파란 BERG 커넥터), 오른쪽 SMPS 라벨 (보드가 180° 돌아간 방향) |
+| zoom/front/20261108_212556_C3-green-choke_CHRP4-right.jpg | CHRP4 오른쪽 위 초록 원통 부품(C3, 코일 추정)과 옆 주황 세라믹을 벌려서 찍음 |
+| zoom/back/20261108_212622_back-bottom-edge_C3-area.jpg | 같은 부분 뒷면 (보드 아래쪽 가장자리) |
+
 ## 키보드 `keyboard/` 추가 (2026-11-08)
 
 | 파일 | 내용 |
