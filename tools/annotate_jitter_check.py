@@ -64,5 +64,17 @@ d.text((20, y), "① +5V가 4.75V 아래거나 AC가 0.1V 넘음 → 전원부 �
 d.text((20, y + 40), "② 흔들 때 화면이 변함 → 영상 케이블·단자 접촉", font=F(24), fill=BLU)
 d.text((20, y + 80), "④ 두드릴 때 화면이 변하는 칩 → 그 칩 소켓 접촉 (전원 끄고 꾹 누르기)", font=F(24), fill=MAG)
 d.text((20, y + 120), "모두 정상인데 지글거림 → 모니터 쪽 (V-HOLD·H-HOLD 조정, 다른 모니터로 비교)", font=F(24), fill=BLK)
+# 아래에 비디오 칩 확대(④ 상세)를 붙여 한 장으로 (tools/annotate_video_chips.py 출력)
+import subprocess, tempfile, os
+tmp = os.path.join(tempfile.gettempdir(), "_video_chips.jpg")
+subprocess.run([sys.executable, "-I", "tools/annotate_video_chips.py", tmp], check=True, capture_output=True)
+vz = Image.open(tmp).convert("RGB")
+vz = vz.resize((cv.width, int(vz.height * cv.width / vz.width)), Image.LANCZOS)
+full = Image.new("RGB", (cv.width, cv.height + 30 + vz.height), "white")
+full.paste(cv, (0, 0))
+ImageDraw.Draw(full).line((0, cv.height + 14, cv.width, cv.height + 14), fill=(180, 180, 180), width=3)
+full.paste(vz, (0, cv.height + 30))
+os.remove(tmp)
+cv = full
 cv.save(OUT, quality=88)
 print(cv.size)

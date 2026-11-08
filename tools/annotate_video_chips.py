@@ -1,5 +1,5 @@
 """비디오 쪽 칩 확대 그림 (화면 지글거림 점검용, 앞면 기준 사진 202813).
-사용: python tools/annotate_video_chips.py analysis/video_chips.jpg
+단독 파일로 저장하지 않음: tools/annotate_jitter_check.py 가 불러서 analysis/jitter_check_points.jpg 아래쪽에 붙임.
 좌표는 data/bom.csv 배치 좌표(202813의 1/2 크기)를 씀.
 """
 import sys

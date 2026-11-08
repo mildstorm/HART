@@ -171,7 +171,7 @@ photos/
 
 | 파일 | 내용 |
 | --- | --- |
-| case/20261108_171356_J1-power-connector_wired.jpg | 보드 J1에 꽂힌 SMPS 5가닥 (검정·빨강·파랑·초록·주황), 아래에 SMPS 라벨 "DAE HAN ENGINEERING". 전압 표시본: [`analysis/j1_power_pins.jpg`](../analysis/j1_power_pins.jpg) |
+| case/20261108_171356_J1-power-connector_wired.jpg | 보드 J1에 꽂힌 SMPS 5가닥 (검정·빨강·파랑·초록·주황), 아래에 SMPS 라벨 "DAE HAN ENGINEERING". 전압 표시는 analysis/power_reference.jpg |
 
 ## 키보드 `keyboard/` 추가 (2026-11-08)
 
