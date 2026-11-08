@@ -185,6 +185,8 @@ photos/
 | zoom/front/20261108_224802_LM339_resistors-diode_C2.jpg | LM339(U3) 주변: 왼쪽 세로 저항 6개 + 유리 다이오드 1개 + 저항, 104 세라믹 2개, 2핀 커넥터, 아래 가로 저항 3개, 오른쪽 C2 |
 | zoom/front/20261108_224807_LM339_C2_C1815_RCA.jpg | LM339·C2·트랜지스터 C1815·VIDEO RCA |
 | zoom/front/20261108_224823_NE558_paddle-caps-223.jpg | NE558(U27) 옆 연두 커패시터 4개 = 223(0.022µF) → 게임 패들 타이밍 확인 (리셋과 무관) |
+| zoom/front/20261108_225548_top-right_LM339_Z80_74LS05.jpg | 오른쪽 위 구역 전체: LM339·저항·다이오드, Z80, 74LS05(U10, 슬롯 옆 줄), 게임 포트 소켓, NE558 (보드가 90° 돌아간 방향) |
+| zoom/front/20261108_225601_LM339-resistors_74LS05_column.jpg | 같은 구역 다른 각도: LM339 옆 저항·다이오드 줄, 74LS05 위치 |
 | zoom/back/20261108_225042_back-right-edge_RCA-corner.jpg | 뒷면 오른쪽 가장자리, RCA 고정 납땜(아래) |
 | zoom/back/20261108_214205_back-RCA-corner_C2-area.jpg | 같은 모서리 뒷면 (RCA 단자·5핀 커넥터 납땜) |
 
