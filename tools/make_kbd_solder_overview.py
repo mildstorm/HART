@@ -65,6 +65,6 @@ d.text((tx, ty), lab, font=F(28), fill=RED)
 
 # 아래 요약
 y = TOP + nh + 18
-d.text((20, y), "단자: 16 GND · 9 +5V · 8/12/7/6 = 행 번호 A/B/C/D · 10 열(RESET) · 11 추가 선택선 · 1–5, 13–15 열 후보", font=F(28), fill=BLK)
-d.text((20, y + 46), "케이블 본체 쪽 커넥터 구멍 번호는 analysis/kbd_cable_holes_numbered.jpg (1번 +5V, 8·9번 GND)", font=FR(26), fill=BLK)
+d.text((20, y), "단자: 16 GND · 9 +5V · 8/12/7/6 = 행 번호 A/B/C/D (74LS145 15/14/13/12번) · 2–5, 10, 13–15 = 열 8가닥 (10 = RESET 열) · 1, 11 = 케이블 선 없음", font=F(28), fill=BLK)
+d.text((20, y + 46), "케이블 본체 쪽 구멍 번호: analysis/kbd_cable_holes_numbered.jpg · J10 핀별 신호: docs/05-interface-pinouts.md", font=FR(26), fill=BLK)
 canvas.save(OUT, quality=88)

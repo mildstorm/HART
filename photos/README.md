@@ -103,7 +103,7 @@ photos/
 
 | 파일 | 내용 |
 | --- | --- |
-| backlit/232515_backlit_U64.jpg | 두 번째 6502 뒷면. 핀 번호 표시본: [`analysis/u64_backlit_pins.jpg`](../analysis/u64_backlit_pins.jpg) |
+| backlit/232515_backlit_U64.jpg | 두 번째 6502 뒷면. 핀 번호 표시본: [`analysis/u64_back_pins.jpg`](../analysis/u64_back_pins.jpg) |
 | backlit/232518_backlit_U64-left_U72-row.jpg | U64 왼쪽(뒷면 기준)과 아래 줄 |
 | backlit/232548_backlit_dram-area.jpg | DRAM 구역 |
 | backlit/232551_backlit_U30.jpg | 메인 6502 뒷면 (비교용) |
