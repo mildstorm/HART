@@ -178,6 +178,7 @@ photos/
 | zoom/back/20261108_212622_back-bottom-edge_C3-area.jpg | 같은 부분 뒷면 (보드 아래쪽 가장자리) |
 | zoom/front/20261108_214148_C2-tantalum_LM339-RCA-corner.jpg | C2 노란 탄탈 (LM339·Z80 오른쪽, VIDEO RCA 단자 아래). 극성 표시는 사진으로 안 보임 |
 | zoom/front/20261108_214517_C2-tantalum_side-plus-mark.jpg | C2 탄탈 측면: 몸통에 "+ +" 표시와 숫자(5…) 보임. 표시가 어느 다리 쪽인지는 이 각도로 확정 못 함 |
+| zoom/front/20261108_214911_C2-tantalum_top_LM339.jpg | C2 탄탈 위에서: "+" 표시가 몸통 오른쪽(트랜지스터·RCA 쪽)에 있음 → 그쪽 다리 = +극 (추정) |
 | zoom/back/20261108_214205_back-RCA-corner_C2-area.jpg | 같은 모서리 뒷면 (RCA 단자·5핀 커넥터 납땜) |
 
 ## 키보드 `keyboard/` 추가 (2026-11-08)
