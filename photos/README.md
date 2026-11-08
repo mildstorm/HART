@@ -176,6 +176,8 @@ photos/
 | case/20261108_171641_FDD-cables-J2-J3_in-case.jpg | 케이스 안 보드, J2·J3에 꽂힌 FDD 리본 케이블 2개(파란 BERG 커넥터), 오른쪽 SMPS 라벨 (보드가 180° 돌아간 방향) |
 | zoom/front/20261108_212556_C3-green-choke_CHRP4-right.jpg | CHRP4 오른쪽 위 초록 원통 부품(C3, 코일 추정)과 옆 주황 세라믹을 벌려서 찍음 |
 | zoom/back/20261108_212622_back-bottom-edge_C3-area.jpg | 같은 부분 뒷면 (보드 아래쪽 가장자리) |
+| zoom/front/20261108_214148_C2-tantalum_LM339-RCA-corner.jpg | C2 노란 탄탈 (LM339·Z80 오른쪽, VIDEO RCA 단자 아래). 극성 표시는 사진으로 안 보임 |
+| zoom/back/20261108_214205_back-RCA-corner_C2-area.jpg | 같은 모서리 뒷면 (RCA 단자·5핀 커넥터 납땜) |
 
 ## 키보드 `keyboard/` 추가 (2026-11-08)
 
