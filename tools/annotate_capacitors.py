@@ -167,5 +167,46 @@ for i, (t, c) in enumerate([
 ]):
     d.text((20, y + i * 40), t, font=F(22), fill=c)
 cv = full
+
+# --- 맨 아래: C1 앞면·뒷면 (U30 왼쪽 아래 탄탈) ---
+CB = reg["back_to_front"]
+def b2f(x, y):
+    u, v = x / 1000, y / 1000
+    t = [1, u, v, u * u, u * v, v * v, u ** 3, u * u * v, u * v * v, v ** 3]
+    return sum(c[0] * w for c, w in zip(CB, t)), sum(c[1] * w for c, w in zip(CB, t))
+FX, FY = 100, 1600
+bx, by = f2b(FX + W0 / 2, FY + H0 / 2)
+BX, BY = int(bx) - W0 // 2, int(by) - H0 // 2
+fcrop = fr.crop((FX, FY, FX + W0, FY + H0)).resize((int(W0 * K), int(H0 * K)), Image.LANCZOS)
+bcrop = bk.crop((BX, BY, BX + W0, BY + H0)).resize((int(W0 * K), int(H0 * K)), Image.LANCZOS)
+full = Image.new("RGB", (cv.width, cv.height + SEC + fcrop.height + 260), "white")
+full.paste(cv, (0, 0))
+oy = cv.height + SEC
+full.paste(fcrop, (20, oy)); full.paste(bcrop, (40 + fcrop.width, oy))
+d = ImageDraw.Draw(full)
+d.line((0, cv.height + 10, cv.width, cv.height + 10), fill=(180, 180, 180), width=3)
+d.text((20, cv.height + 20), "C1 (STC 22µF 16V, U30 왼쪽 아래): 왼쪽 = 앞면, 오른쪽 = 뒷면", font=F(28), fill=BLK)
+d.text((20, cv.height + 56), "극성: 아래 다리 = + (사용자 육안 확인). 뒷면 위치는 앞·뒷면 정합 (오차 약 2px)", font=F(20), fill=GRY)
+def fp(x, y): return 20 + (x - FX) * K, oy + (y - FY) * K
+def bp(x, y): return 40 + fcrop.width + (x - BX) * K, oy + (y - BY) * K
+C1LEGS = [((BX + 665 / 4, BY + 415 / 4), "-", BLK), ((BX + 665 / 4, BY + 565 / 4), "+", RED)]   # 뒷면 납땜점
+for (x, y), sgn, col in C1LEGS:
+    px, py = bp(x, y)
+    d.ellipse((px - 22, py - 22, px + 22, py + 22), outline=col, width=6)
+    d.text((px + 28, py - 18), sgn, font=F(34), fill=col)
+    qx, qy = fp(*b2f(x, y))
+    d.ellipse((qx - 16, qy - 16, qx + 16, qy + 16), outline=col, width=5)
+    d.text((qx - 50, qy - 20), sgn, font=F(34), fill=col)
+rx, ry = bp(BX + 450 / 4, BY + 555 / 4)
+d.text((rx - 60, ry + 26), "저항 R1 다리", font=F(18), fill=GRY)
+y = oy + fcrop.height + 14
+for i, (t, c) in enumerate([
+    ("빨강 + = 아래 다리, 검정 - = 위 다리 (앞면·뒷면 같은 표시)", RED),
+    ("뒷면: - 다리는 굵은 선으로 R1(1kΩ) 다리·U30 핀 1(GND)과 이어짐 → +5V 바이패스 커패시터로 보임 (리셋과 무관 추정)", BLK),
+    ("확인: 전원 켜고 DC V (검정 = 슬롯 26) → + 다리 약 5V, - 다리 0V 이면 +5V 바이패스 확정", BLK),
+    ("단락 검사: 전원 끄고 방전 후 + ↔ - 도통 → 계속 삐 = 단락(+5V가 GND에 붙음, 보드 안 켜짐)", BLK),
+]):
+    d.text((20, y + i * 40), t, font=F(21), fill=c)
+cv = full
 cv.save(OUT, quality=88)
 print(cv.size)
