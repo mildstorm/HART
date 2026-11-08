@@ -18,7 +18,7 @@ S/N 506267 Apple II 호환 메인보드의 사진, 부품 분석, 회로도를 �
 | 키보드 (ZPC-40) | **정상 동작 확인 (2026-11-08)**. 키 입력 됨, Ctrl+RESET에 "삑". 케이블 결선 전부 확인. 일부 키는 스위치 접점 불량 → 아래 "키보드" |
 | 수리 (화면 안 나옴) | **화면 복구 (2026-11-07)**. 원인: 소켓 접촉 불량. 칩을 다시 눌러 끼운 뒤 부팅 로고 출력. **가끔 부팅 실패(까만 화면)는 남아 있음** → 아래 "알려진 문제". 기록: [`docs/08-repair-log.md`](docs/08-repair-log.md) |
 
-> **전원**: SMPS 단자·선 색·재는 곳은 [`analysis/power_reference.jpg`](analysis/power_reference.jpg). 이 기계는 **빨강 = +12V, 주황 = +5V** (일반 관례와 다름).
+> **전원**: SMPS 단자·선 색·재는 곳은 [`analysis/power_reference.jpg`](analysis/power_reference.jpg), 보드 J1 핀별 전압은 [`analysis/j1_power_pins.jpg`](analysis/j1_power_pins.jpg). 이 기계는 **빨강 = +12V, 주황 = +5V** (일반 관례와 다름).
 
 > **다시 고장 나면 먼저 [`docs/09-verified-baseline.md`](docs/09-verified-baseline.md)** 를 보세요. 수리 이력, 정상 동작 때 측정값(전원·클럭·키보드), 확인된 배선, 측정 실수 사례, 점검 순서를 모아 두었습니다.
 

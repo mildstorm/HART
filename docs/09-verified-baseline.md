@@ -19,7 +19,7 @@
 
 ### 전원·리셋
 
-SMPS 단자·선 색·재는 곳: [`analysis/power_reference.jpg`](../analysis/power_reference.jpg) (**빨강 = +12V, 주황 = +5V** 주의)
+SMPS 단자·선 색·재는 곳: [`analysis/power_reference.jpg`](../analysis/power_reference.jpg) (**빨강 = +12V, 주황 = +5V** 주의). J1 핀별 전압: [`analysis/j1_power_pins.jpg`](../analysis/j1_power_pins.jpg) — GND · +12V · −5V · −12V · +5V (선 색 기준)
 
 | 측정 위치 | 정상 값 | 날짜 |
 | --- | --- | --- |

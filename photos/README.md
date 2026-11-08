@@ -167,6 +167,12 @@ photos/
 | 20261107_145239_kbd-solder-side_connector-ICs.jpg | 키보드 납땜면 단자·칩 부분. **측정 번호 그림 기준** ([`analysis/kbd_measure_simple.jpg`](../analysis/kbd_measure_simple.jpg)) |
 | 20261107_145358 / 145413 / 145419 | 키보드 부품면: 칩 표기·노치 방향, JAE 16P, 점퍼선, 케이스에 붙은 검정 선 중계 패드 |
 
+## 전원 `case/` 추가 (2026-11-08)
+
+| 파일 | 내용 |
+| --- | --- |
+| case/20261108_171356_J1-power-connector_wired.jpg | 보드 J1에 꽂힌 SMPS 5가닥 (검정·빨강·파랑·초록·주황), 아래에 SMPS 라벨 "DAE HAN ENGINEERING". 전압 표시본: [`analysis/j1_power_pins.jpg`](../analysis/j1_power_pins.jpg) |
+
 ## 키보드 `keyboard/` 추가 (2026-11-08)
 
 | 파일 | 내용 |

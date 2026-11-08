@@ -86,6 +86,6 @@ for i, row in enumerate(rows):
     for c, txt in zip(cols, row):
         d.text((c, y + i * 44), txt, font=f, fill=BLK)
     d.line((20, y + i * 44 + 38, W - 20, y + i * 44 + 38), fill=(200, 200, 200), width=1)
-d.text((20, y + len(rows) * 44 + 8), "슬롯 핀 방향: 앞면 슬롯이 위일 때 왼쪽 줄 26(위)→50(아래), 오른쪽 줄 25(위)→1(아래). 슬롯1 = 왼쪽 끝. SMPS: 상표 DE, 한국산, AC 90–130/180–260V 겸용", font=FR(20), fill=GRY)
+d.text((20, y + len(rows) * 44 + 8), "슬롯 핀 방향: 앞면 슬롯이 위일 때 왼쪽 줄 26(위)→50(아래), 오른쪽 줄 25(위)→1(아래). 슬롯1 = 왼쪽 끝. SMPS: DAE HAN ENGINEERING(DE), 한국산, AC 90–130/180–260V 겸용", font=FR(20), fill=GRY)
 cv.save(OUT, quality=90)
 print(cv.size)

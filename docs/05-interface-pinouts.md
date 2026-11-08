@@ -162,6 +162,10 @@ Apple II 표준 핀 배치입니다. 호환기이므로 일치할 가능성이 �
 
 ![전원 기준 그림](../analysis/power_reference.jpg)
 
+**J1 핀별 전압** (커넥터에 꽂힌 상태, 그림 기준 위에서부터): **GND(검정) · +12V(빨강) · −5V(파랑) · −12V(초록) · +5V(주황)** — [`analysis/j1_power_pins.jpg`](../analysis/j1_power_pins.jpg). 선 색 기준이며 J1 핀에서 직접 잰 것은 아님. SMPS 제조사: DAE HAN ENGINEERING (DE).
+
+![J1 핀별 전압](../analysis/j1_power_pins.jpg)
+
 단자별 선 색 (사진 `photos/case/230434_PSU-wire-colors.jpg`, 2026-11-06 실물 확인):
 
 | PSU 단자 | 하네스 선 색 |
