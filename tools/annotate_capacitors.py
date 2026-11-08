@@ -274,12 +274,40 @@ for i, t in enumerate([
 ]):
     d.text((tx, oy + fcrop.height + 60 + i * 36), t, font=F(21), fill=RED if "X1" in t else BLK)
 full = full2
-y = oy + fcrop.height + 50 + ph.height + 14
+# --- 트리머 옆모습: 납땜할 곳 (사용자 사진 20261109_021819) ---
+sd = ImageOps.exif_transpose(Image.open("photos/zoom/front/20261109_021819_trimmer_side-legs_2.jpg")).convert("RGB")
+SX0, SY0, SX1, SY1 = 2850, 1150, 3650, 1800
+sd = sd.crop((SX0, SY0, SX1, SY1))
+sk = (cv.width - 40) / sd.width
+sd = sd.resize((cv.width - 40, int(sd.height * sk)), Image.LANCZOS)
+dsd = ImageDraw.Draw(sd)
+SP = lambda x, y: ((x - SX0) * sk, (y - SY0) * sk)
+def mark(x, y, r, t, col, tx, ty):
+    cx, cy = SP(x, y); rr = r * sk
+    dsd.ellipse((cx - rr, cy - rr, cx + rr, cy + rr), outline=col, width=8)
+    l, tt, r2, b = dsd.textbbox((0, 0), t, font=F(34))
+    dsd.rectangle((tx - 8, ty - 4, tx + (r2 - l) + 8, ty + 46), fill=col)
+    dsd.text((tx, ty), t, font=F(34), fill="white")
+    dsd.line((tx + (r2 - l) / 2, ty + (46 if ty < cy else -4), cx, cy + (-rr if ty < cy else rr)), fill=col, width=5)
+mark(3093, 1630, 55, "① 왼쪽 다리 납땜 → 다시 녹이기", RED, 40, 1080)
+mark(3430, 1655, 60, "② 오른쪽 다리 납땜 → 다시 녹이기", RED, 760, 1080)
+mark(3273, 1335, 70, "돌리는 부분: 돌리지 말 것", GRY, 760, 40)
+mark(3170, 1480, 45, "흰 세라믹 몸체: 인두 대지 말 것", ORG, 40, 40)
+full3 = Image.new("RGB", (cv.width, full.height + 100 + sd.height + 20), "white")
+full3.paste(full, (0, 0))
+d = ImageDraw.Draw(full3)
+ys = full.height + 10
+d.text((20, ys), "트리머 옆에서 본 모습 — 납땜할 곳 (사진 2026-11-09)", font=F(28), fill=BLK)
+d.text((20, ys + 40), "빨강 ①② = 금속 다리가 기판에 붙은 곳 (갈색 얼룩). IPA로 닦고 인두 2~3초 + 실납 조금", font=F(21), fill=RED)
+full3.paste(sd, (20, ys + 80))
+full = full3
+y = full.height - 10
+full4 = Image.new("RGB", (cv.width, full.height + 200), "white"); full4.paste(full, (0, 0)); full = full4; d = ImageDraw.Draw(full)
 for i, (t, c) in enumerate([
     ("뒷면 주황 ①②③ = 트리머·X1 다리 납땜점 (사진 판독, 어느 것이 X1인지는 미확인). 큰 둥근 납땜 2개 + 위쪽 1개", ORG),
     ("볼 것: 납땜 둘레에 동그랗게 금 간 곳, 납이 들뜬 곳 → 있으면 인두로 다시 녹이기", BLK),
     ("도통 확인 (전원 끔): 앞면 트리머 다리 ↔ 뒷면 ①②③ 삐 → 위치 확인", BLK),
-    ("앞면: 트리머 돌리기 전 현재 위치 표시. 접점 세정제 + 좌우로 몇 번 돌렸다 원위치", BLK),
+    ("트리머는 돌리지 않음 (공장 고정 추정). 납땜만 다시 하고, 그래도 재발하면 트리머 교체", RED),
 ]):
     d.text((20, y + i * 40), t, font=F(21), fill=c)
 cv = full
