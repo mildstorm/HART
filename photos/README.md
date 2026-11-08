@@ -194,6 +194,7 @@ photos/
 | zoom/front/20261109_004430_U72-replaced_GD74LS04.jpg | U72를 GoldStar GD74LS04로 교체한 모습 (반달 홈 = 트리머 쪽) |
 | zoom/front/20261109_012438_trimmer_X1_U72-original.jpg | 트리머 T1(분홍 세라믹, 홈 세로 방향 = 2026-11-09 기준 위치), 옆 은색 원통 = X1 수정, U72 원래 칩(M74LS04P)으로 되돌린 상태, 오른쪽 저항 2개 |
 | zoom/front/20261109_012448_trimmer-area_wide.jpg · 012450 | 같은 구역 넓게 |
+| zoom/front/20261109_021816_trimmer_side-legs.jpg · 021819 | 트리머 옆에서: 흰 세라믹 몸체가 금속 다리 2개 위에 떠 있고, 다리 아래 납땜에 갈색 얼룩(산화·플럭스 추정) |
 | zoom/back/20261108_225042_back-right-edge_RCA-corner.jpg | 뒷면 오른쪽 가장자리, RCA 고정 납땜(아래) |
 | zoom/back/20261108_214205_back-RCA-corner_C2-area.jpg | 같은 모서리 뒷면 (RCA 단자·5핀 커넥터 납땜) |
 
