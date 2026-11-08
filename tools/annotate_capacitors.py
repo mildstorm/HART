@@ -76,5 +76,60 @@ for i, (t, c) in enumerate([
 ]):
     d.text((20, y + i * 42), t, font=F(22), fill=c)
 cv = full
+
+# --- 맨 아래: C2 뒷면 위치 (앞면·뒷면 정합 data/front_back_registration.json, 평균 오차 약 2px) ---
+import json
+reg = json.load(open("data/front_back_registration.json", encoding="utf-8"))
+CF = reg["front_to_back"]
+def f2b(x, y):
+    u, v = x / 1000, y / 1000
+    t = [1, u, v, u * u, u * v, v * v, u ** 3, u * u * v, u * v * v, v ** 3]
+    return sum(c[0] * w for c, w in zip(CF, t)), sum(c[1] * w for c, w in zip(CF, t))
+fr = ImageOps.exif_transpose(Image.open(reg["front"])).convert("RGB")
+bk = ImageOps.exif_transpose(Image.open(reg["back"])).convert("RGB")
+FX, FY, W0, H0 = 1730, 120, 300, 250          # 앞면 창 (기준 사진 픽셀)
+bx, by = f2b(FX + W0 / 2, FY + H0 / 2)
+BX, BY = int(bx) - W0 // 2, int(by) - H0 // 2
+K = (cv.width - 60) / 2 / W0
+fcrop = fr.crop((FX, FY, FX + W0, FY + H0)).resize((int(W0 * K), int(H0 * K)), Image.LANCZOS)
+bcrop = bk.crop((BX, BY, BX + W0, BY + H0)).resize((int(W0 * K), int(H0 * K)), Image.LANCZOS)
+SEC = 90
+full = Image.new("RGB", (cv.width, cv.height + SEC + fcrop.height + 300), "white")
+full.paste(cv, (0, 0))
+oy = cv.height + SEC
+full.paste(fcrop, (20, oy)); full.paste(bcrop, (40 + fcrop.width, oy))
+d = ImageDraw.Draw(full)
+d.line((0, cv.height + 10, cv.width, cv.height + 10), fill=(180, 180, 180), width=3)
+d.text((20, cv.height + 20), "C2 위치: 왼쪽 = 앞면, 오른쪽 = 뒷면 (같은 자리, 뒷면은 좌우 반전)", font=F(28), fill=BLK)
+d.text((20, cv.height + 56), "뒷면 위치는 앞·뒷면 사진 정합으로 옮긴 것 (평균 오차 약 2px)", font=F(20), fill=GRY)
+GRN2 = (0, 170, 80)
+# 앞면 표시: C2 몸통, LM339 맨 위 두 핀(기준점)
+def fp(x, y): return 20 + (x - FX) * K, oy + (y - FY) * K
+def bp(x, y): return 40 + fcrop.width + (x - BX) * K, oy + (y - BY) * K
+cx, cy = fp(1882, 208)
+d.ellipse((cx - 40, cy - 40, cx + 40, cy + 40), outline=RED, width=6)
+d.text((cx - 30, cy - 80), "C2", font=F(28), fill=RED)
+for (x, y) in ((1900, 266), (1802, 266)):
+    px, py = fp(x, y); d.ellipse((px - 12, py - 12, px + 12, py + 12), outline=GRN2, width=4)
+    qx, qy = f2b(x, y); px, py = bp(qx, qy); d.ellipse((px - 16, py - 16, px + 16, py + 16), outline=GRN2, width=4)
+d.text(fp(1790, 300), "LM339 맨 위 핀 (기준)", font=F(20), fill=GRN2)
+# 뒷면: C2 다리 납땜점 2개 (몸통 아래 패드, 정합 사진에서 판독)
+BLU = (30, 90, 230)
+legs = [(BX + 565 / 4, BY + 380 / 4, "다리 ①"), (BX + 700 / 4, BY + 380 / 4, "다리 ②")]
+for x, y, lab in legs:
+    px, py = bp(x, y)
+    d.ellipse((px - 22, py - 22, px + 22, py + 22), outline=BLU, width=6)
+    d.text((px - 34, py + 26), lab, font=F(22), fill=BLU)
+qx, qy = bp(*f2b(1882, 208))
+d.text((qx - 20, qy - 70), "C2 자리", font=F(22), fill=RED)
+y = oy + fcrop.height + 14
+for i, (t, c) in enumerate([
+    ("파랑 ①·② = 뒷면에서 C2 다리로 보이는 납땜점 2개 (정합으로 찾은 추정 위치)", BLU),
+    ("확인: 앞면 C2 다리 하나 ↔ 뒷면 ① 또는 ② 도통 → 삐 나면 맞는 자리", BLK),
+    ("뒷면에서 재기: ① ↔ ② Ω(단락 확인), ①·② 각각 ↔ U30 40번 도통(리셋 연결 확인)", RED),
+    ("초록 = LM339 맨 위 두 핀 (앞·뒤 같은 핀, 위치 맞추는 기준)", GRN2),
+]):
+    d.text((20, y + i * 40), t, font=F(22), fill=c)
+cv = full
 cv.save(OUT, quality=88)
 print(cv.size)
