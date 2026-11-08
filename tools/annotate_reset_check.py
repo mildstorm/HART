@@ -79,5 +79,43 @@ for i, (t, col) in enumerate([
     ("주의: 전원 반드시 끄고. 프로브 끝이 옆 핀에 같이 닿지 않게", RED),
 ]):
     d.text((20, y2 + i * 42), t, font=F(22), fill=col)
+# --- 아래: 결과와 다음 측정 (LM339 핀 6·7, C2 vs 104 두 개) ---
+p = ImageOps.exif_transpose(Image.open("photos/zoom/front/20261108_224802_LM339_resistors-diode_C2.jpg")).convert("RGB")
+p = p.resize((2000, 1500), Image.LANCZOS).crop((560, 560, 2000, 1300))   # 1440x740
+p = p.resize((W - 40, int(740 * (W - 40) / 1440)), Image.LANCZOS)
+ks = (W - 40) / 1440
+P = lambda x, y: ((x - 560) * ks, (y - 560) * ks)
+dp = ImageDraw.Draw(p)
+ORG = (240, 120, 0)
+# LM339 핀 1 (확인), 6, 7 (아래 줄 왼쪽부터 1..7: x = 1085,1175,1270,1365,1460,1555,1650 / y 835)
+for x, no, col in ((1085, 1, RED), (1555, 6, BLU), (1650, 7, BLU)):
+    cx, cy = P(x, 835); pin(dp, cx, cy, no, col, side="below")
+# 104 세라믹 두 개
+for (x, y) in ((960, 1010), (900, 1190)):
+    cx, cy = P(x, y); r = 70 * ks
+    dp.ellipse((cx - r, cy - r, cx + r, cy + r), outline=GRY, width=5)
+gx, gy = P(700, 1260); dp.rectangle((gx - 6, gy - 4, gx + 270, gy + 34), fill=GRY); dp.text((gx, gy - 2), "104 두 개 (0.1µF)", font=F(24), fill=WHT)
+# C2
+cx, cy = P(1810, 860); r = 95 * ks
+dp.ellipse((cx - r, cy - r * 1.5, cx + r, cy + r * 1.5), outline=ORG, width=6)
+dp.rectangle((cx - 210, cy - r * 1.5 - 44, cx + 20, cy - r * 1.5 - 6), fill=ORG); dp.text((cx - 204, cy - r * 1.5 - 42), "C2 (22µF 탄탈)", font=F(24), fill=WHT)
+full = Image.new("RGB", (W, cv.height + 90 + p.height + 330), WHT)
+full.paste(cv, (0, 0))
+d = ImageDraw.Draw(full)
+yy = cv.height + 10
+d.line((0, yy, W, yy), fill=(180, 180, 180), width=3)
+d.text((20, yy + 14), "결과 (2026-11-08): U30 핀 40 ↔ LM339 핀 1 삐 → 리셋 = LM339 비교기 2. 74LS05 무관", font=F(26), fill=RED)
+d.text((20, yy + 52), "다음 측정 — 아래 사진 (반달 홈 왼쪽, 아래 줄 왼쪽부터 1~7)", font=F(22), fill=BLK)
+full.paste(p, (20, yy + 90))
+y3 = yy + 90 + p.height + 14
+for i, (t, col) in enumerate([
+    ("파랑 6·7 = 리셋 비교기의 입력 두 개. 빨강 1 = 출력(U30 핀 40과 연결, 확인됨)", BLU),
+    ("① 전원 끄고 도통: C2 + 다리(\"+ +\" 표시 쪽, 뒷면 ①) ↔ 6번, ↔ 7번 → 삐 나면 C2가 리셋 지연 커패시터", ORG),
+    ("② 전원 켜고 DC V (검정 = 슬롯 26): 6번, 7번 전압 — 켜졌을 때와 안 켜졌을 때 둘 다 적기", BLK),
+    ("회색 104 두 개(0.1µF)는 이번 측정 대상 아님: 몇 초 지연을 만들기엔 너무 작음. C2(22µF)가 지연용 후보", GRY),
+    ("C2가 6·7번과 안 이어지면 → 6·7번에 연결된 다른 커패시터를 다시 찾음", GRY),
+]):
+    d.text((20, y3 + i * 42), t, font=F(22), fill=col)
+cv = full
 cv.save(OUT, quality=88)
 print(cv.size)
