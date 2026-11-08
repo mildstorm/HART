@@ -1,7 +1,7 @@
-"""본체 쪽 키보드 케이블 커넥터(구멍 면, 점퍼선 없음) 사진 20261107_224136에 구멍 번호 매기기. ← 본체 쪽 커넥터 번호 기준 그림
-사용: python tools/annotate_cable_holes_clear.py photos/keyboard/20261107_224136_cable-connector_holes_clear.jpg analysis/kbd_cable_holes_numbered.jpg
+"""본체 쪽 키보드 케이블 커넥터(소켓 접속면, 점퍼선 없음) 사진 20261107_224136에 소켓 번호 매기기. ← 본체 쪽 커넥터 번호 기준 그림
+사용: python tools/annotate_cable_socket.py photos/keyboard/20261107_224136_cable-connector_holes_clear.jpg analysis/kbd_cable_socket_numbered.jpg
 번호 규칙 = kbd_measure_simple.jpg 와 같음: 오른쪽 줄 맨 위 = 1, 오른쪽 줄 아래로 1–8, 이어서 왼쪽 줄 아래→위 9–16.
-사진 기준: 구멍 면, 글자(JAE…) 면과 케이블 묶음이 오른쪽, 묶음이 붙은 끝이 위.
+사진 기준: 소켓 접속면, 글자(JAE…) 면과 케이블 묶음이 오른쪽, 묶음이 붙은 끝이 위.
 +5V = 1번: 같은 각도로 찍은 사진 223843에서 흰 점퍼선(+5V, 사용자 확인)이 꽂힌 자리.
 """
 import sys
@@ -49,7 +49,7 @@ for i, (x, y) in enumerate(left_bottom_up):
     hole(i + 9, x, y, "L")
 cx, cy = P(*right[0])
 d.text((cx + 90, cy - 22), "= +5V", font=F(32), fill=RED)
-# 8·9번 = GND (사용자 확인: 슬롯 GND와 통전) — J10의 GND 2핀(케이스 반대쪽 끝)에 들어가는 줄
+# 8·9번 = GND (사용자 확인: 슬롯 GND와 도통) — J10의 GND 2핀(케이스 반대쪽 끝)에 들어가는 줄
 GRN = (0, 150, 60)
 for (x, y) in (right[7], left_bottom_up[0]):
     gx, gy = P(x, y)
@@ -57,10 +57,10 @@ for (x, y) in (right[7], left_bottom_up[0]):
 gx, gy = P(*right[7])
 d.text((gx + 80, gy - 22), "8·9 = GND", font=F(32), fill=GRN)
 
-d.text((20, 14), "본체 쪽 케이블 커넥터 구멍 번호 (기준 그림)", font=F(36), fill=BLK)
+d.text((20, 14), "본체 쪽 케이블 소켓 번호 (기준 그림)", font=F(36), fill=BLK)
 d.text((20, 66), "오른쪽 줄 맨 위 = 1, 아래로 1–8 → 왼쪽 줄 아래에서 위로 9–16 (키보드 그림과 같은 규칙)", font=FR(24), fill=BLK)
-d.text((20, 102), "구멍 면을 보고, 글자(JAE…) 면·케이블 묶음이 오른쪽, 묶음 붙은 끝이 위로 오게 들었을 때", font=FR(24), fill=BLK)
+d.text((20, 102), "소켓 접속면을 보고, 글자(JAE…) 면·케이블 묶음이 오른쪽, 묶음 붙은 끝이 위로 오게 들었을 때", font=FR(24), fill=BLK)
 y = TOP + crop.height + 14
-d.text((20, y), "+5V = 1번 (흰 점퍼선 자리) · GND = 8·9번 (슬롯 GND와 통전, 사용자 확인)", font=F(26), fill=RED)
-d.text((20, y + 44), "측정 결과는 '키보드 단자 ○ → 구멍 ○번'으로 알려 주세요.", font=FR(24), fill=BLK)
+d.text((20, y), "+5V = 1번 (흰 점퍼선 자리) · GND = 8·9번 (슬롯 GND와 도통, 사용자 확인)", font=F(26), fill=RED)
+d.text((20, y + 44), "측정 결과는 '키보드 단자 ○ → 소켓 ○번'으로 알려 주세요.", font=FR(24), fill=BLK)
 canvas.save(OUT, quality=90)

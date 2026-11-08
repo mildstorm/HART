@@ -33,7 +33,7 @@ def ring(x, y, col, r=11):
 # ① +5V: 슬롯1 맨 위 두 핀 (왼쪽 줄 위 = 26 GND, 오른쪽 줄 위 = 25 +5V)
 ring(77, 22, BLK); ring(106, 22, RED)
 label((LM + im.width + 20, TOP + 10), "① +5V 재는 곳 (슬롯1 맨 위)", RED, 26, P(106, 22))
-d.text((LM + im.width + 20, TOP + 55), "검정 침 = 왼쪽 핀 (26, GND)\n빨간 침 = 오른쪽 핀 (25, +5V)\nDC: 4.75V 이상\nAC: 거의 0V (0.1V 넘으면 잡음)", font=F(20), fill=BLK, spacing=6)
+d.text((LM + im.width + 20, TOP + 55), "검정 프로브 = 왼쪽 핀 (26, GND)\n빨간 프로브 = 오른쪽 핀 (25, +5V)\nDC: 4.75V 이상\nAC: 거의 0V (0.1V 넘으면 잡음)", font=F(20), fill=BLK, spacing=6)
 
 # ② 영상 단자 J7 (VIDEO RCA)
 rect(850, 0, 912, 58, BLU)

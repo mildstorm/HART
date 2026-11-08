@@ -173,7 +173,7 @@ photos/
 | --- | --- |
 | 20261108_081101_cable-whole-coiled.jpg | 키보드 코일 케이블 전체 (양 끝 커넥터) |
 | 20261108_081800_cable-both-connectors.jpg | 케이블 양쪽 커넥터 (전선 14가닥, 수축튜브·케이블타이) |
-| 20261108_081926_board-side-connector_2-bare-pins.jpg | 본체 쪽 커넥터: 전선 없는 핀 2개 (구멍 9·14) |
+| 20261108_081926_board-side-connector_2-bare-pins.jpg | 본체 쪽 커넥터: 전선 없는 핀 2개 (소켓 9·14) |
 | 20261108_082634_kbd-connected-to-board_original-pair.jpg | 키보드 ↔ 본체 J10 연결 상태. 원래 짝 키보드 (사용자 확인) |
 
 ## 추가로 필요한 사진
