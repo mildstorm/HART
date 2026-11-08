@@ -233,9 +233,50 @@ for (x, y), lab in (((2026, 2769), "①"), ((1979, 2843), "②"), ((2069, 2849),
     px, py = bp(x, y)
     d.ellipse((px - 22, py - 22, px + 22, py + 22), outline=ORG, width=6)
     d.text((px + 24, py - 30), lab, font=F(26), fill=ORG)
-y = oy + fcrop.height + 14
+# 사용자 확대 사진(20261109_012438, 보드 90° 돌아감)에 T1·X1·저항·U72 표시
+ph = ImageOps.exif_transpose(Image.open("photos/zoom/front/20261109_012438_trimmer_X1_U72-original.jpg")).convert("RGB")
+PX0, PY0, PX1, PY1 = 1150, 880, 2050, 2450
+ph = ph.crop((PX0, PY0, PX1, PY1))
+pk = (cv.width - 40) / 2 / ph.width
+ph = ph.resize((int(ph.width * pk), int(ph.height * pk)), Image.LANCZOS)
+dph = ImageDraw.Draw(ph)
+PP = lambda x, y: ((x - PX0) * pk, (y - PY0) * pk)
+def lab(x, y, r, t, col):
+    cx, cy = PP(x, y); rr = r * pk
+    dph.ellipse((cx - rr, cy - rr, cx + rr, cy + rr), outline=col, width=6)
+    l, tt, r2, b = dph.textbbox((0, 0), t, font=F(24))
+    tx0 = min(max(cx - (r2 - l) / 2, 4), ph.width - (r2 - l) - 12); ty0 = cy + rr + 6
+    dph.rectangle((tx0 - 4, ty0, tx0 + (r2 - l) + 4, ty0 + 34), fill=col)
+    dph.text((tx0, ty0 + 2), t, font=F(24), fill="white")
+lab(1470, 1110, 170, "T1", ORG)
+lab(1720, 1120, 110, "X1 (수정 추정)", RED)
+lab(1870, 1380, 90, "330Ω", GRY)
+lab(1870, 2020, 90, "330Ω", GRY)
+cx, cy = PP(1560, 1840); d2 = dph; d2.text((cx - 40, cy), "U72", font=F(26), fill="white")
+full2 = Image.new("RGB", (cv.width, oy + fcrop.height + 30 + ph.height + 300), "white")
+full2.paste(full, (0, 0))
+d = ImageDraw.Draw(full2)
+d.text((20, oy + fcrop.height + 14), "실물 확대 (사용자 사진, 보드가 90° 돌아간 방향: 위 = 앞면 기준 왼쪽)", font=F(22), fill=BLK)
+full2.paste(ph, (20, oy + fcrop.height + 50))
+tx = 40 + ph.width
+for i, t in enumerate([
+    "X1 = 14.318MHz 수정 발진자 (추정)",
+    "  트리머 옆 작은 은색·회색 원통, 눕혀서 붙음",
+    "  위에 투명 고정 칠",
+    "  양 끝이 기판 패드에 납땜 (다리 2개)",
+    "  ※ 모양만으로 판단, 표기 미확인",
+    "",
+    "뒷면 납땜을 다시 할 때:",
+    "  트리머 다리 + X1 다리 2개",
+    "  (뒷면 ①②③과 바로 옆 큰 납땜점)",
+    "",
+    "저항 2개는 330Ω 정상 → 생략 가능",
+]):
+    d.text((tx, oy + fcrop.height + 60 + i * 36), t, font=F(21), fill=RED if "X1" in t else BLK)
+full = full2
+y = oy + fcrop.height + 50 + ph.height + 14
 for i, (t, c) in enumerate([
-    ("뒷면 주황 ①②③ = 트리머 다리 납땜점 (사진 판독, 추정). 큰 둥근 납땜 2개 + 위쪽 1개", ORG),
+    ("뒷면 주황 ①②③ = 트리머·X1 다리 납땜점 (사진 판독, 어느 것이 X1인지는 미확인). 큰 둥근 납땜 2개 + 위쪽 1개", ORG),
     ("볼 것: 납땜 둘레에 동그랗게 금 간 곳, 납이 들뜬 곳 → 있으면 인두로 다시 녹이기", BLK),
     ("도통 확인 (전원 끔): 앞면 트리머 다리 ↔ 뒷면 ①②③ 삐 → 위치 확인", BLK),
     ("앞면: 트리머 돌리기 전 현재 위치 표시. 접점 세정제 + 좌우로 몇 번 돌렸다 원위치", BLK),
