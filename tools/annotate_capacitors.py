@@ -125,10 +125,45 @@ d.text((qx - 20, qy - 70), "C2 자리", font=F(22), fill=RED)
 y = oy + fcrop.height + 14
 for i, (t, c) in enumerate([
     ("파랑 ①·② = 뒷면에서 C2 다리로 보이는 납땜점 2개 (정합으로 찾은 추정 위치). 어느 쪽이 +인지는 아직 모름", BLU),
-    ("극성 먼저 (전원 켜고, DC V): 검정 = 슬롯 26번(GND), 빨강 = ① 다음 ② → 전압 높은 쪽 = +다리, 낮은(0V) 쪽 = −다리", RED),
-    ("Ω 잴 때 (전원 끄고): 빨간 프로브 = +다리, 검정 프로브 = −다리 (테스터 Ω 모드에서 빨강이 + 쪽). 반대로 대도 고장나진 않음", RED),
+    ("극성 먼저 (전원 켜고, DC V): 검정 = 슬롯 26번(GND), 빨강 = ① 다음 ② → 전압 높은 쪽 = +다리, 낮은(0V) 쪽 = -다리", RED),
+    ("Ω 잴 때 (전원 끄고): 빨간 프로브 = +다리, 검정 프로브 = -다리 (테스터 Ω 모드에서 빨강이 + 쪽). 반대로 대도 고장나진 않음", RED),
     ("뒷면에서 재기: ① ↔ ② Ω(단락 확인), ①·② 각각 ↔ U30 40번 도통(리셋 연결 확인, 극성 무관)", BLK),
     ("초록 = LM339 맨 위 두 핀 (앞·뒤 같은 핀, 위치 맞추는 기준)", GRN2),
+]):
+    d.text((20, y + i * 40), t, font=F(22), fill=c)
+cv = full
+
+# --- 맨 아래: 뒷면 위쪽 띠 전체 — 극성 재는 곳 (C2 ①②, 슬롯1 핀 26 GND) ---
+SX0, SY0, SX1, SY1 = 0, 0, 2121, 420                  # 뒷면 기준 사진 위쪽 띠
+ks = (cv.width - 40) / (SX1 - SX0)
+strip = bk.crop((SX0, SY0, SX1, SY1)).resize((int((SX1 - SX0) * ks), int((SY1 - SY0) * ks)), Image.LANCZOS)
+full = Image.new("RGB", (cv.width, cv.height + 100 + strip.height + 260), "white")
+full.paste(cv, (0, 0))
+oy = cv.height + 100
+full.paste(strip, (20, oy))
+d = ImageDraw.Draw(full)
+d.line((0, cv.height + 10, cv.width, cv.height + 10), fill=(180, 180, 180), width=3)
+d.text((20, cv.height + 20), "C2 극성 재기 — 뒷면에서 (뒷면 위쪽 띠, 오른쪽 = 슬롯1, 왼쪽 위 = C2)", font=F(28), fill=BLK)
+d.text((20, cv.height + 58), "전원 켜고 테스터 DC V. 보드를 뒤집어 뒷면에서 재도 됨", font=F(20), fill=GRY)
+S = lambda x, y: (20 + (x - SX0) * ks, oy + (y - SY0) * ks)
+# 슬롯1 핀 26 (뒷면: 슬롯1 오른쪽 줄 맨 위, slots_pin40_back 기준 핀 40 (1930,575)에서 14칸 위)
+gx, gy = S(1930, 93)
+d.ellipse((gx - 14, gy - 14, gx + 14, gy + 14), outline=BLK, width=5)
+d.rectangle((gx - 250, gy + 22, gx + 10, gy + 56), fill=BLK)
+d.text((gx - 244, gy + 24), "검정 프로브: 슬롯1 핀 26 (GND)", font=F(20), fill="white")
+for x, y, lab in legs:
+    px, py = S(x, y)
+    d.ellipse((px - 12, py - 12, px + 12, py + 12), outline=BLU, width=5)
+c1x, c1y = S(*legs[0][:2]); c2x, c2y = S(*legs[1][:2])
+d.rectangle((c1x - 10, c1y + 20, c1x + 330, c1y + 54), fill=BLU)
+d.text((c1x - 4, c1y + 22), "빨간 프로브: ① 다음 ② (C2 다리)", font=F(20), fill="white")
+d.text((c1x - 20, c1y - 40), "①", font=F(22), fill=BLU); d.text((c2x + 6, c2y - 40), "②", font=F(22), fill=BLU)
+y = oy + strip.height + 14
+for i, (t, c) in enumerate([
+    ("① 전압 > ② 전압 → ① = +, ② = -   /   ② 전압 > ① 전압 → ② = +, ① = -", RED),
+    ("한쪽이 0V 근처면 그쪽이 - (GND 쪽). 음수가 나오면 그 다리가 -", BLK),
+    ("극성이 정해지면: Ω 잴 때 빨강 → +다리, 검정 → -다리. 교체할 때 새 탄탈의 + 를 같은 구멍에", BLK),
+    ("①② 위치는 정합으로 찾은 추정 — 앞면 C2 다리 ↔ ①/② 도통으로 한 번 확인", GRY),
 ]):
     d.text((20, y + i * 40), t, font=F(22), fill=c)
 cv = full
