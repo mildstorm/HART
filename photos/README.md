@@ -180,6 +180,8 @@ photos/
 | zoom/front/20261108_214517_C2-tantalum_side-plus-mark.jpg | C2 탄탈 측면: 몸통에 "+ +" 표시와 숫자(5…) 보임. 표시가 어느 다리 쪽인지는 이 각도로 확정 못 함 |
 | zoom/front/20261108_214911_C2-tantalum_top_LM339.jpg | C2 탄탈 위에서: "+" 표시가 몸통 오른쪽(트랜지스터·RCA 쪽)에 있음 → 그쪽 다리 = +극 (추정) |
 | zoom/front/20261108_215334_C2-tantalum_STC-22uF-16V.jpg | C2 탄탈 선명: **STC 22µF 16V**, "+" 표시. 옆 트랜지스터 C1815(Q1 영상 버퍼 추정) |
+| zoom/front/20261108_223339_C1-tantalum_STC-22uF-16V_U30.jpg | C1 탄탈: STC 22µF 16V, U30(메인 CPU)·74LS245 사이, 옆에 저항 |
+| zoom/front/20261108_223347_C1-tantalum_U30-LS245.jpg | C1 다른 각도 |
 | zoom/back/20261108_214205_back-RCA-corner_C2-area.jpg | 같은 모서리 뒷면 (RCA 단자·5핀 커넥터 납땜) |
 
 ## 키보드 `keyboard/` 추가 (2026-11-08)
