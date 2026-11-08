@@ -181,22 +181,24 @@ photos/
 | zoom/front/20261108_214911_C2-tantalum_top_LM339.jpg | C2 탄탈 위에서: "+" 표시가 몸통 오른쪽(트랜지스터·RCA 쪽)에 있음 → 그쪽 다리 = +극 (추정) |
 | zoom/front/20261108_215334_C2-tantalum_STC-22uF-16V.jpg | C2 탄탈 선명: **STC 22µF 16V**, "+" 표시. 옆 트랜지스터 C1815(Q1 영상 버퍼 추정) |
 | zoom/front/20261108_223339_C1-tantalum_STC-22uF-16V_U30.jpg | C1 탄탈: STC 22µF 16V, U30(메인 CPU)·74LS245 사이, 옆에 저항 |
-| zoom/front/20261108_223347_C1-tantalum_U30-LS245.jpg | C1 다른 각도 |
 | zoom/front/20261108_224802_LM339_resistors-diode_C2.jpg | LM339(U3) 주변: 왼쪽 세로 저항 6개 + 유리 다이오드 1개 + 저항, 104 세라믹 2개, 2핀 커넥터, 아래 가로 저항 3개, 오른쪽 C2 |
 | zoom/front/20261108_224807_LM339_C2_C1815_RCA.jpg | LM339·C2·트랜지스터 C1815·VIDEO RCA |
 | zoom/front/20261108_224823_NE558_paddle-caps-223.jpg | NE558(U27) 옆 연두 커패시터 4개 = 223(0.022µF) → 게임 패들 타이밍 확인 (리셋과 무관) |
 | zoom/front/20261108_225548_top-right_LM339_Z80_74LS05.jpg | 오른쪽 위 구역 전체: LM339·저항·다이오드, Z80, 74LS05(U10, 슬롯 옆 줄), 게임 포트 소켓, NE558 (보드가 90° 돌아간 방향) |
 | zoom/front/20261108_225601_LM339-resistors_74LS05_column.jpg | 같은 구역 다른 각도: LM339 옆 저항·다이오드 줄, 74LS05 위치 |
 | zoom/front/20261108_230021_Z80-area_slots3-4.jpg | Z80 구역: U1 373, Z80, U4 244, U5 82S123, U6·U7 367, U8 163, U9 00, 둘째 줄 U10 05 … U15 10, 카세트 잭 2개, RGB 5핀 (칩 표기 선명, BOM과 일치 확인) |
-| zoom/front/20261108_230024_Z80-area_slots3-4_2.jpg | 같은 구역 다른 각도 |
 | zoom/front/20261108_230032_U4-U15_U21-U28_rows.jpg | U4–U15, U21–U28, U34–U38 줄 (BOM과 일치 확인) |
 | zoom/back/20261108_232044_back-right_Z80-LM339-area.jpg | 뒷면 오른쪽 (Z80·LM339 구역) |
 | zoom/front/20261109_004430_U72-replaced_GD74LS04.jpg | U72를 GoldStar GD74LS04로 교체한 모습 (반달 홈 = 트리머 쪽) |
 | zoom/front/20261109_012438_trimmer_X1_U72-original.jpg | 트리머 T1(분홍 세라믹, 홈 세로 방향 = 2026-11-09 기준 위치), 옆 은색 원통 = X1 수정, U72 원래 칩(M74LS04P)으로 되돌린 상태, 오른쪽 저항 2개 |
-| zoom/front/20261109_012448_trimmer-area_wide.jpg · 012450 | 같은 구역 넓게 |
-| zoom/front/20261109_021816_trimmer_side-legs.jpg · 021819 | 트리머 옆에서: 흰 세라믹 몸체가 금속 다리 2개 위에 떠 있고, 다리 아래 납땜에 갈색 얼룩(산화·플럭스 추정) |
+| zoom/front/20261109_012448_trimmer-area_wide.jpg | 같은 구역 넓게 |
+| zoom/front/20261109_021819_trimmer_side-legs_2.jpg | 트리머 옆에서: 흰 세라믹 몸체가 금속 다리 2개 위에 떠 있고, 다리 아래 납땜에 갈색 얼룩(산화·플럭스 추정) |
 | zoom/back/20261108_225042_back-right-edge_RCA-corner.jpg | 뒷면 오른쪽 가장자리, RCA 고정 납땜(아래) |
 | zoom/back/20261108_214205_back-RCA-corner_C2-area.jpg | 같은 모서리 뒷면 (RCA 단자·5핀 커넥터 납땜) |
+
+## 2026-11-08 ~ 09 중복 사진 정리
+
+같은 장면을 연달아 찍은 사진은 선명한 쪽만 남김: 230024(=230021), 223347(=223339), 012450(=012448), 021816(=021819) 삭제.
 
 ## 키보드 `keyboard/` 추가 (2026-11-08)
 
