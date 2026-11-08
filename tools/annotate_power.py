@@ -67,6 +67,19 @@ for (px, py), col, lab in (((77, 22), BLK, "26 GND"), ((106, 22), ORG, "25 +5V")
 cx, cy = B(106, 22)
 tag(cx + 30, cy - 18, "슬롯1 맨 위: 왼쪽 26 GND · 오른쪽 25 +5V", RED, 22)
 
+# J1 핀별 전압 (bom 1/2 좌표, 보드 사진에서 핀 5개 확인: 맨 위 핀 다음에 한 칸 비어 있음)
+# 순서는 꽂힌 사진 20261108_171356 의 선 색 (위→아래: 검정·빨강·파랑·초록·주황)
+J1PINS = [(89, BLK, "GND"), (140, RED, "+12V"), (176, BLU, "-5V"), (208, GRN, "-12V"), (243, ORG, "+5V")]
+for py, col, lab in J1PINS:
+    cx, cy = B(34, py)
+    d.ellipse((cx - 11, cy - 11, cx + 11, cy + 11), outline=col, width=5)
+    l, t, r, b = d.textbbox((0, 0), lab, font=F(30))
+    lx = BX - 40 - (r - l)
+    d.line((lx + (r - l) + 8, cy, cx - 11, cy), fill=col, width=4)
+    d.rectangle((lx - 8, cy - 22 + t, lx + (r - l) + 8, cy - 22 + b + 8), fill=col)
+    d.text((lx, cy - 22), lab, font=F(30), fill=WHT if col != ORG else BLK)
+d.text((BX - 330, B(0, 89)[1] - 70), "J1 핀 (위→아래)", font=F(26), fill=BLK)
+
 # 제목·표
 d.text((20, 14), "전원 기준 그림 — SMPS 단자, 선 색, 보드에서 재는 곳", font=F(40), fill=BLK)
 d.text((20, 68), "주의: 이 기계는 빨강 = +12V, 주황 = +5V (일반 관례와 다름). 전원 교체·선 연결 때 반드시 이 그림으로 확인.", font=F(24), fill=RED)
