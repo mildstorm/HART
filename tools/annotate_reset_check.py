@@ -117,5 +117,59 @@ for i, (t, col) in enumerate([
 ]):
     d.text((20, y3 + i * 42), t, font=F(22), fill=col)
 cv = full
+
+# --- 맨 아래: 뒷면에서 재는 곳 (앞·뒷면 정합 data/front_back_registration.json) ---
+import json
+reg = json.load(open("data/front_back_registration.json", encoding="utf-8"))
+CF = reg["front_to_back"]
+def f2b(x, y):
+    u, v = x / 1000, y / 1000
+    t = [1, u, v, u * u, u * v, v * v, u ** 3, u * u * v, u * v * v, v ** 3]
+    return sum(c[0] * w for c, w in zip(CF, t)), sum(c[1] * w for c, w in zip(CF, t))
+bk = ImageOps.exif_transpose(Image.open(reg["back"])).convert("RGB")
+# 앞면 기준 사진에서 LM339(U3)는 세로, 반달 홈 아래 → 오른쪽 줄 아래→위 1..7 (x 1900), 왼쪽 줄 위→아래 8..14 (x 1802), 핀 간격 35px, 맨 위 y 271
+LM = {n: (1900, 271 + (7 - n) * 35) for n in range(1, 8)}
+LM.update({n: (1802, 271 + (n - 8) * 35) for n in range(8, 15)})
+pts = {n: (f2b(*LM[n])[0] + 11, f2b(*LM[n])[1]) for n in LM}   # +11px: 뒷면 사진에서 패드 중심에 맞춤 (눈으로 보정)
+xs = [v[0] for v in pts.values()]; ys = [v[1] for v in pts.values()]
+cx0, cy0 = (min(xs) + max(xs)) / 2, (min(ys) + max(ys)) / 2 - 40
+BW, BH = 360, 420
+BX, BY = int(cx0 - BW / 2), int(cy0 - BH / 2)
+kb = (W - 40) / BW
+bc = bk.crop((BX, BY, BX + BW, BY + BH)).resize((W - 40, int(BH * kb)), Image.LANCZOS)
+db = ImageDraw.Draw(bc)
+BP = lambda x, y: ((x - BX) * kb, (y - BY) * kb)
+for n in range(1, 15):
+    x, y = BP(*pts[n])
+    col = RED if n == 1 else BLU if n in (6, 7) else GRY
+    if n in (1, 6, 7):
+        pin(db, x, y, n, col, side="right" if n <= 7 else "left")
+    else:
+        db.ellipse((x - 10, y - 10, x + 10, y + 10), outline=GRY, width=2)
+        db.text((x + 14, y - 12) if n <= 7 else (x - 40, y - 12), str(n), font=F(18), fill=GRY)
+# C2 다리 (capacitor_suspects 기준: 앞면 B = 뒷면 ① = +), 뒷면 좌표
+for (x, y), lab, col in (((54 + 565 / 4, 130 + 380 / 4), "C2 + (①)", ORG), ((54 + 700 / 4, 130 + 380 / 4), "C2 - (②)", GRY)):
+    px, py = BP(x, y)
+    if 0 < px < bc.width and 0 < py < bc.height:
+        db.ellipse((px - 24, py - 24, px + 24, py + 24), outline=col, width=6)
+        l, t, r, b = db.textbbox((0, 0), lab, font=F(24))
+        db.rectangle((px - (r - l) / 2 - 6, py - 64, px + (r - l) / 2 + 6, py - 30), fill=col)
+        db.text((px - (r - l) / 2, py - 62), lab, font=F(24), fill=WHT)
+full = Image.new("RGB", (W, cv.height + 90 + bc.height + 200), WHT)
+full.paste(cv, (0, 0))
+d = ImageDraw.Draw(full)
+yy = cv.height + 10
+d.line((0, yy, W, yy), fill=(180, 180, 180), width=3)
+d.text((20, yy + 14), "뒷면에서 재기 — LM339 납땜점 (뒷면은 좌우 반전)", font=F(28), fill=BLK)
+d.text((20, yy + 52), "위치는 앞·뒷면 사진 정합(오차 약 2px)으로 옮긴 것. 빨강 1 = 리셋 출력(U30 핀 40과 연결 확인), 파랑 6·7 = 입력", font=F(20), fill=GRY)
+full.paste(bc, (20, yy + 90))
+y3 = yy + 90 + bc.height + 14
+for i, (t, col) in enumerate([
+    ("① 전원 끄고 도통: 주황 C2 + ↔ 파랑 6, ↔ 파랑 7 → 삐 나면 C2 = 리셋 지연 커패시터", ORG),
+    ("② 전원 켜고 DC V (검정 = 슬롯 26): 파랑 6, 7 전압 — 켜졌을 때 / 안 켜졌을 때", BLK),
+    ("먼저 빨강 1 ↔ U30 핀 40 삐가 나는지 확인 → 나면 뒷면 위치가 맞는 것", RED),
+]):
+    d.text((20, y3 + i * 42), t, font=F(22), fill=col)
+cv = full
 cv.save(OUT, quality=88)
 print(cv.size)

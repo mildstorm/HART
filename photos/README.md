@@ -190,6 +190,7 @@ photos/
 | zoom/front/20261108_230021_Z80-area_slots3-4.jpg | Z80 구역: U1 373, Z80, U4 244, U5 82S123, U6·U7 367, U8 163, U9 00, 둘째 줄 U10 05 … U15 10, 카세트 잭 2개, RGB 5핀 (칩 표기 선명, BOM과 일치 확인) |
 | zoom/front/20261108_230024_Z80-area_slots3-4_2.jpg | 같은 구역 다른 각도 |
 | zoom/front/20261108_230032_U4-U15_U21-U28_rows.jpg | U4–U15, U21–U28, U34–U38 줄 (BOM과 일치 확인) |
+| zoom/back/20261108_232044_back-right_Z80-LM339-area.jpg | 뒷면 오른쪽 (Z80·LM339 구역) |
 | zoom/back/20261108_225042_back-right-edge_RCA-corner.jpg | 뒷면 오른쪽 가장자리, RCA 고정 납땜(아래) |
 | zoom/back/20261108_214205_back-RCA-corner_C2-area.jpg | 같은 모서리 뒷면 (RCA 단자·5핀 커넥터 납땜) |
 
