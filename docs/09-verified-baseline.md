@@ -134,6 +134,7 @@ SMPS 단자·선 색·재는 곳: [`analysis/power_reference.jpg`](../analysis/p
 
 **트리머 다리 납땜 다시 함 (사용자, 2026-11-09)** — 결과 시험 중 (껐다 켜기 10회). 이후 첫 시험: 한 번에 켜짐, 화면이 서서히 밝아지며 로고 (모니터 CRT 예열로 추정 — 모니터·컴퓨터를 도란스 스위치 하나로 동시에 켜고 있었음).
 - **납땜 후에도 다시 안 켜지는 경우 있음 (사용자)** → 납땜만으로는 해결 안 됨. 다음: 안 켜질 때 트리머 건드려 켜지면 **트리머 교체**.
+- **참고 자료 (트리머·수정 발진)**: 정품 Apple II는 직렬형 수정을 쓰고, 클론은 병렬형 수정 + **수정과 직렬로 단 작은 트리머**(한 클론은 50pF 표기, 다른 의견은 약 47pF)로 주파수를 맞추는 경우가 많음 → 이 구조면 **트리머 접점이 끊기면 발진이 완전히 멈춤** (증상과 일치, 추정). 보관 중 트리머가 깨진 클론 사례 있음. [Applefritter: Apple ii crystal oscillator issue](https://www.applefritter.com/node/34430), [Applefritter: Colour output missing (Apple II+)](https://www.applefritter.com/node/30673), [Euro Apple mods (PDF)](https://mirror.informatik.hs-fulda.de/apple2/mirrors.apple2.org.za/ftp.apple.asimov.net/documentation/misc/APPLE%202%20EURO%20APPLE%20MODS.pdf), [Apple II+ 클론 수리기](https://classic-computers.org.nz/blog/2009-03-29-re-repairing-an-apple-II-plus-clone.htm), [Apple II 수리 가이드 (willegal)](https://www.willegal.net/appleii/appleii-repair.htm).
 - **본체 전원 스위치 불량 (사용자)**: 스위치로 켜고 끄기 어려워 전원 플러그를 꽂았다 뺌. 스위치 접점이 튀면 켤 때 전원이 여러 번 끊겼다 붙어 시작이 불안정해질 수 있음 (추정) → 시험할 때는 스위치 달린 멀티탭 권장, 나중에 스위치 점검·교체.
 
 **결론 (2026-11-09)**: 트리머를 건드리자 바로 켜짐 → **트리머 접촉 불량으로 14MHz 발진이 멈춤**이 가장 유력. 해결: 트리머 접점 청소(접점 세정제, 좌우로 몇 번 돌렸다 원위치) 또는 같은 값 트리머로 교체. 교체 전 원래 위치 표시.
