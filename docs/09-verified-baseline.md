@@ -19,6 +19,8 @@
 
 ### 전원·리셋
 
+SMPS 단자·선 색·재는 곳: [`analysis/power_reference.jpg`](../analysis/power_reference.jpg) (**빨강 = +12V, 주황 = +5V** 주의)
+
 | 측정 위치 | 정상 값 | 날짜 |
 | --- | --- | --- |
 | U30 핀 8 (+5V) | 4.8V (허용 4.75–5.25V, 하한 근처) | 11-06 |

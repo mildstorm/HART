@@ -158,6 +158,10 @@ Apple II 표준 핀 배치입니다. 호환기이므로 일치할 가능성이 �
 | −12V | PSU 단자 | 슬롯 33번 핀 |
 | GND | PSU 단자 | |
 
+**전원 기준 그림**: [`analysis/power_reference.jpg`](../analysis/power_reference.jpg) — SMPS 단자·선 색·보드 J1·슬롯에서 재는 곳을 한 장에.
+
+![전원 기준 그림](../analysis/power_reference.jpg)
+
 단자별 선 색 (사진 `photos/case/230434_PSU-wire-colors.jpg`, 2026-11-06 실물 확인):
 
 | PSU 단자 | 하네스 선 색 |
