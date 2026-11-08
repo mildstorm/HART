@@ -99,7 +99,7 @@ for name, ((xl, xr), rows) in FDD.items():
             d.text((tx0, cy - 10), t, font=F(15), fill=col)
     cx, cy = B(xr, rows[-1])
     d.ellipse((cx - 13, cy - 13, cx + 13, cy + 13), outline=RED, width=5)
-    lab, lab2 = f"{name} FDD 단자 (20핀)", "오른쪽 아래 = 1번 GND"
+    lab, lab2 = f"{name} FDD " + ("드라이브 2" if name == "J2" else "드라이브 1"), "오른쪽 아래 = 1번 GND"
     l, tt, r, b = d.textbbox((0, 0), lab2, font=F(22))
     lx = BX - 40 - (r - l)
     ly = B(0, (rows[0] + rows[-1]) / 2)[1] - 20
