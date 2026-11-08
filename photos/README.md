@@ -191,6 +191,7 @@ photos/
 | zoom/front/20261108_230024_Z80-area_slots3-4_2.jpg | 같은 구역 다른 각도 |
 | zoom/front/20261108_230032_U4-U15_U21-U28_rows.jpg | U4–U15, U21–U28, U34–U38 줄 (BOM과 일치 확인) |
 | zoom/back/20261108_232044_back-right_Z80-LM339-area.jpg | 뒷면 오른쪽 (Z80·LM339 구역) |
+| zoom/front/20261109_004430_U72-replaced_GD74LS04.jpg | U72를 GoldStar GD74LS04로 교체한 모습 (반달 홈 = 트리머 쪽) |
 | zoom/back/20261108_225042_back-right-edge_RCA-corner.jpg | 뒷면 오른쪽 가장자리, RCA 고정 납땜(아래) |
 | zoom/back/20261108_214205_back-RCA-corner_C2-area.jpg | 같은 모서리 뒷면 (RCA 단자·5핀 커넥터 납땜) |
 
