@@ -155,6 +155,7 @@ photos/
 | 파일 | 내용 |
 | --- | --- |
 | 20261113_063659_HART-magazine-ad_Zungwon.jpg | 당시 잡지 광고 스캔 (주식회사 정원컴퓨터). 한글 40×24 롬 내장, Dual CPU(CP/M·APPLE), Auto Videx, 캐패시티브 키보드, 624KDB 디스크 드라이브, 워드프로세서 "한글모음 4024". README 맨 위에 사용 |
+| 20211008_075758_HART-and-Royal-V64cp_catalog-ad.jpg | 판매 광고 (책자 촬영). 왼쪽 "Apple 기종 정원 HART" (본체·모니터 화면에 HART 로고·분리형 키보드), 표준시스템 765,000원 / 특별할인 624,000원. 오른쪽은 다른 제품 로얄 V-64cp. README 맨 위에 사용 |
 
 ## 화면 사진 `screen/`
 

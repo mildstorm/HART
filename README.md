@@ -3,9 +3,9 @@
 S/N 506267 Apple II 호환 메인보드의 사진, 부품 분석, 회로도를 정리한 저장소입니다.
 이 보드는 6502 메인 CPU에 **Z80 서브시스템**과 **두 번째 6502**가 함께 실장된 형태로, 일반 Apple II와 구성이 다릅니다.
 
-<p align="center"><a href="photos/ad/20261113_063659_HART-magazine-ad_Zungwon.jpg"><img src="photos/ad/20261113_063659_HART-magazine-ad_Zungwon.jpg" width="500" alt="HART 당시 잡지 광고 (주식회사 정원컴퓨터)"></a></p>
+<p align="center"><a href="photos/ad/20261113_063659_HART-magazine-ad_Zungwon.jpg"><img src="photos/ad/20261113_063659_HART-magazine-ad_Zungwon.jpg" height="420" alt="HART 당시 잡지 광고 (주식회사 정원컴퓨터)"></a> <a href="photos/ad/20211008_075758_HART-and-Royal-V64cp_catalog-ad.jpg"><img src="photos/ad/20211008_075758_HART-and-Royal-V64cp_catalog-ad.jpg" height="420" alt="판매 광고: 정원 HART (왼쪽)와 로얄 V-64cp"></a></p>
 
-당시 잡지 광고 (주식회사 정원컴퓨터, 서울 강남구 신사동). 광고에 적힌 특징: 한글 40×24 표시 롬 내장, Dual CPU(CP/M·APPLE), 원터치로 전환되는 Auto Videx, 캐패시티브 키보드, 624KDB 대용량 디스크 드라이브 접속.
+당시 광고. 왼쪽은 잡지 광고 (주식회사 정원컴퓨터, 서울 강남구 신사동): 한글 40×24 표시 롬 내장, Dual CPU(CP/M·APPLE), 원터치로 전환되는 Auto Videx, 캐패시티브 키보드, 624KDB 대용량 디스크 드라이브 접속. 오른쪽은 판매 광고로 **왼쪽 기기가 "Apple 기종 정원 HART"** 입니다 (오른쪽 기기는 다른 회사 제품 로얄 V-64cp). 표준시스템(본체·12" 그린 모니터·5¼" 드라이브) 765,000원, 특별할인 624,000원.
 
 | 앞면 (부품면) | 뒷면 (납땜면) |
 | --- | --- |
