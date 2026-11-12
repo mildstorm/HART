@@ -3,6 +3,12 @@
 S/N 506267 Apple II 호환 메인보드의 사진, 부품 분석, 회로도를 정리한 저장소입니다.
 이 보드는 6502 메인 CPU에 **Z80 서브시스템**과 **두 번째 6502**가 함께 실장된 형태로, 일반 Apple II와 구성이 다릅니다.
 
+| 앞면 (부품면) | 뒷면 (납땜면) |
+| --- | --- |
+| <a href="photos/overview/front/202813_front-flat_layout-ref.jpg"><img src="photos/overview/front/202813_front-flat_layout-ref.jpg" width="400" alt="HART 보드 앞면"></a> | <a href="photos/overview/back/203240_back-flat_registration-ref.jpg"><img src="photos/overview/back/203240_back-flat_registration-ref.jpg" width="400" alt="HART 보드 뒷면"></a> |
+
+사진을 누르면 원본 크기로 볼 수 있습니다. 뒷면은 앞면과 좌우가 뒤집혀 있습니다 (보드를 옆으로 뒤집은 방향). 다른 사진은 [`photos/README.md`](photos/README.md)에 정리되어 있습니다.
+
 ## 현재 상태
 
 | 항목 | 상태 |
