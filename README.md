@@ -3,6 +3,10 @@
 S/N 506267 Apple II 호환 메인보드의 사진, 부품 분석, 회로도를 정리한 저장소입니다.
 이 보드는 6502 메인 CPU에 **Z80 서브시스템**과 **두 번째 6502**가 함께 실장된 형태로, 일반 Apple II와 구성이 다릅니다.
 
+<p align="center"><a href="photos/ad/20261113_063659_HART-magazine-ad_Zungwon.jpg"><img src="photos/ad/20261113_063659_HART-magazine-ad_Zungwon.jpg" width="500" alt="HART 당시 잡지 광고 (주식회사 정원컴퓨터)"></a></p>
+
+당시 잡지 광고 (주식회사 정원컴퓨터, 서울 강남구 신사동). 광고에 적힌 특징: 한글 40×24 표시 롬 내장, Dual CPU(CP/M·APPLE), 원터치로 전환되는 Auto Videx, 캐패시티브 키보드, 624KDB 대용량 디스크 드라이브 접속.
+
 | 앞면 (부품면) | 뒷면 (납땜면) |
 | --- | --- |
 | <a href="photos/overview/front/202813_front-flat_layout-ref.jpg"><img src="photos/overview/front/202813_front-flat_layout-ref.jpg" width="400" alt="HART 보드 앞면"></a> | <a href="photos/overview/back/203240_back-flat_registration-ref.jpg"><img src="photos/overview/back/203240_back-flat_registration-ref.jpg" width="400" alt="HART 보드 뒷면"></a> |
