@@ -13,6 +13,10 @@ S/N 506267 Apple II 호환 메인보드의 사진, 부품 분석, 회로도를 �
 
 사진을 누르면 원본 크기로 볼 수 있습니다. 뒷면은 앞면과 좌우가 뒤집혀 있습니다 (보드를 옆으로 뒤집은 방향). 다른 사진은 [`photos/README.md`](photos/README.md)에 정리되어 있습니다.
 
+<p align="center"><a href="photos/screen/20261118_200334_boot-logo_green-monitor.jpg"><img src="photos/screen/20261118_200334_boot-logo_green-monitor.jpg" width="600" alt="그린 모니터에 뜬 HART 부팅 화면"></a></p>
+
+부팅 화면 (2026-11-18, 그린 모니터). "ZW" 글자로 그린 "HART" 로고와 "Zung Won Co.,Ltd. 542-3675 SEOUL KOREA"가 한 장으로 또렷하게 나옵니다. 화면 바탕 전체에 초록 세로 줄무늬가 보이는데, 모니터 밝기 때문인지 영상 신호 문제인지는 아직 확인하지 않았습니다.
+
 ## 현재 상태
 
 | 항목 | 상태 |

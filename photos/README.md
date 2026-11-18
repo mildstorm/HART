@@ -163,6 +163,7 @@ photos/
 | 파일 | 내용 |
 | --- | --- |
 | 20261107_015041_boot-logo_vertical-roll.jpg | 수리 후 첫 부팅 화면. "HART" 로고와 "Zung Won Co.,Ltd. 542-3675 SEOUL KOREA". 모니터 수직 동기가 안 맞아 위아래로 두 번 겹쳐 보임 |
+| 20261118_200334_boot-logo_green-monitor.jpg | 부팅 화면 (그린 모니터). "ZW" 글자로 그린 HART 로고와 Zung Won 주소가 한 장으로 또렷함. 바탕 전체에 초록 세로 줄무늬 (원인 미확인). README에 사용 |
 
 ## 키보드 `keyboard/` (2026-11-07)
 
