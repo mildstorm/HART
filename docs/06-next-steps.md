@@ -80,4 +80,4 @@ DOS 3.3으로 부팅한 뒤 [`tools/romdump.bas`](../tools/romdump.bas)(Applesof
 | 2 | C800–CFFF | 약 13 | 확장 ROM 여부 |
 | 3 | D000–FFFF | 약 77 | BASIC·모니터, HART 로고, 한글·80컬럼·Z80 전환 주소 |
 
-U65 "VD5", U70 "CHR P4", PROM 6개(82S129 ×5, 82S123)는 메인 CPU에서 보이지 않으므로 ROM 리더기(TL866II+ 등)로 칩을 직접 읽어야 합니다. 화면 사진 대신 Floppy Emu·ADTPro(카세트 단자 오디오 전송) 등을 쓰면 `BSAVE`한 파일을 바로 옮길 수 있습니다.
+칩별 덤프 목록·순서·주의는 [`11-rom-dump-list.md`](11-rom-dump-list.md)에 따로 정리했습니다. U65 "VD5", U70 "CHR P4", PROM 6개(82S129 ×5, 82S123)는 메인 CPU에서 보이지 않으므로 ROM 리더기(TL866II+ 등)로 칩을 직접 읽어야 합니다. 화면 사진 대신 Floppy Emu·ADTPro(카세트 단자 오디오 전송) 등을 쓰면 `BSAVE`한 파일을 바로 옮길 수 있습니다.
