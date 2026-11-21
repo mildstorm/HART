@@ -28,7 +28,7 @@ S/N 506267 Apple II 호환 메인보드의 사진, 부품 분석, 회로도를 �
 | 뒷면 확대 사진 | 14장, 13장은 뒷면 기준 사진에 정합 완료 |
 | 앞면·뒷면 정합 | 완료 (2026-11-07). 비아 205개 기준 평균 오차 약 2px → [`analysis/back_on_front.jpg`](analysis/back_on_front.jpg) |
 | 핀 단위 결선 (넷리스트) | 진행 중. `data/netlist.csv` (U64 버스·클럭 분리, Φ0 배선, 슬롯 방향) |
-| ROM / PROM 덤프 | 미완료. 뽑아서 읽을 칩 11개 목록: [`docs/11-rom-dump-list.md`](docs/11-rom-dump-list.md) |
+| ROM / PROM 덤프 | **2764 EPROM 4개 완료** (U45·U46·U65·U70, 2026-11-22, [`rom/`](rom/)). 82S129·82S123 PROM 7개는 남음. 목록·결과: [`docs/11-rom-dump-list.md`](docs/11-rom-dump-list.md). 읽은 장비: [ROMReader](https://github.com/mildstorm/ROMReader) (아래 "관련 프로젝트") |
 | 키보드 (ZPC-40) | **정상 동작 확인 (2026-11-08)**. 키 입력 됨, Ctrl+RESET에 "삑". 케이블 결선 전부 확인. 일부 키는 스위치 접점 불량 → 아래 "키보드" |
 | 수리 (화면 안 나옴) | **화면 복구 (2026-11-07)**. 원인: 소켓 접촉 불량. 기록: [`docs/08-repair-log.md`](docs/08-repair-log.md) |
 | 수리 (가끔 안 켜짐) | **해결 (2026-11-17)**. 원인: 14MHz 발진 회로의 **트리머 콘덴서 불량** → 2다리 **50pF 세라믹 트리머로 교체** |
@@ -213,7 +213,8 @@ HART/
 │   ├── 08-repair-log.md          수리 점검 기록 (날짜별 원자료)
 │   ├── 09-verified-baseline.md   확인된 사항·정상 기준값·고장 시 점검 순서
 │   ├── 10-fdd-drive.md           디스크 드라이브 GFD-450A1 기판 분석과 추정 (확인된 것은 README "디스크 드라이브" 절)
-│   └── 11-rom-dump-list.md       본체에서 뽑아 덤프할 ROM·PROM 11개 목록, 순서, 주의
+│   └── 11-rom-dump-list.md       본체에서 뽑아 덤프할 ROM·PROM 11개 목록, 순서, 주의, 덤프 결과
+├── rom/                          ROM 덤프 이미지 (ROMReader로 읽음, SHA-1은 docs/11)
 ├── schematic/
 │   ├── apple2-clone-schematic.html  인터랙티브 블록 회로도 + 배치도 + 부품표
 │   └── src/                      HTML 생성 스크립트 (gen.py + 템플릿)
@@ -226,6 +227,19 @@ HART/
     ├── front_back_registration.json     뒷면 기준 사진 ↔ 앞면 기준 사진 좌표 (비아 정합)
     └── front_add_20261107_registration.json  추가 앞면 사진 → 앞면 기준 사진 좌표
 ```
+
+## 관련 프로젝트: ROMReader
+
+[mildstorm/ROMReader](https://github.com/mildstorm/ROMReader)는 이 보드의 ROM·PROM을 읽으려고 만든 ATmega128 기반 읽기 전용 ROM 리더입니다 (펌웨어 + PC 덤프 스크립트 `tools/romdump.py`).
+
+| 무엇 | 어디 |
+| --- | --- |
+| 덤프할 칩 목록·순서·주의 (리더기가 따르는 기준) | 이 저장소 [`docs/11-rom-dump-list.md`](docs/11-rom-dump-list.md) |
+| 칩 종류별 ZIF 결선·펌웨어·덤프 명령 | ROMReader [README](https://github.com/mildstorm/ROMReader#readme), `HART/zif-wiring.html` |
+| 덤프 원본 | ROMReader `rom/HART/` |
+| HART 분석용 사본 | 이 저장소 [`rom/`](rom/) (파일명·SHA-1 같음) |
+
+새 칩을 덤프하면 ROMReader `rom/HART/`에 저장한 뒤 이 저장소 `rom/`에 복사하고, docs/11 "결과 기록" 표에 크기·SHA-1을 적습니다. ROMReader에는 다른 애플 II 호환기(고도, Malum) 덤프도 있지만 HART와는 관계없습니다.
 
 ## 회로도 보기
 
