@@ -12,6 +12,12 @@
 | 정체 미확인 16핀 (표기 갈림) | 1 | U17 |
 | **합계** | **11** | |
 
+### 보드 위 위치
+
+[![ROM·PROM 덤프 대상 11개 위치](../analysis/rom_dump_locations.jpg)](../analysis/rom_dump_locations.jpg)
+
+앞면 기준 사진(202813)에 표시했습니다. 슬롯이 위로 가게 놓고 봅니다. 상자 색은 아래 "덤프 목록"의 순위와 같습니다 (빨강 1, 주황 2, 파랑 3, 보라 4). 칩 위치는 [`data/bom.csv`](../data/bom.csv) 좌표로 그렸습니다. 그림 생성: [`tools/annotate_rom_dump.py`](../tools/annotate_rom_dump.py).
+
 ## 덤프 목록
 
 우선순위 1이 가장 먼저 읽을 칩입니다. "칩 표기"의 판정(확인/추정)은 03 문서와 같습니다.
