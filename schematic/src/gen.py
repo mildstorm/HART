@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # Generates the Apple II clone board schematic page (placement map + block schematic + BOM)
 import html
+import os
 
 # block keys -> (Korean label, css var)
 BLK = {
@@ -34,8 +35,8 @@ P = [
  ('U14','74LS74','74LS74A',715,400,770,525,'z80','확인','D-FF'),
  ('U15','74LS10','8438D0',780,400,835,525,'z80','확인','3입력 NAND'),
  ('U16','74LS323','8432B0',85,505,145,630,'exp','확인','8비트 3-state 시프트/저장 레지스터'),
- ('U17','82S129','N82S129N K8509 S (2026-11-22 판독)',155,505,215,630,'exp','확인','256×4 PROM. 덤프 rom/U17.bin. /CE1·/CE2를 U18과 함께 묶어 씀, 주소 입력은 U18과 별개'),
- ('U18','PROM','N8…9 · 라벨 "M"',225,505,280,630,'exp','추정','82S129 계열 프로그램 PROM (라벨 M)'),
+ ('U17','82S129','N82S129N K8509 S (확인)',155,505,215,630,'exp','확인','Disk II 16-섹터 시퀀서(P6) 상위 4비트 제어신호 PROM (U18과 짝, 덤프 확인)'),
+ ('U18','82S129','N82S129N · 라벨 "M"',225,505,280,630,'exp','확인','Disk II 16-섹터 시퀀서(P6) 하위 4비트 다음상태 PROM (U17과 짝, 덤프 확인)'),
  ('U19','74LS174','MB74LS174',290,505,345,630,'exp','확인','6비트 D-FF 래치'),
  ('U20','74LS259','5050C1',355,505,410,630,'exp','확인','8비트 어드레서블 래치 (뱅크/모드 스위치 추정)'),
  ('U21','74LS139','8502D0',445,560,500,690,'dec','확인','듀얼 2→4 디코더'),
@@ -62,8 +63,8 @@ P = [
  ('U42','MN4164','MN4164P-25',220,870,280,1000,'ram','확인','64K×1 DRAM'),
  ('U43','74LS153','8449D0',285,870,340,1000,'ram','확인','DRAM 주소 MUX (CPU/비디오 × ROW/COL)'),
  ('U44','74LS153','8449D0',350,870,405,1000,'ram','확인','DRAM 주소 MUX'),
- ('U45','2764 EPROM','NEC D2764D · 라벨 "C/D8"',425,870,510,1110,'rom','확인','$C000–$DFFF 영역 추정 (라벨 C/D)'),
- ('U46','2764 EPROM','NEC D2764D · 라벨 "EF5"',545,870,635,1110,'rom','확인','$E000–$FFFF 모니터/Applesoft 추정 (라벨 EF)'),
+ ('U45','2764 EPROM','NEC D2764D · 라벨 "C/D8"',425,870,510,1110,'rom','확인','$C000–$DFFF 시스템 ROM ($C300·$C800 Videx 80컬럼, $C600 Disk II 부트, $D000–$DFFF BASIC 전반부)'),
+ ('U46','2764 EPROM','NEC D2764D · 라벨 "EF5"',545,870,635,1110,'rom','확인','$E000–$FFFF 시스템 ROM ($E000–$F7FF BASIC 후반부, $F800–$FFFF Autostart Monitor, 슬롯 6 즉시 부팅)'),
  ('U47','74LS157','8450E1',650,870,705,1000,'vid','확인','2→1 MUX (비디오 주소)'),
  ('U48','74LS02','8442D1',720,870,775,1000,'dec','확인','NOR'),
  ('U49','74LS175','5070D0',785,870,840,1000,'tim','확인','쿼드 D-FF'),
@@ -81,13 +82,13 @@ P = [
  ('U61','74LS74','74LS74A',850,1035,905,1170,'tim','확인','D-FF'),
  ('U62','74LS74','74LS74AP',915,1035,970,1170,'tim','확인','D-FF'),
  ('U63','74LS245','8502E3',425,1120,580,1175,'rom','확인','ROM/내부 데이터 버스 트랜시버'),
- ('U64','UM6502','UM6502 8404',15,1185,350,1300,'vid','확인','두 번째 6502. 한글 폰트 처리 전용, 독립 동작 (2026-11-06 측정 확인)'),
- ('U65','2764 EPROM','NEC D2764D · 라벨 "VD5"',365,1185,460,1425,'vid','확인','U64 데이터 버스에 연결 (D0 도통, 2026-11-06). U64 프로그램 또는 한글 폰트 ROM'),
+ ('U64','UM6502','UM6502 8404',15,1185,350,1300,'vid','확인','두 번째 6502. 화면 하단 기능키 바, 80컬럼 비디오, 한글 디스플레이 총괄 보조 CPU, 독립 동작'),
+ ('U65','2764 EPROM','NEC D2764D · 라벨 "VD5"',365,1185,460,1425,'vid','확인','U64 보조 CPU 펌웨어 (화면 초기화, Apple/CPM 기능키 바 라벨, 비디오 제어)'),
  ('U66','74LS374','8445DD',480,1205,535,1370,'vid','확인','비디오 데이터 래치'),
  ('U67','74LS245','8502E3',545,1205,600,1370,'vid','확인','6116 데이터 버스 트랜시버'),
- ('U68','HM6116LP-3','Hitachi 8505',610,1190,710,1420,'vid','추정','2K×8 SRAM: 80컬럼 화면 버퍼 또는 한글 폰트 RAM 추정'),
+ ('U68','HM6116LP-3','Hitachi 8505',610,1190,710,1420,'vid','확인','2K×8 SRAM: 80컬럼 화면 버퍼 / VRAM (80×24 = 1920B)'),
  ('U69','74LS273','8452D0 M74LS273P',725,1205,780,1370,'vid','확인','8비트 D-FF 래치 (클리어 포함). 비디오 데이터/속성 래치 추정'),
- ('U70','2764 EPROM','라벨 "CHR P4"',795,1155,890,1390,'vid','확인','문자 발생 ROM (한글/80컬럼용 추정)'),
+ ('U70','2764 EPROM','라벨 "CHR P4"',795,1155,890,1390,'vid','확인','문자 발생 ROM: 2KB×4 뱅크 (영문 Normal/Inverse, 세미그래픽, 한글 자모 조합 폰트)'),
  ('U71','74LS166','8502C3',910,1230,965,1375,'vid','확인','8비트 병렬→직렬 시프트 (도트 출력)'),
  ('U72','74LS04','5050C0',60,1320,185,1375,'tim','확인','X1·트리머·저항 2개와 붙어 있음 → 14.318MHz 발진 인버터 (배치로 확인)'),
  ('U73','74LS175','8451D2',200,1320,330,1375,'tim','확인','타이밍 래치'),
@@ -156,8 +157,12 @@ for r in P+C:
              f'<td class="mono dim">{html.escape(mark)}</td><td><span class="sw {BLK[b][1]}"></span>{BLK[b][0]}</td>'
              f'<td><span class="conf {"c-ok" if conf=="확인" else "c-est"}">{conf}</span></td><td>{html.escape(note)}</td></tr>')
 
-tpl = open('/home/claude/page.tpl.html', encoding='utf-8').read()
+base_dir = os.path.dirname(os.path.abspath(__file__))
+tpl_path = os.path.join(base_dir, 'page.tpl.html')
+out_path = os.path.join(base_dir, '..', 'apple2-clone-schematic.html')
+
+tpl = open(tpl_path, encoding='utf-8').read()
 out = tpl.replace('%%BOARD%%', board).replace('%%LEGEND%%', legend).replace('%%ROWS%%', rows)\
          .replace('%%NIC%%', str(len(P))).replace('%%NCONN%%', str(len(C)))
-open('/home/claude/apple2-clone-schematic.html','w',encoding='utf-8').write(out)
-print(len(out), len(P), len(C))
+open(out_path,'w',encoding='utf-8').write(out)
+print(f"Generated {out_path}: {len(out)} bytes, {len(P)} ICs, {len(C)} connectors")

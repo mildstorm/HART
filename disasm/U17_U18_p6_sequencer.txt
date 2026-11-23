@@ -1,0 +1,264 @@
+# 정원 HART 내장 FDD 시퀀서 PROM (U17 + U18 결합 분석)
+# U17: N82S129N (256×4) - 상위 4비트 시퀀서 제어 신호 (Command Bits)
+# U18: N82S129N 라벨 'M' (256×4) - 하위 4비트 다음 상태 번호 (Next State N0-N3)
+# 결합: (U17 << 4) | U18 = 256×8 Apple Disk II 16-섹터 State Sequencer (P6 PROM, 341-0028 호환)
+# 제어 명령: 0x8=NOP, 0x9=SL0(Shift Left 0), 0xA=SL1(Shift Left 1), 0xB=SR(Shift Right), 0xE=CLR(Clear)
+
+주소(Hex) | U17(Cmd) | U18(State) | 결합(Byte) | 디코딩 명령 / 전이 설명
+---------------------------------------------------------------------------
+  0x00    |    0x8   |    0x2     |    0x82    | [Read] 상태 S0 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S2
+  0x01    |    0x9   |    0x0     |    0x90    | [Read] 상태 S1 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x02    |    0x8   |    0xB     |    0x8B    | [Read] 상태 S2 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x03    |    0x9   |    0x0     |    0x90    | [Read] 상태 S3 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x04    |    0x8   |    0xB     |    0x8B    | [Read] 상태 S4 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x05    |    0x9   |    0x0     |    0x90    | [Read] 상태 S5 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x06    |    0xE   |    0x9     |    0xE9    | [Read] 상태 S6 (MSB=0, Pulse=0) -> 명령 CLR (시프트레지스터 클리어), 다음상태 S9
+  0x07    |    0x9   |    0x0     |    0x90    | [Read] 상태 S7 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x08    |    0x8   |    0xB     |    0x8B    | [Read] 상태 S8 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x09    |    0x9   |    0x0     |    0x90    | [Read] 상태 S9 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x0A    |    0x8   |    0xB     |    0x8B    | [Read] 상태 SA (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x0B    |    0x9   |    0x0     |    0x90    | [Read] 상태 SB (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x0C    |    0xA   |    0xB     |    0xAB    | [Read] 상태 SC (MSB=0, Pulse=0) -> 명령 SL1 (좌시프트 1), 다음상태 SB
+  0x0D    |    0x9   |    0x0     |    0x90    | [Read] 상태 SD (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x0E    |    0xE   |    0xF     |    0xEF    | [Read] 상태 SE (MSB=0, Pulse=0) -> 명령 CLR (시프트레지스터 클리어), 다음상태 SF
+  0x0F    |    0x9   |    0x0     |    0x90    | [Read] 상태 SF (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x10    |    0xE   |    0x4     |    0xE4    | [Read] 상태 S0 (MSB=1, Pulse=0) -> 명령 CLR (시프트레지스터 클리어), 다음상태 S4
+  0x11    |    0x9   |    0x0     |    0x90    | [Read] 상태 S1 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x12    |    0x8   |    0xB     |    0x8B    | [Read] 상태 S2 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x13    |    0x9   |    0x0     |    0x90    | [Read] 상태 S3 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x14    |    0x8   |    0xB     |    0x8B    | [Read] 상태 S4 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x15    |    0x9   |    0x0     |    0x90    | [Read] 상태 S5 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x16    |    0xA   |    0xB     |    0xAB    | [Read] 상태 S6 (MSB=1, Pulse=0) -> 명령 SL1 (좌시프트 1), 다음상태 SB
+  0x17    |    0x9   |    0x0     |    0x90    | [Read] 상태 S7 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x18    |    0x8   |    0xB     |    0x8B    | [Read] 상태 S8 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x19    |    0x9   |    0x0     |    0x90    | [Read] 상태 S9 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x1A    |    0x8   |    0xB     |    0x8B    | [Read] 상태 SA (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x1B    |    0x9   |    0x0     |    0x90    | [Read] 상태 SB (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x1C    |    0x8   |    0xB     |    0x8B    | [Read] 상태 SC (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x1D    |    0x9   |    0x0     |    0x90    | [Read] 상태 SD (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x1E    |    0xE   |    0xB     |    0xEB    | [Read] 상태 SE (MSB=1, Pulse=0) -> 명령 CLR (시프트레지스터 클리어), 다음상태 SB
+  0x1F    |    0x9   |    0x0     |    0x90    | [Read] 상태 SF (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x20    |    0x8   |    0x2     |    0x82    | [Read] 상태 S0 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S2
+  0x21    |    0x8   |    0x2     |    0x82    | [Read] 상태 S1 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S2
+  0x22    |    0xA   |    0x6     |    0xA6    | [Read] 상태 S2 (MSB=0, Pulse=1) -> 명령 SL1 (좌시프트 1), 다음상태 S6
+  0x23    |    0xB   |    0x6     |    0xB6    | [Read] 상태 S3 (MSB=0, Pulse=1) -> 명령 SR (우시프트), 다음상태 S6
+  0x24    |    0x8   |    0xA     |    0x8A    | [Read] 상태 S4 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SA
+  0x25    |    0x8   |    0xA     |    0x8A    | [Read] 상태 S5 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SA
+  0x26    |    0xA   |    0xE     |    0xAE    | [Read] 상태 S6 (MSB=0, Pulse=1) -> 명령 SL1 (좌시프트 1), 다음상태 SE
+  0x27    |    0xB   |    0xE     |    0xBE    | [Read] 상태 S7 (MSB=0, Pulse=1) -> 명령 SR (우시프트), 다음상태 SE
+  0x28    |    0x8   |    0x3     |    0x83    | [Read] 상태 S8 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S3
+  0x29    |    0x8   |    0x3     |    0x83    | [Read] 상태 S9 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S3
+  0x2A    |    0x8   |    0x7     |    0x87    | [Read] 상태 SA (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S7
+  0x2B    |    0x8   |    0x7     |    0x87    | [Read] 상태 SB (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S7
+  0x2C    |    0x8   |    0xB     |    0x8B    | [Read] 상태 SC (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SB
+  0x2D    |    0x8   |    0xB     |    0x8B    | [Read] 상태 SD (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SB
+  0x2E    |    0x8   |    0xF     |    0x8F    | [Read] 상태 SE (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SF
+  0x2F    |    0x8   |    0xF     |    0x8F    | [Read] 상태 SF (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SF
+  0x30    |    0x8   |    0x4     |    0x84    | [Read] 상태 S0 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S4
+  0x31    |    0x8   |    0x4     |    0x84    | [Read] 상태 S1 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S4
+  0x32    |    0x8   |    0x1     |    0x81    | [Read] 상태 S2 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S1
+  0x33    |    0x8   |    0x1     |    0x81    | [Read] 상태 S3 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S1
+  0x34    |    0x8   |    0xC     |    0x8C    | [Read] 상태 S4 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SC
+  0x35    |    0x8   |    0xC     |    0x8C    | [Read] 상태 S5 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SC
+  0x36    |    0x8   |    0x9     |    0x89    | [Read] 상태 S6 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S9
+  0x37    |    0x8   |    0x9     |    0x89    | [Read] 상태 S7 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S9
+  0x38    |    0x8   |    0x5     |    0x85    | [Read] 상태 S8 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S5
+  0x39    |    0x8   |    0x5     |    0x85    | [Read] 상태 S9 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S5
+  0x3A    |    0x8   |    0x0     |    0x80    | [Read] 상태 SA (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S0
+  0x3B    |    0x8   |    0x0     |    0x80    | [Read] 상태 SB (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S0
+  0x3C    |    0x8   |    0xD     |    0x8D    | [Read] 상태 SC (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SD
+  0x3D    |    0x8   |    0xD     |    0x8D    | [Read] 상태 SD (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SD
+  0x3E    |    0x8   |    0x8     |    0x88    | [Read] 상태 SE (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S8
+  0x3F    |    0x8   |    0x8     |    0x88    | [Read] 상태 SF (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S8
+  0x40    |    0x8   |    0x2     |    0x82    | [Read] 상태 S0 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S2
+  0x41    |    0x9   |    0x0     |    0x90    | [Read] 상태 S1 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x42    |    0x8   |    0x6     |    0x86    | [Read] 상태 S2 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S6
+  0x43    |    0x9   |    0x0     |    0x90    | [Read] 상태 S3 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x44    |    0x8   |    0xA     |    0x8A    | [Read] 상태 S4 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SA
+  0x45    |    0x9   |    0x0     |    0x90    | [Read] 상태 S5 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x46    |    0xE   |    0xE     |    0xEE    | [Read] 상태 S6 (MSB=0, Pulse=0) -> 명령 CLR (시프트레지스터 클리어), 다음상태 SE
+  0x47    |    0x9   |    0x0     |    0x90    | [Read] 상태 S7 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x48    |    0x8   |    0x3     |    0x83    | [Read] 상태 S8 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S3
+  0x49    |    0x9   |    0x0     |    0x90    | [Read] 상태 S9 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x4A    |    0x8   |    0x7     |    0x87    | [Read] 상태 SA (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S7
+  0x4B    |    0x9   |    0x0     |    0x90    | [Read] 상태 SB (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x4C    |    0xA   |    0xB     |    0xAB    | [Read] 상태 SC (MSB=0, Pulse=0) -> 명령 SL1 (좌시프트 1), 다음상태 SB
+  0x4D    |    0x9   |    0x0     |    0x90    | [Read] 상태 SD (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x4E    |    0xE   |    0xF     |    0xEF    | [Read] 상태 SE (MSB=0, Pulse=0) -> 명령 CLR (시프트레지스터 클리어), 다음상태 SF
+  0x4F    |    0x9   |    0x0     |    0x90    | [Read] 상태 SF (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x50    |    0xE   |    0x4     |    0xE4    | [Read] 상태 S0 (MSB=1, Pulse=0) -> 명령 CLR (시프트레지스터 클리어), 다음상태 S4
+  0x51    |    0x9   |    0x0     |    0x90    | [Read] 상태 S1 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x52    |    0x8   |    0x1     |    0x81    | [Read] 상태 S2 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S1
+  0x53    |    0x9   |    0x0     |    0x90    | [Read] 상태 S3 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x54    |    0xA   |    0x4     |    0xA4    | [Read] 상태 S4 (MSB=1, Pulse=0) -> 명령 SL1 (좌시프트 1), 다음상태 S4
+  0x55    |    0x9   |    0x0     |    0x90    | [Read] 상태 S5 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x56    |    0xA   |    0x3     |    0xA3    | [Read] 상태 S6 (MSB=1, Pulse=0) -> 명령 SL1 (좌시프트 1), 다음상태 S3
+  0x57    |    0x9   |    0x0     |    0x90    | [Read] 상태 S7 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x58    |    0x8   |    0x5     |    0x85    | [Read] 상태 S8 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S5
+  0x59    |    0x9   |    0x0     |    0x90    | [Read] 상태 S9 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x5A    |    0x8   |    0x8     |    0x88    | [Read] 상태 SA (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S8
+  0x5B    |    0x9   |    0x0     |    0x90    | [Read] 상태 SB (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x5C    |    0x8   |    0x0     |    0x80    | [Read] 상태 SC (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S0
+  0x5D    |    0x9   |    0x0     |    0x90    | [Read] 상태 SD (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x5E    |    0xE   |    0x1     |    0xE1    | [Read] 상태 SE (MSB=1, Pulse=0) -> 명령 CLR (시프트레지스터 클리어), 다음상태 S1
+  0x5F    |    0x9   |    0x0     |    0x90    | [Read] 상태 SF (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x60    |    0x8   |    0x2     |    0x82    | [Read] 상태 S0 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S2
+  0x61    |    0x8   |    0x2     |    0x82    | [Read] 상태 S1 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S2
+  0x62    |    0xA   |    0x6     |    0xA6    | [Read] 상태 S2 (MSB=0, Pulse=1) -> 명령 SL1 (좌시프트 1), 다음상태 S6
+  0x63    |    0xB   |    0x6     |    0xB6    | [Read] 상태 S3 (MSB=0, Pulse=1) -> 명령 SR (우시프트), 다음상태 S6
+  0x64    |    0x8   |    0xA     |    0x8A    | [Read] 상태 S4 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SA
+  0x65    |    0x8   |    0xA     |    0x8A    | [Read] 상태 S5 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SA
+  0x66    |    0xA   |    0xE     |    0xAE    | [Read] 상태 S6 (MSB=0, Pulse=1) -> 명령 SL1 (좌시프트 1), 다음상태 SE
+  0x67    |    0xB   |    0xE     |    0xBE    | [Read] 상태 S7 (MSB=0, Pulse=1) -> 명령 SR (우시프트), 다음상태 SE
+  0x68    |    0x8   |    0x3     |    0x83    | [Read] 상태 S8 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S3
+  0x69    |    0x8   |    0x3     |    0x83    | [Read] 상태 S9 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S3
+  0x6A    |    0x8   |    0x7     |    0x87    | [Read] 상태 SA (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S7
+  0x6B    |    0x8   |    0x7     |    0x87    | [Read] 상태 SB (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S7
+  0x6C    |    0x8   |    0xB     |    0x8B    | [Read] 상태 SC (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SB
+  0x6D    |    0x8   |    0xB     |    0x8B    | [Read] 상태 SD (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SB
+  0x6E    |    0x8   |    0xF     |    0x8F    | [Read] 상태 SE (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SF
+  0x6F    |    0x8   |    0xF     |    0x8F    | [Read] 상태 SF (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SF
+  0x70    |    0x8   |    0x4     |    0x84    | [Read] 상태 S0 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S4
+  0x71    |    0x8   |    0x4     |    0x84    | [Read] 상태 S1 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S4
+  0x72    |    0x8   |    0x1     |    0x81    | [Read] 상태 S2 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S1
+  0x73    |    0x8   |    0x1     |    0x81    | [Read] 상태 S3 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S1
+  0x74    |    0x8   |    0xC     |    0x8C    | [Read] 상태 S4 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SC
+  0x75    |    0x8   |    0xC     |    0x8C    | [Read] 상태 S5 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SC
+  0x76    |    0x8   |    0x9     |    0x89    | [Read] 상태 S6 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S9
+  0x77    |    0x8   |    0x9     |    0x89    | [Read] 상태 S7 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S9
+  0x78    |    0x8   |    0x5     |    0x85    | [Read] 상태 S8 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S5
+  0x79    |    0x8   |    0x5     |    0x85    | [Read] 상태 S9 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S5
+  0x7A    |    0x8   |    0x0     |    0x80    | [Read] 상태 SA (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S0
+  0x7B    |    0x8   |    0x0     |    0x80    | [Read] 상태 SB (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S0
+  0x7C    |    0x8   |    0xD     |    0x8D    | [Read] 상태 SC (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SD
+  0x7D    |    0x8   |    0xD     |    0x8D    | [Read] 상태 SD (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SD
+  0x7E    |    0x8   |    0x8     |    0x88    | [Read] 상태 SE (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S8
+  0x7F    |    0x8   |    0x8     |    0x88    | [Read] 상태 SF (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S8
+  0x80    |    0x8   |    0x2     |    0x82    | [Write] 상태 S0 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S2
+  0x81    |    0x9   |    0x0     |    0x90    | [Write] 상태 S1 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x82    |    0x8   |    0x0     |    0x80    | [Write] 상태 S2 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S0
+  0x83    |    0x9   |    0x0     |    0x90    | [Write] 상태 S3 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x84    |    0x8   |    0xB     |    0x8B    | [Write] 상태 S4 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x85    |    0x9   |    0x0     |    0x90    | [Write] 상태 S5 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x86    |    0x8   |    0xB     |    0x8B    | [Write] 상태 S6 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x87    |    0x9   |    0x0     |    0x90    | [Write] 상태 S7 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x88    |    0x8   |    0xB     |    0x8B    | [Write] 상태 S8 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x89    |    0x9   |    0x0     |    0x90    | [Write] 상태 S9 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x8A    |    0x8   |    0xB     |    0x8B    | [Write] 상태 SA (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x8B    |    0x9   |    0x0     |    0x90    | [Write] 상태 SB (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x8C    |    0x8   |    0xB     |    0x8B    | [Write] 상태 SC (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x8D    |    0x9   |    0x0     |    0x90    | [Write] 상태 SD (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x8E    |    0x8   |    0xF     |    0x8F    | [Write] 상태 SE (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SF
+  0x8F    |    0x9   |    0x0     |    0x90    | [Write] 상태 SF (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x90    |    0x8   |    0x6     |    0x86    | [Write] 상태 S0 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S6
+  0x91    |    0x9   |    0x0     |    0x90    | [Write] 상태 S1 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x92    |    0x8   |    0x1     |    0x81    | [Write] 상태 S2 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S1
+  0x93    |    0x9   |    0x0     |    0x90    | [Write] 상태 S3 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x94    |    0x8   |    0xB     |    0x8B    | [Write] 상태 S4 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x95    |    0x8   |    0x0     |    0x80    | [Write] 상태 S5 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S0
+  0x96    |    0x8   |    0xB     |    0x8B    | [Write] 상태 S6 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x97    |    0x9   |    0x0     |    0x90    | [Write] 상태 S7 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x98    |    0x8   |    0xB     |    0x8B    | [Write] 상태 S8 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x99    |    0x9   |    0x0     |    0x90    | [Write] 상태 S9 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x9A    |    0x8   |    0xB     |    0x8B    | [Write] 상태 SA (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SB
+  0x9B    |    0x9   |    0x0     |    0x90    | [Write] 상태 SB (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x9C    |    0x8   |    0xD     |    0x8D    | [Write] 상태 SC (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SD
+  0x9D    |    0x9   |    0x0     |    0x90    | [Write] 상태 SD (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0x9E    |    0x0   |    0xD     |    0x0D    | [Write] 상태 SE (MSB=1, Pulse=0) -> 명령 RESET/IDLE, 다음상태 SD
+  0x9F    |    0x9   |    0x0     |    0x90    | [Write] 상태 SF (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xA0    |    0x8   |    0x2     |    0x82    | [Write] 상태 S0 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S2
+  0xA1    |    0x8   |    0x2     |    0x82    | [Write] 상태 S1 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S2
+  0xA2    |    0xA   |    0x6     |    0xA6    | [Write] 상태 S2 (MSB=0, Pulse=1) -> 명령 SL1 (좌시프트 1), 다음상태 S6
+  0xA3    |    0xB   |    0x6     |    0xB6    | [Write] 상태 S3 (MSB=0, Pulse=1) -> 명령 SR (우시프트), 다음상태 S6
+  0xA4    |    0x8   |    0xA     |    0x8A    | [Write] 상태 S4 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SA
+  0xA5    |    0x8   |    0xA     |    0x8A    | [Write] 상태 S5 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SA
+  0xA6    |    0xA   |    0xE     |    0xAE    | [Write] 상태 S6 (MSB=0, Pulse=1) -> 명령 SL1 (좌시프트 1), 다음상태 SE
+  0xA7    |    0xB   |    0xE     |    0xBE    | [Write] 상태 S7 (MSB=0, Pulse=1) -> 명령 SR (우시프트), 다음상태 SE
+  0xA8    |    0x8   |    0x3     |    0x83    | [Write] 상태 S8 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S3
+  0xA9    |    0x8   |    0x3     |    0x83    | [Write] 상태 S9 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S3
+  0xAA    |    0x8   |    0x7     |    0x87    | [Write] 상태 SA (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S7
+  0xAB    |    0x8   |    0x7     |    0x87    | [Write] 상태 SB (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S7
+  0xAC    |    0x8   |    0xB     |    0x8B    | [Write] 상태 SC (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SB
+  0xAD    |    0x8   |    0xB     |    0x8B    | [Write] 상태 SD (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SB
+  0xAE    |    0x8   |    0xF     |    0x8F    | [Write] 상태 SE (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SF
+  0xAF    |    0x8   |    0xF     |    0x8F    | [Write] 상태 SF (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SF
+  0xB0    |    0x8   |    0x4     |    0x84    | [Write] 상태 S0 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S4
+  0xB1    |    0x8   |    0x4     |    0x84    | [Write] 상태 S1 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S4
+  0xB2    |    0x8   |    0x1     |    0x81    | [Write] 상태 S2 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S1
+  0xB3    |    0x8   |    0x1     |    0x81    | [Write] 상태 S3 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S1
+  0xB4    |    0x8   |    0xC     |    0x8C    | [Write] 상태 S4 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SC
+  0xB5    |    0x8   |    0xC     |    0x8C    | [Write] 상태 S5 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SC
+  0xB6    |    0x8   |    0x9     |    0x89    | [Write] 상태 S6 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S9
+  0xB7    |    0x8   |    0x9     |    0x89    | [Write] 상태 S7 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S9
+  0xB8    |    0x8   |    0x5     |    0x85    | [Write] 상태 S8 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S5
+  0xB9    |    0x8   |    0x5     |    0x85    | [Write] 상태 S9 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S5
+  0xBA    |    0x8   |    0x8     |    0x88    | [Write] 상태 SA (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S8
+  0xBB    |    0x8   |    0x8     |    0x88    | [Write] 상태 SB (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S8
+  0xBC    |    0x8   |    0xD     |    0x8D    | [Write] 상태 SC (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SD
+  0xBD    |    0x8   |    0xD     |    0x8D    | [Write] 상태 SD (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SD
+  0xBE    |    0x8   |    0x0     |    0x80    | [Write] 상태 SE (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S0
+  0xBF    |    0x8   |    0x0     |    0x80    | [Write] 상태 SF (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S0
+  0xC0    |    0x8   |    0x2     |    0x82    | [Write] 상태 S0 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S2
+  0xC1    |    0x9   |    0x0     |    0x90    | [Write] 상태 S1 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xC2    |    0x8   |    0x4     |    0x84    | [Write] 상태 S2 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S4
+  0xC3    |    0x9   |    0x0     |    0x90    | [Write] 상태 S3 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xC4    |    0x8   |    0xA     |    0x8A    | [Write] 상태 S4 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SA
+  0xC5    |    0x9   |    0x0     |    0x90    | [Write] 상태 S5 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xC6    |    0x8   |    0xE     |    0x8E    | [Write] 상태 S6 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SE
+  0xC7    |    0x9   |    0x0     |    0x90    | [Write] 상태 S7 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xC8    |    0x8   |    0x3     |    0x83    | [Write] 상태 S8 (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S3
+  0xC9    |    0x9   |    0x0     |    0x90    | [Write] 상태 S9 (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xCA    |    0x8   |    0x7     |    0x87    | [Write] 상태 SA (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S7
+  0xCB    |    0x9   |    0x0     |    0x90    | [Write] 상태 SB (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xCC    |    0x0   |    0xC     |    0x0C    | [Write] 상태 SC (MSB=0, Pulse=0) -> 명령 RESET/IDLE, 다음상태 SC
+  0xCD    |    0x9   |    0x0     |    0x90    | [Write] 상태 SD (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xCE    |    0x8   |    0xF     |    0x8F    | [Write] 상태 SE (MSB=0, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SF
+  0xCF    |    0x9   |    0x0     |    0x90    | [Write] 상태 SF (MSB=0, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xD0    |    0x8   |    0x6     |    0x86    | [Write] 상태 S0 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S6
+  0xD1    |    0x9   |    0x0     |    0x90    | [Write] 상태 S1 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xD2    |    0x8   |    0x1     |    0x81    | [Write] 상태 S2 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S1
+  0xD3    |    0x9   |    0x0     |    0x90    | [Write] 상태 S3 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xD4    |    0x8   |    0xC     |    0x8C    | [Write] 상태 S4 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SC
+  0xD5    |    0x9   |    0x0     |    0x90    | [Write] 상태 S5 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xD6    |    0x8   |    0x9     |    0x89    | [Write] 상태 S6 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S9
+  0xD7    |    0x9   |    0x0     |    0x90    | [Write] 상태 S7 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xD8    |    0x8   |    0x5     |    0x85    | [Write] 상태 S8 (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S5
+  0xD9    |    0x9   |    0x0     |    0x90    | [Write] 상태 S9 (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xDA    |    0x8   |    0x8     |    0x88    | [Write] 상태 SA (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 S8
+  0xDB    |    0x9   |    0x0     |    0x90    | [Write] 상태 SB (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xDC    |    0x8   |    0xD     |    0x8D    | [Write] 상태 SC (MSB=1, Pulse=0) -> 명령 NOP (상태유지), 다음상태 SD
+  0xDD    |    0x9   |    0x0     |    0x90    | [Write] 상태 SD (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xDE    |    0x0   |    0xD     |    0x0D    | [Write] 상태 SE (MSB=1, Pulse=0) -> 명령 RESET/IDLE, 다음상태 SD
+  0xDF    |    0x9   |    0x0     |    0x90    | [Write] 상태 SF (MSB=1, Pulse=0) -> 명령 SL0 (좌시프트 0), 다음상태 S0
+  0xE0    |    0x8   |    0x2     |    0x82    | [Write] 상태 S0 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S2
+  0xE1    |    0x8   |    0x2     |    0x82    | [Write] 상태 S1 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S2
+  0xE2    |    0xA   |    0x6     |    0xA6    | [Write] 상태 S2 (MSB=0, Pulse=1) -> 명령 SL1 (좌시프트 1), 다음상태 S6
+  0xE3    |    0xB   |    0x6     |    0xB6    | [Write] 상태 S3 (MSB=0, Pulse=1) -> 명령 SR (우시프트), 다음상태 S6
+  0xE4    |    0x8   |    0xA     |    0x8A    | [Write] 상태 S4 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SA
+  0xE5    |    0x8   |    0xA     |    0x8A    | [Write] 상태 S5 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SA
+  0xE6    |    0xA   |    0xE     |    0xAE    | [Write] 상태 S6 (MSB=0, Pulse=1) -> 명령 SL1 (좌시프트 1), 다음상태 SE
+  0xE7    |    0xB   |    0xE     |    0xBE    | [Write] 상태 S7 (MSB=0, Pulse=1) -> 명령 SR (우시프트), 다음상태 SE
+  0xE8    |    0x8   |    0x3     |    0x83    | [Write] 상태 S8 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S3
+  0xE9    |    0x8   |    0x3     |    0x83    | [Write] 상태 S9 (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S3
+  0xEA    |    0x8   |    0x7     |    0x87    | [Write] 상태 SA (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S7
+  0xEB    |    0x8   |    0x7     |    0x87    | [Write] 상태 SB (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S7
+  0xEC    |    0x8   |    0xB     |    0x8B    | [Write] 상태 SC (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SB
+  0xED    |    0x8   |    0xB     |    0x8B    | [Write] 상태 SD (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SB
+  0xEE    |    0x8   |    0xF     |    0x8F    | [Write] 상태 SE (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SF
+  0xEF    |    0x8   |    0xF     |    0x8F    | [Write] 상태 SF (MSB=0, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SF
+  0xF0    |    0x8   |    0x4     |    0x84    | [Write] 상태 S0 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S4
+  0xF1    |    0x8   |    0x4     |    0x84    | [Write] 상태 S1 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S4
+  0xF2    |    0x8   |    0x1     |    0x81    | [Write] 상태 S2 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S1
+  0xF3    |    0x8   |    0x1     |    0x81    | [Write] 상태 S3 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S1
+  0xF4    |    0x8   |    0xC     |    0x8C    | [Write] 상태 S4 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SC
+  0xF5    |    0x8   |    0xC     |    0x8C    | [Write] 상태 S5 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SC
+  0xF6    |    0x8   |    0x9     |    0x89    | [Write] 상태 S6 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S9
+  0xF7    |    0x8   |    0x9     |    0x89    | [Write] 상태 S7 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S9
+  0xF8    |    0x8   |    0x5     |    0x85    | [Write] 상태 S8 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S5
+  0xF9    |    0x8   |    0x5     |    0x85    | [Write] 상태 S9 (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S5
+  0xFA    |    0x8   |    0x8     |    0x88    | [Write] 상태 SA (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S8
+  0xFB    |    0x8   |    0x8     |    0x88    | [Write] 상태 SB (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S8
+  0xFC    |    0x8   |    0xD     |    0x8D    | [Write] 상태 SC (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SD
+  0xFD    |    0x8   |    0xD     |    0x8D    | [Write] 상태 SD (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 SD
+  0xFE    |    0x8   |    0x0     |    0x80    | [Write] 상태 SE (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S0
+  0xFF    |    0x8   |    0x0     |    0x80    | [Write] 상태 SF (MSB=1, Pulse=1) -> 명령 NOP (상태유지), 다음상태 S0
