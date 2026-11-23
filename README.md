@@ -215,7 +215,8 @@ HART/
 │   ├── 09-verified-baseline.md   확인된 사항·정상 기준값·고장 시 점검 순서
 │   ├── 10-fdd-drive.md           디스크 드라이브 GFD-450A1 기판 분석과 추정 (확인된 것은 README "디스크 드라이브" 절)
 │   ├── 11-rom-dump-list.md       본체에서 뽑아 덤프할 ROM·PROM 11개 목록, 순서, 주의, 덤프 결과
-│   └── 12-memory-map.md          3개 CPU(메인 6502, Z80, 보조 6502) 및 비디오·FDD 메모리 맵과 주소 변환표
+│   ├── 12-memory-map.md          3개 CPU(메인 6502, Z80, 보조 6502) 및 비디오·FDD 메모리 맵과 주소 변환표
+│   └── 13-u64-interface.md       메인 6502 ↔ U64 연결: U64 키보드 스캔, U68 공유 80컬럼 화면, U65 주소 정정
 ├── rom/                          ROM 덤프 이미지 (ROMReader로 읽음, SHA-1은 docs/11)
 ├── disasm/                       ROM/PROM 디스어셈블리 소스 및 분석 (6502 역어셈블리, P6 시퀀서, 폰트 등)
 ├── schematic/
