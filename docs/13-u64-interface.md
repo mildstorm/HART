@@ -111,6 +111,8 @@ U64  $5000 + k   ↔   U68 바이트 2k+1   (홀수 = 홀수 칸)
 
 ## 5. 확인하면 좋은 측정 (실기)
 
+> 2026-11-25 기준 남은 측정은 [14-measure-todo.md](14-measure-todo.md)에 정리했습니다.
+
 측정 위치 그림: [`analysis/u64_interface_measure.jpg`](../analysis/u64_interface_measure.jpg) (`tools/annotate_u64_interface.py`로 생성)
 
 * U64 주소선 A10·A11·A12·A14·A15가 어느 칩(디코더)으로 가는지 → `$0400/$0800/$0C00`, `$4000/$5000`, `$8000/$8800` 디코드 확정
