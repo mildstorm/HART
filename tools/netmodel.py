@@ -595,55 +595,64 @@ def unit_defs(part):
             u['outs'].append(p)
     return units
 
+def _pinsort(s):
+    return (not s.isdigit(), int(s) if s.isdigit() else 0, s)
+
 def logic_units(m):
-    """Units to draw, the pin→port map, and wires (driver pin → load pin)."""
-    drawn = set()
-    for lab, st, mem, drv in net_rows(m):
-        for n in mem:
-            if n[0] in m.bom or n[0] == 'SL':
-                drawn.add(n)
-    for n in m.measured:
-        if (n[0] in m.bom or n[0] == 'SL') and m.power(m.net_of(n)[1]):
-            drawn.add(n)
+    """Every IC on the board split into its units, plus slot / passive boxes
+    for measured pins outside any IC unit.  Returns (units, pin→unit, wires).
+
+    Chips are placed even before any of their pins is measured, so the
+    drawing shows the whole board and fills in as wires are found."""
     units, pin_unit = {}, {}
-    cache = {}
-    for n in sorted(drawn, key=sort_key):
-        ref, pin = n
-        if m.pin_info(n)[1] in ('vcc', 'gnd'):
-            continue                      # supply pins are implied
-        part = m.bom.get(ref, '')
-        defs = cache.setdefault(part, unit_defs(part))
-        key = None
-        if defs and pin.isdigit():
-            for k, u in defs.items():
-                if int(pin) in u['ins'] or int(pin) in u['outs']:
-                    key = k
-                    break
-        if key is None and defs and m.power(m.net_of(n)[1]):
-            continue                      # e.g. 74LS157 /G tied to GND: listed in the net table only
-        if key is None:
-            uid = f'{ref}'
-            u = units.setdefault(uid, {'id': uid, 'ref': ref, 'part': ('Apple 슬롯' if ref == 'SL' else part), 'type': 'BOX',
-                                       'title': '', 'ins': [], 'outs': [], 'whole': True})
-            name, kind = m.pin_info(n)
-            (u['ins'] if kind in ('in', '?') else u['outs']).append(pin)
-        else:
-            uid = f'{ref}:{"/".join(map(str, key[:2] if key[0] != "F" else key[:1]))}:{min(defs[key]["outs"])}'
-            if uid not in units:
-                d = defs[key]
+    with open(os.path.join(ROOT, 'data', 'bom.csv'), encoding='utf-8') as f:
+        block = {r['ref']: r['block'] for r in csv.DictReader(f)}
+    for ref in sorted(m.bom, key=lambda r: sort_key((r, '0'))):
+        part = m.bom[ref]
+        lib = LIB.get(part)
+        if not ref.startswith('U'):
+            continue
+        if not lib:                     # no pin table yet (e.g. NE558): placeholder box
+            units[ref] = {'id': ref, 'ref': ref, 'part': part, 'type': 'BOX', 'title': '핀 기능표 없음',
+                          'ins': [], 'outs': [], 'whole': True, 'block': block.get(ref, '')}
+            continue
+        defs = unit_defs(part)
+        if defs:
+            for key, d in defs.items():
+                uid = f'{ref}:{"/".join(map(str, key[:2] if key[0] != "F" else key[:1]))}:{min(d["outs"])}'
                 units[uid] = {'id': uid, 'ref': ref, 'part': part, 'type': d['type'], 'title': d['title'],
-                              'ins': [str(p) for p in d['ins']],
-                              'outs': [str(p) for p in d['outs']] if d['type'] in GATE_SHAPES or d['title'] == 'MUX' else [],
-                              'whole': False}
-            u = units[uid]
-            if pin not in u['ins'] and pin not in u['outs']:
-                u['outs'].append(pin)
+                              'ins': [str(p) for p in dict.fromkeys(d['ins'])],
+                              'outs': sorted({str(p) for p in d['outs']}, key=_pinsort),
+                              'whole': False, 'block': block.get(ref, '')}
+                for p in units[uid]['ins'] + units[uid]['outs']:
+                    pin_unit[(ref, p)] = uid
+        else:
+            pins = [p for p, (nm, k) in sorted(lib['pins'].items()) if k not in ('vcc', 'gnd', 'nc')]
+            units[ref] = {'id': ref, 'ref': ref, 'part': part, 'type': 'BOX', 'title': '',
+                          'ins': [str(p) for p in pins if lib['pins'][p][1] == 'in'],
+                          'outs': [str(p) for p in pins if lib['pins'][p][1] != 'in'],
+                          'whole': True, 'block': block.get(ref, '')}
+            for p in units[ref]['ins'] + units[ref]['outs']:
+                pin_unit[(ref, p)] = ref
+    # measured pins that are in no IC unit: slot, resistor, a chip's shared enable ...
+    extra = set()
+    for lab, st, mem, drv in net_rows(m):
+        extra.update(n for n in mem if n[0] in m.bom or n[0] == 'SL')
+    for n in sorted(extra, key=sort_key):
+        ref, pin = n
+        if n in pin_unit or m.pin_info(n)[1] in ('vcc', 'gnd'):
+            continue
+        uid = 'SL' if ref == 'SL' else f'{ref}:etc'
+        u = units.setdefault(uid, {'id': uid, 'ref': ref, 'part': ('Apple 슬롯' if ref == 'SL' else m.bom.get(ref, '')),
+                                   'type': 'BOX', 'title': ('' if ref == 'SL' or not ref.startswith('U') else '기타 핀'),
+                                   'ins': [], 'outs': [], 'whole': True, 'block': block.get(ref, '확장')})
+        name, kind = m.pin_info(n)
+        (u['ins'] if kind in ('in', '?') else u['outs']).append(pin)
         pin_unit[n] = uid
     for u in units.values():
-        u['ins'] = sorted(dict.fromkeys(u['ins']), key=lambda s: (not s.isdigit(), int(s) if s.isdigit() else 0, s)) if u['whole'] else list(dict.fromkeys(u['ins']))
-        u['outs'] = sorted(dict.fromkeys(u['outs']), key=lambda s: (not s.isdigit(), int(s) if s.isdigit() else 0, s))
-        for p in u['ins'] + u['outs']:
-            pin_unit.setdefault((u['ref'], p), u['id'])
+        if u['whole']:
+            u['ins'] = sorted(dict.fromkeys(u['ins']), key=_pinsort)
+            u['outs'] = sorted(dict.fromkeys(u['outs']), key=_pinsort)
     wires = []
     for lab, st, mem, drv in net_rows(m):
         board = [n for n in mem if n in pin_unit]
@@ -703,16 +712,21 @@ def logic_svg(m):
                 dfs(v)
         state[u] = 2
         order.append(u)
-    for u in sorted(units, key=lambda x: (-len(succ[x]), x)):
+    wired = set()
+    for w in wires:
+        if w['src']:
+            wired.add(pin_unit[w['src']])
+        wired.update(pin_unit[d] for d in w['dst'])
+    for u in sorted(wired, key=lambda x: (-len(succ[x]), x)):
         if u not in state:
             dfs(u)
-    layer = {u: 0 for u in units}
+    layer = {u: 0 for u in wired}
     for u in reversed(order):
         for v in succ[u]:
             if (u, v) not in back:
                 layer[v] = max(layer[v], layer[u] + 1)
     L = max(layer.values()) + 1 if layer else 1
-    cols = [sorted(u for u in units if layer[u] == i) for i in range(L)]
+    cols = [sorted(u for u in wired if layer[u] == i) for i in range(L)]
     nb = defaultdict(set)
     for u in succ:
         for v in succ[u]:
@@ -749,25 +763,54 @@ def logic_svg(m):
         xcol.append(x)
         x += colw[i] + 70 + 7 * len(chan_nets[i]) + 40
     totw = x + 40
-    ypos, toth = {}, 0
+    xy, toth = {}, 0
     for i, c in enumerate(cols):
-        y = 30
+        y = 60
         for u in c:
             y += geo[u]['top']
-            ypos[u] = y
+            xy[u] = (xcol[i] + (colw[i] - geo[u]['w']) / 2 + 30, y)
             y += geo[u]['h'] + geo[u]['bottom'] + VGAP
         toth = max(toth, y)
-    toth += 30
+    totw = max(totw, 2600)
+    toph = toth + 20                    # height of the wired part, used as the first view
+    heads = [f'<text class="blk" x="40" y="36">측정으로 연결된 회로 (신호 흐름 순서, 왼쪽 → 오른쪽)</text>']
+    # units with no wire yet: parked below, grouped by board block, one chip's units together
+    idle = [u for u in units if u not in wired]
+    blocks = defaultdict(list)
+    for u in idle:
+        blocks[units[u]['block'] or '기타'].append(u)
+    y = toth + 80
+    heads.append(f'<line class="sep" x1="20" x2="{totw - 20}" y1="{y - 40}" y2="{y - 40}"/>'
+                 f'<text class="blk" x="40" y="{y - 14}">아직 연결을 측정하지 않은 칩 (기능 블록별)</text>')
+    for bname in sorted(blocks):
+        lst = sorted(blocks[bname], key=lambda u: (sort_key((units[u]['ref'], '0')), u))
+        y += 24
+        heads.append(f'<text class="blk2" x="40" y="{y}">{esc(bname)}</text>')
+        y += 22
+        x, rowh, prev = 60, 0, None
+        for u in lst:
+            g = geo[u]
+            gap = 24 if units[u]['ref'] == prev else 56
+            need = g['w'] + 60
+            if x + need > totw - 40:
+                x, y, rowh = 60, y + rowh + 40, 0
+            elif prev is not None:
+                x += gap
+            xy[u] = (x + 18, y + g['top'])
+            x += need - 24
+            rowh = max(rowh, g['top'] + g['h'] + g['bottom'])
+            prev = units[u]['ref']
+        y += rowh + 30
+    toth = y + 30
     # pin coordinates
     pxy = {}
     parts_svg = []
     for uid, u in units.items():
         g = geo[uid]
-        x0 = xcol[layer[uid]] + (colw[layer[uid]] - g['w']) / 2 + 30
-        y0 = ypos[uid]
+        x0, y0 = xy[uid]
         w, h = g['w'], g['h']
         ref = u['ref']
-        s = [f'<g class="unit" data-ref="{esc(ref)}"><title>{esc(ref)} {esc(u["part"])}</title>']
+        s = [f'<g class="unit{"" if uid in wired else " idle"}" data-ref="{esc(ref)}"><title>{esc(ref)} {esc(u["part"])}</title>']
         if u['type'] in GATE_SHAPES:
             s.append(_shape(u['type'], x0, y0, w, h))
             n = len(u['ins'])
@@ -814,7 +857,7 @@ def logic_svg(m):
             west = p in u['ins']
             if pw:
                 s.append(f'<text class="pw" x="{px - 2 if west else px + 2}" y="{py + 3}" text-anchor="{"end" if west else "start"}">{pw}</text>')
-            elif len(mem) <= 1 and n not in m.measured:
+            elif len(mem) <= 1 and n not in m.measured and uid in wired:
                 s.append(f'<text class="unk" x="{px - 2 if west else px + 2}" y="{py + 3}" text-anchor="{"end" if west else "start"}">?</text>')
         s.append('</g>')
         parts_svg.append(''.join(s))
@@ -842,24 +885,25 @@ def logic_svg(m):
             wsvg.insert(0, f'<path class="{cls}" data-net="{esc(w["net"])}" d="{d}"><title>{esc(w["net"])}</title></path>')
             if len(ys) > 2:
                 wsvg.append(f'<circle class="dot" cx="{cx:.0f}" cy="{ys[0]:.0f}" r="2.5"/>')
-    return (f'<svg id="logic" class="logic" viewBox="0 0 {totw:.0f} {toth:.0f}" data-w="{totw:.0f}" data-h="{toth:.0f}" role="img" '
-            f'aria-label="측정으로 확인한 연결을 게이트·플립플롭 단위로 그린 논리 회로도">'
-            f'<g class="wires">{"".join(wsvg)}</g><g class="units">{"".join(parts_svg)}</g></svg>')
+    return (f'<svg id="logic" class="logic" viewBox="0 0 {totw:.0f} {toph:.0f}" data-w="{totw:.0f}" data-h="{toth:.0f}" data-top="{toph:.0f}" role="img" '
+            f'aria-label="보드의 모든 칩을 게이트·플립플롭 단위로 놓고 측정으로 확인한 연결을 이은 논리 회로도">'
+            f'<g class="heads">{"".join(heads)}</g><g class="wires">{"".join(wsvg)}</g><g class="units">{"".join(parts_svg)}</g></svg>')
 
 LOGIC_VIEW = r'''
 <div class="logic-wrap">
   <div class="logic-bar">
     <span id="logic-info" class="dim">선에 마우스를 올리면 넷 이름이 나오고 같은 넷이 강조됩니다. 휠로 확대, 끌어서 이동.</span>
-    <button type="button" id="logic-fit">전체 보기</button>
+    <span><button type="button" id="logic-wired">연결된 부분</button> <button type="button" id="logic-fit">전체 보기</button></span>
   </div>
   %%SVG%%
 </div>
 <script>
 (function(){
   const svg=document.getElementById('logic'), info=document.getElementById('logic-info');
-  const W=+svg.dataset.w, H=+svg.dataset.h;
-  let vb=[0,0,W,H]; const set=()=>svg.setAttribute('viewBox',vb.join(' '));
+  const W=+svg.dataset.w, H=+svg.dataset.h, T=+svg.dataset.top;
+  let vb=[0,0,W,T]; const set=()=>svg.setAttribute('viewBox',vb.join(' '));
   const fit=()=>{vb=[0,0,W,H];set();}; document.getElementById('logic-fit').onclick=fit;
+  document.getElementById('logic-wired').onclick=()=>{vb=[0,0,W,T];set();};
   svg.addEventListener('mouseover',ev=>{const w=ev.target.closest('.wire'); if(!w) return;
     info.textContent='넷: '+w.dataset.net;
     svg.querySelectorAll('.wire').forEach(x=>x.classList.toggle('hi',x.dataset.net===w.dataset.net));});
@@ -887,9 +931,10 @@ def render_html(m=None):
     h = [f'<p class="dim">도통 측정({len(m.rows)}줄)을 묶은 넷 {len(rows)}개. 구동원 미확인 {len(nod)}개, 출력 충돌 {len(con)}개. '
          '<code>tools/netmodel.py</code>가 칩 핀 기능표로 신호를 거슬러 올라가 논리식을 만듭니다. '
          '<span class="mono">?75-2(J)</span> = 아직 모르는 핀, <span class="mono">[… 구동원 미확인]</span> = 출력을 못 찾은 선.</p>']
-    h.append('<h3>통합 논리 회로도 (측정된 연결만, 자동 배치)</h3>'
-             '<p class="dim">칩마다 측정한 핀만 그립니다. 왼쪽 = 입력, 오른쪽 = 출력. '
-             '<span class="mono">=+5V</span>·<span class="mono">=GND</span>는 전원에 묶인 핀, 빨간 점선과 <b>?</b> = 구동원을 못 찾은 선. 측정이 늘면 다시 생성할 때 자동으로 채워집니다.</p>')
+    h.append('<h3>통합 논리 회로도 (보드 전체 칩, 측정된 연결)</h3>'
+             '<p class="dim">보드의 칩 85개를 모두 게이트·플립플롭 단위로 올려 두었습니다. 위쪽 = 측정으로 연결이 확인된 부분(신호 흐름 순서), '
+             '아래쪽 = 아직 연결을 측정하지 않은 칩(흐리게, 기능 블록별). 측정이 늘면 다시 생성할 때 아래에서 위로 옮겨 가며 이어집니다. '
+             '빨간 <b>?</b> = 연결된 게이트의 아직 모르는 입력, 빨간 점선 = 구동원을 못 찾은 선, <span class="mono">+5V</span>·<span class="mono">GND</span> = 전원에 묶인 핀.</p>')
     h.append(LOGIC_VIEW.replace('%%SVG%%', logic_svg(m)))
     h.append('<h3>신호 추적 (논리식)</h3>')
     h.append('<div class="traces">')
