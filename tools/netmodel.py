@@ -553,6 +553,220 @@ def render_md(m):
             L.append(f"- {r['from_ref']}-{r['from_pin']} ↔ {r['to_ref']}-{r['to_pin']}: {r['result']} — {r['note']}")
     return '\n'.join(L) + '\n'
 
+def graph(m):
+    """Chips with their measured pins as ports, nets as driver→load wires.
+
+    Pins tied to +5V/GND get a port label instead of a wire.  A net with no
+    known driver gets a small '?' junction so it still shows as one wire."""
+    import json
+    nodes, edges = {}, []
+    def port(n, power=None):
+        ref, pin = n
+        nid = 'SLOT' if ref == 'SL' else ref
+        if nid not in nodes:
+            part = 'Apple 슬롯 (공통)' if ref == 'SL' else m.bom.get(ref, '')
+            nodes[nid] = {'id': nid, 'label': ('슬롯' if ref == 'SL' else ref), 'part': part, 'ports': {}}
+        name, kind = m.pin_info(n)
+        side = 'WEST' if kind in ('in', '?') else 'EAST'
+        pid = f'{nid}.{pin}'
+        lab = f'{pin} {name}' + (f' ={power}' if power else '')
+        nodes[nid]['ports'][pid] = {'id': pid, 'label': lab, 'side': side, 'kind': kind,
+                                   'pin': int(pin) if pin.isdigit() else 999}
+        return pid
+    for lab, st, mem, drv in net_rows(m):
+        board = [n for n in mem if n[0] in m.bom or n[0] == 'SL']
+        if len(board) < 2 and not (len(board) == 1 and st == 'nodrv'):
+            continue
+        src = [d for d in drv if d in board] or [n for n in board if m.pin_info(n)[1] == 'bi'][:1]
+        if src:
+            s = port(src[0])
+            for n in board:
+                if n != src[0]:
+                    edges.append({'id': f'e{len(edges)}', 'sources': [s], 'targets': [port(n)], 'net': lab, 'nodrv': False})
+        else:
+            jid = f'J{len(edges)}'
+            nodes[jid] = {'id': jid, 'label': '?', 'part': '구동원 미확인', 'ports': {}, 'junction': True}
+            for n in board:
+                edges.append({'id': f'e{len(edges)}', 'sources': [jid], 'targets': [port(n)], 'net': lab, 'nodrv': True})
+    # measured pins that sit on a power rail
+    for n in sorted(m.measured, key=sort_key):
+        if n[0] in m.bom or n[0] == 'SL':
+            r, mem = m.net_of(n)
+            pw = m.power(mem)
+            if pw and n[0] in nodes:
+                port(n, pw)
+    out = []
+    for nd in nodes.values():
+        ps = sorted(nd['ports'].values(), key=lambda p: p['pin'])
+        out.append({**nd, 'ports': ps})
+    return json.dumps({'nodes': out, 'edges': edges}, ensure_ascii=False)
+
+def logic_svg(m):
+    """Lay the chip/wire graph out in columns (no external library) and return SVG.
+
+    Columns come from signal flow (longest path after cutting loops), rows are
+    ordered by the barycentre of connected chips.  Wires are drawn first and
+    chips on top, so a wire that passes a column runs under the chips there."""
+    import json
+    g = json.loads(graph(m))
+    nodes = {n['id']: n for n in g['nodes']}
+    succ = defaultdict(set)
+    for e in g['edges']:
+        s, t = e['sources'][0].split('.')[0], e['targets'][0].split('.')[0]
+        if s != t:
+            succ[s].add(t)
+    # cut loops with a DFS, then longest-path layering
+    order, state, back = [], {}, set()
+    def dfs(u):
+        state[u] = 1
+        for v in sorted(succ[u]):
+            if state.get(v) == 1:
+                back.add((u, v))
+            elif v not in state:
+                dfs(v)
+        state[u] = 2
+        order.append(u)
+    sys.setrecursionlimit(10000)
+    for u in sorted(nodes, key=lambda x: (-len(succ[x]), x)):
+        if u not in state:
+            dfs(u)
+    layer = {u: 0 for u in nodes}
+    for u in reversed(order):
+        for v in succ[u]:
+            if (u, v) not in back:
+                layer[v] = max(layer[v], layer[u] + 1)
+    for u, n in nodes.items():          # '?' junctions sit just before their first load
+        if n.get('junction') and succ[u]:
+            layer[u] = max(0, min(layer[v] for v in succ[u]) - 1)
+    L = max(layer.values()) + 1
+    cols = [[u for u in nodes if layer[u] == i] for i in range(L)]
+    nb = defaultdict(set)
+    for u in succ:
+        for v in succ[u]:
+            nb[u].add(v); nb[v].add(u)
+    for c in cols:
+        c.sort()
+    for it in range(8):                 # barycentre ordering sweeps
+        rng = range(1, L) if it % 2 == 0 else range(L - 2, -1, -1)
+        pos = {u: i for c in cols for i, u in enumerate(c)}
+        for i in rng:
+            ref = i - 1 if it % 2 == 0 else i + 1
+            def bc(u):
+                ns = [pos[v] for v in nb[u] if layer[v] == ref]
+                return sum(ns) / len(ns) if ns else pos[u]
+            cols[i].sort(key=bc)
+    # geometry
+    W, PH, HEAD, VGAP = 196, 14, 32, 26
+    def ports(n, side):
+        return [p for p in n['ports'] if p['side'] == side]
+    height = {u: (18 if n.get('junction') else HEAD + max(len(ports(n, 'WEST')), len(ports(n, 'EAST')), 1) * PH + 6)
+              for u, n in nodes.items()}
+    width = {u: (18 if n.get('junction') else W) for u, n in nodes.items()}
+    nets = defaultdict(list)
+    for e in g['edges']:
+        nets[e['net']].append(e)
+    src_layer_nets = defaultdict(list)
+    for net, es in nets.items():
+        src_layer_nets[layer[es[0]['sources'][0].split('.')[0]]].append(net)
+    chan = [24 + 8 * len(src_layer_nets[i]) for i in range(L)]
+    xcol, x = [], 20
+    for i in range(L):
+        xcol.append(x)
+        x += W + chan[i] + 40
+    totw = x
+    ypos, toth = {}, 0
+    for i, c in enumerate(cols):
+        y = 20
+        for u in c:
+            ypos[u] = y
+            y += height[u] + VGAP
+        toth = max(toth, y)
+    xpos = {u: xcol[layer[u]] + (W - width[u]) / 2 if nodes[u].get('junction') else xcol[layer[u]] for u in nodes}
+    pxy = {}
+    for u, n in nodes.items():
+        if n.get('junction'):
+            pxy[u] = (xpos[u] + 18, ypos[u] + 9)
+            continue
+        for side in ('WEST', 'EAST'):
+            for i, p in enumerate(ports(n, side)):
+                px = xpos[u] if side == 'WEST' else xpos[u] + W
+                pxy[p['id']] = (px, ypos[u] + HEAD + i * PH + 7)
+    # wires: one path per net
+    esc = html.escape
+    track = {}
+    for i in range(L):
+        for k, net in enumerate(src_layer_nets[i]):
+            track[net] = xcol[i] + W + 14 + 8 * k
+    wires = []
+    for net, es in nets.items():
+        s = es[0]['sources'][0]
+        sx, sy = pxy[s]
+        cx = track[net]
+        ys = [sy]
+        d = f'M{sx:.0f},{sy:.0f}H{cx:.0f}'
+        for e in es:
+            tx, ty = pxy[e['targets'][0]]
+            ys.append(ty)
+            d += f'M{cx:.0f},{ty:.0f}H{tx - 10:.0f}V{ty:.0f}H{tx:.0f}' if tx > cx else f'M{cx:.0f},{ty:.0f}H{tx - 10:.0f}H{tx:.0f}'
+        d += f'M{cx:.0f},{min(ys):.0f}V{max(ys):.0f}'
+        cls = 'wire nodrv' if es[0]['nodrv'] else 'wire'
+        wires.append(f'<path class="{cls}" data-net="{esc(net)}" d="{d}"><title>{esc(net)}</title></path>')
+        if len(ys) > 2:
+            wires.append(f'<circle class="dot" cx="{cx:.0f}" cy="{sy:.0f}" r="2.5"/>')
+    boxes = []
+    for u, n in nodes.items():
+        x0, y0 = xpos[u], ypos[u]
+        if n.get('junction'):
+            boxes.append(f'<g class="node junction"><title>구동원 미확인</title><circle cx="{x0 + 9:.0f}" cy="{y0 + 9:.0f}" r="8"/>'
+                         f'<text class="jq" x="{x0 + 9:.0f}" y="{y0 + 13:.0f}" text-anchor="middle">?</text></g>')
+            continue
+        t = [f'<g class="node" data-ref="{esc(u)}"><rect x="{x0:.0f}" y="{y0:.0f}" width="{W}" height="{height[u]}" rx="4"/>',
+             f'<text class="nh" x="{x0 + W / 2:.0f}" y="{y0 + 14:.0f}" text-anchor="middle">{esc(n["label"])}</text>',
+             f'<text class="ns" x="{x0 + W / 2:.0f}" y="{y0 + 26:.0f}" text-anchor="middle">{esc(n["part"])}</text>']
+        for p in n['ports']:
+            px, py = pxy[p['id']]
+            west = p['side'] == 'WEST'
+            t.append(f'<rect class="port k-{p["kind"]}" x="{px - 3:.0f}" y="{py - 3:.0f}" width="6" height="6"/>')
+            cls = 'pl pw' if '=' in p['label'] else 'pl'
+            t.append(f'<text class="{cls}" x="{px + 7 if west else px - 7:.0f}" y="{py + 3:.0f}" text-anchor="{"start" if west else "end"}">{esc(p["label"])}</text>')
+        t.append('</g>')
+        boxes.append(''.join(t))
+    return (f'<svg id="logic" class="logic" viewBox="0 0 {totw:.0f} {toth:.0f}" data-w="{totw:.0f}" data-h="{toth:.0f}" role="img" '
+            f'aria-label="측정으로 확인한 핀 연결을 칩 단위로 그린 논리 회로도">'
+            f'<g class="wires">{"".join(wires)}</g><g class="nodes">{"".join(boxes)}</g></svg>')
+
+LOGIC_VIEW = r'''
+<div class="logic-wrap">
+  <div class="logic-bar">
+    <span id="logic-info" class="dim">선에 마우스를 올리면 넷 이름이 나오고 같은 넷이 강조됩니다. 휠로 확대, 끌어서 이동.</span>
+    <button type="button" id="logic-fit">전체 보기</button>
+  </div>
+  %%SVG%%
+</div>
+<script>
+(function(){
+  const svg=document.getElementById('logic'), info=document.getElementById('logic-info');
+  const W=+svg.dataset.w, H=+svg.dataset.h;
+  let vb=[0,0,W,H]; const set=()=>svg.setAttribute('viewBox',vb.join(' '));
+  const fit=()=>{vb=[0,0,W,H];set();}; document.getElementById('logic-fit').onclick=fit;
+  svg.addEventListener('mouseover',ev=>{const w=ev.target.closest('.wire'); if(!w) return;
+    info.textContent='넷: '+w.dataset.net;
+    svg.querySelectorAll('.wire').forEach(x=>x.classList.toggle('hi',x.dataset.net===w.dataset.net));});
+  svg.addEventListener('wheel',ev=>{ev.preventDefault(); const r=svg.getBoundingClientRect();
+    const s=Math.max(vb[2]/r.width, vb[3]/r.height), k=ev.deltaY>0?1.15:1/1.15;
+    const ox=(r.width*s-vb[2])/2, oy=(r.height*s-vb[3])/2;
+    const mx=vb[0]-ox+(ev.clientX-r.left)*s, my=vb[1]-oy+(ev.clientY-r.top)*s;
+    vb=[mx-(mx-vb[0])*k, my-(my-vb[1])*k, vb[2]*k, vb[3]*k]; set();},{passive:false});
+  let drag=null;
+  svg.addEventListener('pointerdown',ev=>{drag=[ev.clientX,ev.clientY]; svg.setPointerCapture(ev.pointerId);});
+  svg.addEventListener('pointermove',ev=>{if(!drag) return; const r=svg.getBoundingClientRect();
+    const s=Math.max(vb[2]/r.width, vb[3]/r.height);
+    vb[0]-=(ev.clientX-drag[0])*s; vb[1]-=(ev.clientY-drag[1])*s; drag=[ev.clientX,ev.clientY]; set();});
+  svg.addEventListener('pointerup',()=>drag=null);
+})();
+</script>
+'''
+
 def render_html(m=None):
     m = m or build()
     rows = net_rows(m)
@@ -562,6 +776,11 @@ def render_html(m=None):
     h = [f'<p class="dim">도통 측정({len(m.rows)}줄)을 묶은 넷 {len(rows)}개. 구동원 미확인 {len(nod)}개, 출력 충돌 {len(con)}개. '
          '<code>tools/netmodel.py</code>가 칩 핀 기능표로 신호를 거슬러 올라가 논리식을 만듭니다. '
          '<span class="mono">?75-2(J)</span> = 아직 모르는 핀, <span class="mono">[… 구동원 미확인]</span> = 출력을 못 찾은 선.</p>']
+    h.append('<h3>통합 논리 회로도 (측정된 연결만, 자동 배치)</h3>'
+             '<p class="dim">칩마다 측정한 핀만 그립니다. 왼쪽 = 입력, 오른쪽 = 출력. '
+             '<span class="mono">=+5V</span>·<span class="mono">=GND</span>는 전원에 묶인 핀, 빨간 점선과 <b>?</b> = 구동원을 못 찾은 선. 측정이 늘면 다시 생성할 때 자동으로 채워집니다.</p>')
+    h.append(LOGIC_VIEW.replace('%%SVG%%', logic_svg(m)))
+    h.append('<h3>신호 추적 (논리식)</h3>')
     h.append('<div class="traces">')
     for ref, pin, title in TRACE:
         h.append(f'<div class="trace"><div class="tt">{esc(title)} <span class="mono dim">{esc(short((ref, pin)))}</span></div>'
