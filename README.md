@@ -217,14 +217,15 @@ HART/
 │   ├── 11-rom-dump-list.md       본체에서 뽑아 덤프할 ROM·PROM 11개 목록, 순서, 주의, 덤프 결과
 │   ├── 12-memory-map.md          3개 CPU(메인 6502, Z80, 보조 6502) 및 비디오·FDD 메모리 맵과 주소 변환표
 │   ├── 13-u64-interface.md       메인 6502 ↔ U64 연결: U64 키보드 스캔, U68 공유 80컬럼 화면(주소 배선 측정), SELECT·U62 스위치, U65 주소 정정
-│   └── 14-measure-todo.md        남은 도통 측정 목록과 방법 (다음 측정은 여기서 시작)
+│   ├── 14-measure-todo.md        남은 도통 측정 목록과 방법 (다음 측정은 여기서 시작)
+│   └── 15-nets.md                측정된 넷과 논리식 (자동 생성: python tools/netmodel.py)
 ├── rom/                          ROM 덤프 이미지 (ROMReader로 읽음, SHA-1은 docs/11)
 ├── disasm/                       ROM/PROM 디스어셈블리 소스 및 분석 (6502 역어셈블리, P6 시퀀서, 폰트 등)
 ├── schematic/
-│   ├── apple2-clone-schematic.html  인터랙티브 블록 회로도 + 배치도 + 부품표
+│   ├── apple2-clone-schematic.html  인터랙티브 블록 회로도 + 배치도 + 부품표 + 측정된 넷·논리식
 │   └── src/                      HTML 생성 스크립트 (gen.py + 템플릿)
 ├── analysis/                     분석·측정용 그림 (핀 번호, 정합 사진, Φ0 경로 등)
-├── tools/                        사진 정합·그림 생성 스크립트 (Python, OpenCV, Pillow)
+├── tools/                        사진 정합·그림 생성 스크립트 (Python, OpenCV, Pillow), netmodel.py (칩 핀 기능표 + 넷·논리식 추적)
 └── data/
     ├── bom.csv                   부품 데이터 (배치 좌표 포함)
     ├── netlist.csv               측정으로 확인한 핀 단위 결선

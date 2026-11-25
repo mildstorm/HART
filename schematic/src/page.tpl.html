@@ -108,6 +108,16 @@ table.pin{border-collapse:collapse;font-family:var(--mono);font-size:.78rem;widt
 .pin td{border:1px solid var(--grid);padding:2px 8px}
 .pin td:nth-child(odd){color:var(--muted);text-align:right;width:2.5em}
 ol.steps{margin:0;padding-left:1.4em;display:grid;gap:6px;max-width:80ch}
+
+/* measured nets and traced logic */
+.traces{display:grid;gap:10px}
+.trace{background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:4px;padding:8px 12px;min-width:0}
+.trace .tt{font-weight:600;font-size:.9rem}
+.trace pre{margin:4px 0 0;font-family:var(--mono);font-size:.76rem;white-space:pre-wrap;overflow-wrap:anywhere}
+section h3{font-size:1rem;margin-top:6px}
+ul.netlist{margin:0;padding-left:1.2em;display:grid;gap:4px;font-size:.86rem}
+details summary{cursor:pointer;font-weight:600;padding:4px 0}
+code{font-family:var(--mono);font-size:.85em}
 @media (prefers-reduced-motion:no-preference){.board .chip rect{transition:fill .15s,stroke-width .15s}}
 </style>
 
@@ -370,7 +380,12 @@ ol.steps{margin:0;padding-left:1.4em;display:grid;gap:6px;max-width:80ch}
 </section>
 
 <section>
-  <h2><span class="no">05</span>핀 단위 결선 확정 절차</h2>
+  <h2><span class="no">05</span>측정된 넷과 논리식</h2>
+  %%NETS%%
+</section>
+
+<section>
+  <h2><span class="no">06</span>핀 단위 결선 확정 절차</h2>
   <p>핀 단위 회로도를 완성하려면 테스터(도통 모드)로 넷을 확정해야 합니다. 아래 순서로 측정해 표로 주시면, 그 결과로 시트별 상세 회로도(KiCad 등)를 그릴 수 있습니다.</p>
   <ol class="steps">
     <li><b>전원 넷</b>: J1 각 핀과 U30 핀 8(+5V), 핀 21(GND), DRAM 핀 8/16의 도통을 확인합니다.</li>

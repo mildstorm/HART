@@ -4,6 +4,7 @@ import csv
 import html
 import os
 import re
+import sys
 
 # block keys -> (Korean label, css var)
 BLK = {
@@ -258,8 +259,12 @@ for r in P+C:
 tpl_path = os.path.join(base_dir, 'page.tpl.html')
 out_path = os.path.join(base_dir, '..', 'apple2-clone-schematic.html')
 
+sys.path.insert(0, os.path.join(base_dir, '..', '..', 'tools'))
+import netmodel
+nets_html = netmodel.render_html()
+
 tpl = open(tpl_path, encoding='utf-8').read()
-out = tpl.replace('%%BOARD%%', board).replace('%%LEGEND%%', legend).replace('%%ROWS%%', rows)\
+out = tpl.replace('%%BOARD%%', board).replace('%%LEGEND%%', legend).replace('%%ROWS%%', rows).replace('%%NETS%%', nets_html)\
          .replace('%%NIC%%', str(len(P))).replace('%%NCONN%%', str(len(C)))
 open(out_path,'w',encoding='utf-8').write(out)
 print(f"Generated {out_path}: {len(out)} bytes, {len(P)} ICs, {len(C)} connectors")
