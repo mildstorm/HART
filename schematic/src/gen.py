@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 # Generates the Apple II clone board schematic page (placement map + block schematic + BOM)
+import csv
 import html
 import os
+import re
 
 # block keys -> (Korean label, css var)
 BLK = {
@@ -126,24 +128,120 @@ C = [
  ('X1','수정 발진자 + 트리머 콘덴서','',15,1305,58,1375,'tim','확인','소형 금속 캔 수정 + 세라믹 트리머 + 저항 2개(U64 아래 가로 배치) + U72 74LS04 = Apple II식 수정 발진 회로. 주파수 표기 미확인, 14.31818MHz 추정'),
 ]
 
+base_dir = os.path.dirname(os.path.abspath(__file__))
+
+# --- placement: positions come from data/bom.csv (front side, slots at top, 1000x1600 grid) ---
+# The BOM boxes are hand-traced from the photo, so their sizes are rough.  Each IC is redrawn as
+# a DIP body sized by pin count, centred on its BOM box and oriented like it, then nudged apart
+# where neighbours would touch.  Connectors keep their BOM boxes.
+with open(os.path.join(base_dir, '..', '..', 'data', 'bom.csv'), encoding='utf-8') as f:
+    BOM_XY = {d['ref']: tuple(int(d[k]) for k in ('x0', 'y0', 'x1', 'y1')) for d in csv.DictReader(f)}
+
+def _xy(r):
+    ref = r[0]
+    return r[:3] + BOM_XY.get(ref, r[3:7]) + r[7:]
+P = [_xy(r) for r in P]
+C = [_xy(r) for r in C]
+
+PINS = {
+ 'Z80A CPU':40, 'UM6502':40, '2764 EPROM':28, 'HM6116LP-3':24,
+ '74LS373':20, '74LS244':20, '74LS245':20, '74LS323':20, '74LS374':20, '74LS273':20,
+ '74LS00':14, '74LS02':14, '74LS04':14, '74LS05':14, '74LS08':14, '74LS10':14,
+ '74LS32':14, '74LS74':14, '74LS393':14, 'LM339':14,
+}
+UNIT = 165            # grid units per inch (40-pin DIP ≈ 2.05" ≈ 335 units in the BOM)
+def dip_size(part):
+    n = PINS.get(part, 16)
+    length = (n/2*0.1 + 0.05) * UNIT
+    width = (0.56 if n >= 24 else 0.29) * UNIT
+    return n, length, width
+
+GAP = 8               # minimum clearance between bodies
+def place():
+    boxes = []        # [ref, x0, y0, x1, y1, movable]
+    for r in C:
+        boxes.append([r[0], *r[3:7], False])
+    for r in P:
+        x0, y0, x1, y1 = r[3:7]
+        _, L, W = dip_size(r[1])
+        w, h = (W, L) if (y1-y0) >= (x1-x0) else (L, W)
+        cx, cy = (x0+x1)/2, (y0+y1)/2
+        boxes.append([r[0], cx-w/2, cy-h/2, cx+w/2, cy+h/2, True])
+    for _ in range(400):
+        moved = False
+        for i in range(len(boxes)):
+            for j in range(i+1, len(boxes)):
+                a, b = boxes[i], boxes[j]
+                if not (a[5] or b[5]):
+                    continue
+                ox = min(a[3], b[3]) - max(a[1], b[1]) + GAP
+                oy = min(a[4], b[4]) - max(a[2], b[2]) + GAP
+                if ox <= 0 or oy <= 0:
+                    continue
+                moved = True
+                # push apart along the axis that needs the smaller move
+                if ox < oy:
+                    d = ox if (a[1]+a[3]) < (b[1]+b[3]) else -ox
+                    k = (1, 3)
+                else:
+                    d = oy if (a[2]+a[4]) < (b[2]+b[4]) else -oy
+                    k = (2, 4)
+                sa = 0.5 if (a[5] and b[5]) else (1.0 if a[5] else 0.0)
+                sb = 1.0 - sa
+                for idx in k:
+                    a[idx] -= d*sa
+                    b[idx] += d*sb
+        for bx in boxes:  # keep inside the board
+            if bx[5]:
+                dx = max(0, 4-bx[1]) - max(0, bx[3]-996)
+                dy = max(0, 4-bx[2]) - max(0, bx[4]-1596)
+                bx[1] += dx; bx[3] += dx; bx[2] += dy; bx[4] += dy
+        if not moved:
+            break
+    return {bx[0]: tuple(round(v, 1) for v in bx[1:5]) for bx in boxes}
+
+POS = place()
+
+# short labels for connectors and small parts (full names stay in the BOM table / tooltip)
+SHORT = {'J1':'전원', 'J2':'2×10', 'J3':'2×10 ㄱ', 'J4':'CASS', 'J5':'CASS', 'J6':'RGB',
+         'J7':'VIDEO', 'J8':'SPK', 'J9':'GAME I/O', 'J10':'2×8 ㄱ', 'X1':'', 'Q1':'', 'Q2':''}
+
+def label_of(mark):
+    m = re.search(r'라벨 "([^"]+)"', mark)
+    return m.group(1) if m else ''
+
 def chip_svg(r):
-    ref,part,mark,x0,y0,x1,y1,b,conf,note = r
+    ref,part,mark,_x0,_y0,_x1,_y1,b,conf,note = r
+    x0, y0, x1, y1 = POS[ref]
     w,h = x1-x0, y1-y0
     cls = BLK[b][1]
     vertical = h > w
-    cx, cy = x0+w/2, y0+h/2
+    cx, cy = round(x0+w/2, 1), round(y0+h/2, 1)
     dash = ' stroke-dasharray="6 4"' if conf=='추정' else ''
-    t = f'<g class="chip {cls}" data-ref="{ref}" tabindex="0"><title>{ref} {html.escape(part)} — {html.escape(note)}</title>'
-    t += f'<rect x="{x0}" y="{y0}" width="{w}" height="{h}" rx="3"{dash}/>'
-    short = part.replace(' EPROM','').replace(' CPU','').replace('LP-3','')
+    is_ic = ref.startswith('U')
+    t = f'<g class="chip {cls}{" ic" if is_ic else " conn"}" data-ref="{ref}" tabindex="0"><title>{ref} {html.escape(part)} — {html.escape(note)}</title>'
+    t += f'<rect x="{x0}" y="{y0}" width="{round(w,1)}" height="{round(h,1)}" rx="{3 if is_ic else 2}"{dash}/>'
+    rot = f' transform="rotate(-90 {cx} {cy})"' if vertical else ''
     if ref.startswith('SL'):
-        t += f'<text x="{cx}" y="{cy}" class="lbl" transform="rotate(-90 {cx} {cy})">{ref} · 50-pin slot</text>'
-    elif vertical and w < 70:
-        t += f'<text x="{cx}" y="{cy}" class="lbl" transform="rotate(-90 {cx} {cy})"><tspan class="ref" x="{cx}" dy="-6">{ref}</tspan><tspan x="{cx}" dy="16">{html.escape(short)}</tspan></text>'
+        lines = [(ref, 'ref'), ('50-pin slot', '')]
+    elif is_ic:
+        short = part.replace(' EPROM','').replace(' CPU','').replace('LP-3','')
+        lines = [(ref, 'ref'), (short, '')]
+        lab = label_of(mark)
+        if lab:
+            lines.append((f'"{lab}"', 'tag'))
     else:
-        fs = '' if w > 60 else ' small'
-        t += f'<text x="{cx}" y="{cy-4}" class="lbl{fs}"><tspan class="ref">{ref}</tspan></text><text x="{cx}" y="{cy+13}" class="lbl{fs}">{html.escape(short)}</text>'
-    t += '</g>'
+        s = SHORT.get(ref, '')
+        lines = [(ref, 'ref')] + ([(s, 'tag')] if s else [])
+    # lines run along the long side; stack them across the short side
+    across = w if vertical else h
+    step = min(16, (across-4)/len(lines))
+    fs = f' style="font-size:{round(step*0.8,1)}px"' if step*0.8 < 14 else ''
+    top = -step*(len(lines)-1)/2
+    t += f'<text class="lbl"{fs}{rot}>'
+    for i,(s,c) in enumerate(lines):
+        t += f'<tspan x="{cx}" y="{round(cy+top+i*step,1)}"{f" class={chr(34)}{c}{chr(34)}" if c else ""}>{html.escape(s)}</tspan>'
+    t += '</text></g>'
     return t
 
 board = ''.join(chip_svg(r) for r in C+P)
@@ -157,7 +255,6 @@ for r in P+C:
              f'<td class="mono dim">{html.escape(mark)}</td><td><span class="sw {BLK[b][1]}"></span>{BLK[b][0]}</td>'
              f'<td><span class="conf {"c-ok" if conf=="확인" else "c-est"}">{conf}</span></td><td>{html.escape(note)}</td></tr>')
 
-base_dir = os.path.dirname(os.path.abspath(__file__))
 tpl_path = os.path.join(base_dir, 'page.tpl.html')
 out_path = os.path.join(base_dir, '..', 'apple2-clone-schematic.html')
 

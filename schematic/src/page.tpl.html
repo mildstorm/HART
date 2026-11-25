@@ -74,9 +74,12 @@ section{display:grid;gap:14px;min-width:0}
 .board .chip:hover rect,.board .chip:focus rect,.board .chip.on rect{stroke-width:3.5;fill:color-mix(in srgb,var(--c) 38%,var(--paper))}
 .board .chip:focus{outline:none}
 .board .chip.dimmed{opacity:.22}
-.board .lbl{font-family:var(--mono);font-size:12px;fill:var(--fg);text-anchor:middle;dominant-baseline:middle}
-.board .lbl.small{font-size:10px}
+.board .lbl{font-family:var(--mono);font-size:14px;fill:var(--fg);text-anchor:middle;dominant-baseline:middle}
+.board .lbl.small{font-size:11px}
 .board .ref{font-weight:600;fill:var(--c)}
+.board .tag{fill:var(--muted)}
+.board .conn rect{fill:color-mix(in srgb,var(--c) 6%,var(--paper));stroke-dasharray:none}
+.board .edge{font-family:var(--mono);font-size:13px;fill:var(--muted);text-anchor:middle}
 .legend{list-style:none;margin:0;padding:0;display:grid;gap:4px}
 .legend li{display:flex;gap:8px;align-items:center;padding:4px 8px;border-radius:4px;cursor:pointer;font-size:.9rem}
 .legend li:hover,.legend li.on{background:color-mix(in srgb,var(--accent) 12%,transparent)}
@@ -288,11 +291,13 @@ ol.steps{margin:0;padding-left:1.4em;display:grid;gap:6px;max-width:80ch}
 
 <section>
   <h2><span class="no">02</span>부품 배치도</h2>
-  <p class="dim">앞면 기준, 슬롯이 위쪽입니다. 부품을 누르면 정보가 표시되고, 오른쪽 범례를 누르면 해당 블록만 강조됩니다. 점선 테두리는 표기 판독이 불확실한 부품입니다.</p>
+  <p class="dim">앞면 사진과 같은 방향(슬롯이 위쪽)입니다. 위치는 <code>data/bom.csv</code>의 사진 좌표를 따르고, 칩 크기는 핀 수(14·16·20·24·28·40핀)에 맞춘 DIP 크기입니다. 이웃 칩과 겹치는 곳은 조금씩 밀어 놓았으므로 위치는 근사입니다. 부품을 누르면 정보가 표시되고, 오른쪽 범례를 누르면 해당 블록만 강조됩니다. 점선 테두리는 표기 판독이 불확실한 부품입니다.</p>
   <div class="mapgrid">
     <div class="figure">
-      <svg class="board" viewBox="-10 -10 1010 1630" width="100%" style="min-width:560px;max-width:760px;margin:0 auto" role="img" aria-label="부품 배치도">
+      <svg class="board" viewBox="-10 -30 1020 1660" width="100%" style="min-width:640px;max-width:900px;margin:0 auto" role="img" aria-label="부품 배치도">
         <path class="pcb" d="M0 0H1000V1600H0Z"/>
+        <text x="240" y="-12" class="edge">▲ 확장 슬롯 쪽</text>
+        <text x="760" y="-12" class="edge">카세트 · RGB · VIDEO 단자</text>
         <text x="795" y="1585" class="lbl" style="fill:var(--muted)">Serial No. 506267</text>
         %%BOARD%%
       </svg>
