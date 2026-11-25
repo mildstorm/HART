@@ -24,7 +24,7 @@ NOT(NOT(NOT(?72-13(6A))))
 ### U75 SH/LD — 75-9
 
 ```
-U75 시프트 레지스터 QD{J=?75-2(J), /K=?75-3(/K), A=?75-4(A), B=75-13(QC), C=?75-6(C), D=75-13(QC), SH/LD=↺75-12(QD), CLK=NOT(NOT(NOT(?72-13(6A)))), /CLR=+5V}
+U75 SHIFT QD{J=?75-2(J), /K=?75-3(/K), A=?75-4(A), B=75-13(QC), C=?75-6(C), D=75-13(QC), SH/LD=↺75-12(QD), CLK=NOT(NOT(NOT(?72-13(6A)))), /CLR=+5V}
 ```
 
 ### U68 주소 MUX SELECT — 47-1

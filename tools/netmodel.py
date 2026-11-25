@@ -173,37 +173,37 @@ _195ctl = {'J': 2, '/K': 3, 'A': 4, 'B': 5, 'C': 6, 'D': 7, 'SH/LD': 9, 'CLK': 1
 part('74LS195', {1: ('/CLR', 'in'), 2: ('J', 'in'), 3: ('/K', 'in'), 4: ('A', 'in'), 5: ('B', 'in'), 6: ('C', 'in'), 7: ('D', 'in'),
                  8: ('GND', 'gnd'), 9: ('SH/LD', 'in'), 10: ('CLK', 'in'), 11: ('/QD', 'out'), 12: ('QD', 'out'), 13: ('QC', 'out'),
                  14: ('QB', 'out'), 15: ('QA', 'out'), 16: ('VCC', 'vcc')},
-     {p: ('FF', f'시프트 레지스터 {n}', _195ctl) for p, n in [(15, 'QA'), (14, 'QB'), (13, 'QC'), (12, 'QD'), (11, '/QD')]})
+     {p: ('FF', f'SHIFT {n}', _195ctl) for p, n in [(15, 'QA'), (14, 'QB'), (13, 'QC'), (12, 'QD'), (11, '/QD')]})
 
 _259ctl = {'S0': 1, 'S1': 2, 'S2': 3, 'D': 13, '/G': 14, '/CLR': 15}
 part('74LS259', {1: ('S0', 'in'), 2: ('S1', 'in'), 3: ('S2', 'in'), 4: ('Q0', 'out'), 5: ('Q1', 'out'), 6: ('Q2', 'out'), 7: ('Q3', 'out'),
                  8: ('GND', 'gnd'), 9: ('Q4', 'out'), 10: ('Q5', 'out'), 11: ('Q6', 'out'), 12: ('Q7', 'out'), 13: ('D', 'in'),
                  14: ('/G', 'in'), 15: ('/CLR', 'in'), 16: ('VCC', 'vcc')},
-     {p: ('FF', f'어드레서블 래치 Q{n}', _259ctl) for n, p in enumerate([4, 5, 6, 7, 9, 10, 11, 12])})
+     {p: ('FF', f'LATCH Q{n}', _259ctl) for n, p in enumerate([4, 5, 6, 7, 9, 10, 11, 12])})
 
 _163ctl = {'CLK': 2, '/CLR': 1, '/LOAD': 9, 'ENP': 7, 'ENT': 10, 'A': 3, 'B': 4, 'C': 5, 'D': 6}
 part('74LS163', {1: ('/CLR', 'in'), 2: ('CLK', 'in'), 3: ('A', 'in'), 4: ('B', 'in'), 5: ('C', 'in'), 6: ('D', 'in'), 7: ('ENP', 'in'),
                  8: ('GND', 'gnd'), 9: ('/LOAD', 'in'), 10: ('ENT', 'in'), 11: ('QD', 'out'), 12: ('QC', 'out'), 13: ('QB', 'out'),
                  14: ('QA', 'out'), 15: ('RCO', 'out'), 16: ('VCC', 'vcc')},
-     {p: ('FF', f'카운터 {n}', _163ctl) for p, n in [(14, 'QA'), (13, 'QB'), (12, 'QC'), (11, 'QD'), (15, 'RCO')]})
+     {p: ('FF', f'COUNTER {n}', _163ctl) for p, n in [(14, 'QA'), (13, 'QB'), (12, 'QC'), (11, 'QD'), (15, 'RCO')]})
 
 _166ctl = {'SH/LD': 15, 'CLK': 7, 'CLK INH': 6, '/CLR': 9, 'SER': 1}
 part('74LS166', {1: ('SER', 'in'), 2: ('A', 'in'), 3: ('B', 'in'), 4: ('C', 'in'), 5: ('D', 'in'), 6: ('CLK INH', 'in'), 7: ('CLK', 'in'),
                  8: ('GND', 'gnd'), 9: ('/CLR', 'in'), 10: ('E', 'in'), 11: ('F', 'in'), 12: ('G', 'in'), 13: ('QH', 'out'), 14: ('H', 'in'),
                  15: ('SH/LD', 'in'), 16: ('VCC', 'vcc')},
-     {13: ('FF', '시프트 레지스터 QH', _166ctl)})
+     {13: ('FF', 'SHIFT QH', _166ctl)})
 
 _323ctl = {'S0': 1, 'S1': 19, 'CP': 12, '/CLR': 9, 'DS0': 11, 'DS7': 18, '/OE1': 2, '/OE2': 3}
 _p = {1: ('S0', 'in'), 2: ('/OE1', 'in'), 3: ('/OE2', 'in'), 8: ('Q0', 'out'), 9: ('/CLR', 'in'), 10: ('GND', 'gnd'), 11: ('DS0', 'in'),
       12: ('CP', 'in'), 17: ('Q7', 'out'), 18: ('DS7', 'in'), 19: ('S1', 'in'), 20: ('VCC', 'vcc')}
 for io, p in [(6, 4), (4, 5), (2, 6), (0, 7), (1, 13), (3, 14), (5, 15), (7, 16)]:
     _p[p] = (f'I/O{io}', 'bi')
-part('74LS323', _p, {8: ('FF', '시프트 레지스터 Q0', _323ctl), 17: ('FF', '시프트 레지스터 Q7', _323ctl)})
+part('74LS323', _p, {8: ('FF', 'SHIFT Q0', _323ctl), 17: ('FF', 'SHIFT Q7', _323ctl)})
 
 part('74LS393', {1: ('1A', 'in'), 2: ('1CLR', 'in'), 3: ('1QA', 'out'), 4: ('1QB', 'out'), 5: ('1QC', 'out'), 6: ('1QD', 'out'), 7: ('GND', 'gnd'),
                  8: ('2QD', 'out'), 9: ('2QC', 'out'), 10: ('2QB', 'out'), 11: ('2QA', 'out'), 12: ('2CLR', 'in'), 13: ('2A', 'in'), 14: ('VCC', 'vcc')},
-     dict([(p, ('FF', f'카운터 1 {n}', {'CLK': 1, 'CLR': 2})) for p, n in [(3, 'QA'), (4, 'QB'), (5, 'QC'), (6, 'QD')]] +
-          [(p, ('FF', f'카운터 2 {n}', {'CLK': 13, 'CLR': 12})) for p, n in [(11, 'QA'), (10, 'QB'), (9, 'QC'), (8, 'QD')]]))
+     dict([(p, ('FF', f'COUNTER1 {n}', {'CLK': 1, 'CLR': 2})) for p, n in [(3, 'QA'), (4, 'QB'), (5, 'QC'), (6, 'QD')]] +
+          [(p, ('FF', f'COUNTER2 {n}', {'CLK': 13, 'CLR': 12})) for p, n in [(11, 'QA'), (10, 'QB'), (9, 'QC'), (8, 'QD')]]))
 
 _251 = {4: 'D0', 3: 'D1', 2: 'D2', 1: 'D3', 15: 'D4', 14: 'D5', 13: 'D6', 12: 'D7'}
 _p = {p: (n, 'in') for p, n in _251.items()}
@@ -553,70 +553,147 @@ def render_md(m):
             L.append(f"- {r['from_ref']}-{r['from_pin']} ↔ {r['to_ref']}-{r['to_pin']}: {r['result']} — {r['note']}")
     return '\n'.join(L) + '\n'
 
-def graph(m):
-    """Chips with their measured pins as ports, nets as driver→load wires.
+GATE_SHAPES = ('AND', 'NAND', 'OR', 'NOR', 'NOT', 'BUF', 'CMP')
 
-    Pins tied to +5V/GND get a port label instead of a wire.  A net with no
-    known driver gets a small '?' junction so it still shows as one wire."""
-    import json
-    nodes, edges = {}, []
-    def port(n, power=None):
-        ref, pin = n
-        nid = 'SLOT' if ref == 'SL' else ref
-        if nid not in nodes:
-            part = 'Apple 슬롯 (공통)' if ref == 'SL' else m.bom.get(ref, '')
-            nodes[nid] = {'id': nid, 'label': ('슬롯' if ref == 'SL' else ref), 'part': part, 'ports': {}}
-        name, kind = m.pin_info(n)
-        side = 'WEST' if kind in ('in', '?') else 'EAST'
-        pid = f'{nid}.{pin}'
-        lab = f'{pin} {name}' + (f' ={power}' if power else '')
-        nodes[nid]['ports'][pid] = {'id': pid, 'label': lab, 'side': side, 'kind': kind,
-                                   'pin': int(pin) if pin.isdigit() else 999}
-        return pid
+def unit_defs(part):
+    """Split one part into drawable units: single gates, flip-flop groups,
+    mux sections, decoders, PROMs.  Parts without a function table become one
+    box.  Returns {key: {'type', 'title', 'ins': [...], 'outs': [...]}}."""
+    lib = LIB.get(part)
+    units = {}
+    if not lib or not lib['funcs']:
+        return None
+    for p, f in sorted(lib['funcs'].items()):
+        t = f[0]
+        if t in ('NAND', 'AND', 'OR', 'NOR'):
+            units[('G', p)] = {'type': t, 'title': '', 'ins': list(f[1]), 'outs': [p]}
+        elif t == 'NOT':
+            units[('G', p)] = {'type': 'NOT', 'title': '', 'ins': list(f[1]), 'outs': [p]}
+        elif t == 'BUF':
+            units[('G', p)] = {'type': 'BUF', 'title': '', 'ins': [f[1]], 'outs': [p]}
+        elif t == 'CMP':
+            units[('G', p)] = {'type': 'CMP', 'title': '', 'ins': [f[1], f[2]], 'outs': [p]}
+        elif t == 'MUX2':
+            units[('M', p)] = {'type': 'BOX', 'title': 'MUX', 'ins': [f[1], f[2], f[3]], 'outs': [p]}
+        elif t == 'MUX4':
+            units[('M', p)] = {'type': 'BOX', 'title': 'MUX4', 'ins': list(f[1]) + list(f[2]) + [f[3]], 'outs': [p]}
+        elif t == 'MUX8':
+            k = ('M8',)
+            u = units.setdefault(k, {'type': 'BOX', 'title': 'MUX8', 'ins': list(f[1]) + list(f[2]) + [f[3]], 'outs': []})
+            u['outs'].append(p)
+        elif t == 'DEC':
+            k = ('D', tuple(f[2]), tuple(f[3].values()))
+            u = units.setdefault(k, {'type': 'BOX', 'title': 'DECODER', 'ins': list(f[2]) + list(f[3].values()), 'outs': []})
+            u['outs'].append(p)
+        elif t == 'PROM':
+            u = units.setdefault(('P',), {'type': 'BOX', 'title': 'PROM', 'ins': list(f[2]), 'outs': []})
+            u['outs'].append(p)
+        elif t == 'FF':
+            k = ('F', tuple(sorted(f[2].items())))
+            title = re.sub(r'\s*/?Q\w*$|\s*bit\d+$|\s*[A-D]$', '', f[1].split(' Q')[0]).strip()
+            u = units.setdefault(k, {'type': 'BOX', 'title': title, 'ins': list(f[2].values()), 'outs': []})
+            u['outs'].append(p)
+    return units
+
+def logic_units(m):
+    """Units to draw, the pin→port map, and wires (driver pin → load pin)."""
+    drawn = set()
     for lab, st, mem, drv in net_rows(m):
-        board = [n for n in mem if n[0] in m.bom or n[0] == 'SL']
-        if len(board) < 2 and not (len(board) == 1 and st == 'nodrv'):
-            continue
-        src = [d for d in drv if d in board] or [n for n in board if m.pin_info(n)[1] == 'bi'][:1]
-        if src:
-            s = port(src[0])
-            for n in board:
-                if n != src[0]:
-                    edges.append({'id': f'e{len(edges)}', 'sources': [s], 'targets': [port(n)], 'net': lab, 'nodrv': False})
+        for n in mem:
+            if n[0] in m.bom or n[0] == 'SL':
+                drawn.add(n)
+    for n in m.measured:
+        if (n[0] in m.bom or n[0] == 'SL') and m.power(m.net_of(n)[1]):
+            drawn.add(n)
+    units, pin_unit = {}, {}
+    cache = {}
+    for n in sorted(drawn, key=sort_key):
+        ref, pin = n
+        if m.pin_info(n)[1] in ('vcc', 'gnd'):
+            continue                      # supply pins are implied
+        part = m.bom.get(ref, '')
+        defs = cache.setdefault(part, unit_defs(part))
+        key = None
+        if defs and pin.isdigit():
+            for k, u in defs.items():
+                if int(pin) in u['ins'] or int(pin) in u['outs']:
+                    key = k
+                    break
+        if key is None and defs and m.power(m.net_of(n)[1]):
+            continue                      # e.g. 74LS157 /G tied to GND: listed in the net table only
+        if key is None:
+            uid = f'{ref}'
+            u = units.setdefault(uid, {'id': uid, 'ref': ref, 'part': ('Apple 슬롯' if ref == 'SL' else part), 'type': 'BOX',
+                                       'title': '', 'ins': [], 'outs': [], 'whole': True})
+            name, kind = m.pin_info(n)
+            (u['ins'] if kind in ('in', '?') else u['outs']).append(pin)
         else:
-            jid = f'J{len(edges)}'
-            nodes[jid] = {'id': jid, 'label': '?', 'part': '구동원 미확인', 'ports': {}, 'junction': True}
-            for n in board:
-                edges.append({'id': f'e{len(edges)}', 'sources': [jid], 'targets': [port(n)], 'net': lab, 'nodrv': True})
-    # measured pins that sit on a power rail
-    for n in sorted(m.measured, key=sort_key):
-        if n[0] in m.bom or n[0] == 'SL':
-            r, mem = m.net_of(n)
-            pw = m.power(mem)
-            if pw and n[0] in nodes:
-                port(n, pw)
-    out = []
-    for nd in nodes.values():
-        ps = sorted(nd['ports'].values(), key=lambda p: p['pin'])
-        out.append({**nd, 'ports': ps})
-    return json.dumps({'nodes': out, 'edges': edges}, ensure_ascii=False)
+            uid = f'{ref}:{"/".join(map(str, key[:2] if key[0] != "F" else key[:1]))}:{min(defs[key]["outs"])}'
+            if uid not in units:
+                d = defs[key]
+                units[uid] = {'id': uid, 'ref': ref, 'part': part, 'type': d['type'], 'title': d['title'],
+                              'ins': [str(p) for p in d['ins']],
+                              'outs': [str(p) for p in d['outs']] if d['type'] in GATE_SHAPES or d['title'] == 'MUX' else [],
+                              'whole': False}
+            u = units[uid]
+            if pin not in u['ins'] and pin not in u['outs']:
+                u['outs'].append(pin)
+        pin_unit[n] = uid
+    for u in units.values():
+        u['ins'] = sorted(dict.fromkeys(u['ins']), key=lambda s: (not s.isdigit(), int(s) if s.isdigit() else 0, s)) if u['whole'] else list(dict.fromkeys(u['ins']))
+        u['outs'] = sorted(dict.fromkeys(u['outs']), key=lambda s: (not s.isdigit(), int(s) if s.isdigit() else 0, s))
+        for p in u['ins'] + u['outs']:
+            pin_unit.setdefault((u['ref'], p), u['id'])
+    wires = []
+    for lab, st, mem, drv in net_rows(m):
+        board = [n for n in mem if n in pin_unit]
+        if len(board) < 2 and not (board and st == 'nodrv'):
+            continue
+        src = [d for d in drv if d in pin_unit] or [n for n in board if m.pin_info(n)[1] == 'bi'][:1]
+        wires.append({'net': lab, 'src': src[0] if src else None,
+                      'dst': [n for n in board if not src or n != src[0]], 'nodrv': not src})
+    return units, pin_unit, wires
+
+def _shape(t, x, y, w, h):
+    """SVG for a gate body occupying (x, y, w, h); output at x+w, y+h/2."""
+    bub = t in ('NAND', 'NOR', 'NOT')
+    bw = w - (7 if bub else 0)
+    cy = y + h / 2
+    if t in ('AND', 'NAND'):
+        r = h / 2
+        d = f'M{x},{y}H{x + bw - r}A{r},{r} 0 0 1 {x + bw - r},{y + h}H{x}Z'
+    elif t in ('OR', 'NOR'):
+        d = (f'M{x},{y}Q{x + bw * .35},{cy} {x},{y + h}Q{x + bw * .75},{y + h} {x + bw},{cy}'
+             f'Q{x + bw * .75},{y} {x},{y}Z')
+    else:  # NOT, BUF, CMP: triangle
+        d = f'M{x},{y}L{x + bw},{cy}L{x},{y + h}Z'
+    s = f'<path class="sym" d="{d}"/>'
+    if bub:
+        s += f'<circle class="sym" cx="{x + bw + 3.5}" cy="{cy}" r="3.5"/>'
+    if t == 'CMP':
+        s += f'<text class="pl" x="{x + 3}" y="{y + h * .32 + 3}">+</text><text class="pl" x="{x + 3}" y="{y + h * .72 + 3}">−</text>'
+    return s
 
 def logic_svg(m):
-    """Lay the chip/wire graph out in columns (no external library) and return SVG.
+    """Gate-level logic diagram of the measured part of the board.
 
-    Columns come from signal flow (longest path after cutting loops), rows are
-    ordered by the barycentre of connected chips.  Wires are drawn first and
-    chips on top, so a wire that passes a column runs under the chips there."""
-    import json
-    g = json.loads(graph(m))
-    nodes = {n['id']: n for n in g['nodes']}
+    Every chip is split into its gates / flip-flops / mux sections; each is
+    drawn with its logic symbol (boxes for registers, decoders, PROMs, CPUs).
+    Columns follow signal flow (longest path after cutting loops), rows are
+    ordered by barycentre.  Wires are drawn first, symbols on top."""
+    esc = html.escape
+    units, pin_unit, wires = logic_units(m)
     succ = defaultdict(set)
-    for e in g['edges']:
-        s, t = e['sources'][0].split('.')[0], e['targets'][0].split('.')[0]
-        if s != t:
-            succ[s].add(t)
-    # cut loops with a DFS, then longest-path layering
+    for w in wires:
+        if w['src']:
+            s = pin_unit[w['src']]
+            for d in w['dst']:
+                t = pin_unit[d]
+                if s != t:
+                    succ[s].add(t)
+    # loop cut + longest-path layering
     order, state, back = [], {}, set()
+    sys.setrecursionlimit(10000)
     def dfs(u):
         state[u] = 1
         for v in sorted(succ[u]):
@@ -626,114 +703,148 @@ def logic_svg(m):
                 dfs(v)
         state[u] = 2
         order.append(u)
-    sys.setrecursionlimit(10000)
-    for u in sorted(nodes, key=lambda x: (-len(succ[x]), x)):
+    for u in sorted(units, key=lambda x: (-len(succ[x]), x)):
         if u not in state:
             dfs(u)
-    layer = {u: 0 for u in nodes}
+    layer = {u: 0 for u in units}
     for u in reversed(order):
         for v in succ[u]:
             if (u, v) not in back:
                 layer[v] = max(layer[v], layer[u] + 1)
-    for u, n in nodes.items():          # '?' junctions sit just before their first load
-        if n.get('junction') and succ[u]:
-            layer[u] = max(0, min(layer[v] for v in succ[u]) - 1)
-    L = max(layer.values()) + 1
-    cols = [[u for u in nodes if layer[u] == i] for i in range(L)]
+    L = max(layer.values()) + 1 if layer else 1
+    cols = [sorted(u for u in units if layer[u] == i) for i in range(L)]
     nb = defaultdict(set)
     for u in succ:
         for v in succ[u]:
             nb[u].add(v); nb[v].add(u)
-    for c in cols:
-        c.sort()
-    for it in range(8):                 # barycentre ordering sweeps
-        rng = range(1, L) if it % 2 == 0 else range(L - 2, -1, -1)
+    for it in range(10):
         pos = {u: i for c in cols for i, u in enumerate(c)}
+        rng = range(1, L) if it % 2 == 0 else range(L - 2, -1, -1)
         for i in rng:
-            ref = i - 1 if it % 2 == 0 else i + 1
+            refl = i - 1 if it % 2 == 0 else i + 1
             def bc(u):
-                ns = [pos[v] for v in nb[u] if layer[v] == ref]
+                ns = [pos[v] for v in nb[u] if layer[v] == refl]
                 return sum(ns) / len(ns) if ns else pos[u]
             cols[i].sort(key=bc)
-    # geometry
-    W, PH, HEAD, VGAP = 196, 14, 32, 26
-    def ports(n, side):
-        return [p for p in n['ports'] if p['side'] == side]
-    height = {u: (18 if n.get('junction') else HEAD + max(len(ports(n, 'WEST')), len(ports(n, 'EAST')), 1) * PH + 6)
-              for u, n in nodes.items()}
-    width = {u: (18 if n.get('junction') else W) for u, n in nodes.items()}
-    nets = defaultdict(list)
-    for e in g['edges']:
-        nets[e['net']].append(e)
-    src_layer_nets = defaultdict(list)
-    for net, es in nets.items():
-        src_layer_nets[layer[es[0]['sources'][0].split('.')[0]]].append(net)
-    chan = [24 + 8 * len(src_layer_nets[i]) for i in range(L)]
-    xcol, x = [], 20
+    # unit geometry
+    PH, VGAP = 14, 30
+    geo = {}
+    for uid, u in units.items():
+        if u['type'] in GATE_SHAPES:
+            n = max(len(u['ins']), 1)
+            h = max(28, n * 13 + 4)
+            geo[uid] = {'w': 44, 'h': h, 'top': 14, 'bottom': 14}
+        else:
+            rows = max(len(u['ins']), len(u['outs']), 1)
+            geo[uid] = {'w': 150 if u['whole'] else 118, 'h': rows * PH + 30, 'top': 0, 'bottom': 0}
+    colw = [max(geo[u]['w'] for u in c) if c else 60 for c in cols]
+    # wire channels to the right of each column
+    chan_nets = defaultdict(list)
+    for w in wires:
+        c = layer[pin_unit[w['src']]] if w['src'] else max(0, min(layer[pin_unit[d]] for d in w['dst']) - 1)
+        w['col'] = c
+        chan_nets[c].append(w)
+    xcol, x = [], 40
     for i in range(L):
         xcol.append(x)
-        x += W + chan[i] + 40
-    totw = x
+        x += colw[i] + 70 + 7 * len(chan_nets[i]) + 40
+    totw = x + 40
     ypos, toth = {}, 0
     for i, c in enumerate(cols):
-        y = 20
+        y = 30
         for u in c:
+            y += geo[u]['top']
             ypos[u] = y
-            y += height[u] + VGAP
+            y += geo[u]['h'] + geo[u]['bottom'] + VGAP
         toth = max(toth, y)
-    xpos = {u: xcol[layer[u]] + (W - width[u]) / 2 if nodes[u].get('junction') else xcol[layer[u]] for u in nodes}
+    toth += 30
+    # pin coordinates
     pxy = {}
-    for u, n in nodes.items():
-        if n.get('junction'):
-            pxy[u] = (xpos[u] + 18, ypos[u] + 9)
-            continue
-        for side in ('WEST', 'EAST'):
-            for i, p in enumerate(ports(n, side)):
-                px = xpos[u] if side == 'WEST' else xpos[u] + W
-                pxy[p['id']] = (px, ypos[u] + HEAD + i * PH + 7)
-    # wires: one path per net
-    esc = html.escape
-    track = {}
-    for i in range(L):
-        for k, net in enumerate(src_layer_nets[i]):
-            track[net] = xcol[i] + W + 14 + 8 * k
-    wires = []
-    for net, es in nets.items():
-        s = es[0]['sources'][0]
-        sx, sy = pxy[s]
-        cx = track[net]
-        ys = [sy]
-        d = f'M{sx:.0f},{sy:.0f}H{cx:.0f}'
-        for e in es:
-            tx, ty = pxy[e['targets'][0]]
-            ys.append(ty)
-            d += f'M{cx:.0f},{ty:.0f}H{tx - 10:.0f}V{ty:.0f}H{tx:.0f}' if tx > cx else f'M{cx:.0f},{ty:.0f}H{tx - 10:.0f}H{tx:.0f}'
-        d += f'M{cx:.0f},{min(ys):.0f}V{max(ys):.0f}'
-        cls = 'wire nodrv' if es[0]['nodrv'] else 'wire'
-        wires.append(f'<path class="{cls}" data-net="{esc(net)}" d="{d}"><title>{esc(net)}</title></path>')
-        if len(ys) > 2:
-            wires.append(f'<circle class="dot" cx="{cx:.0f}" cy="{sy:.0f}" r="2.5"/>')
-    boxes = []
-    for u, n in nodes.items():
-        x0, y0 = xpos[u], ypos[u]
-        if n.get('junction'):
-            boxes.append(f'<g class="node junction"><title>구동원 미확인</title><circle cx="{x0 + 9:.0f}" cy="{y0 + 9:.0f}" r="8"/>'
-                         f'<text class="jq" x="{x0 + 9:.0f}" y="{y0 + 13:.0f}" text-anchor="middle">?</text></g>')
-            continue
-        t = [f'<g class="node" data-ref="{esc(u)}"><rect x="{x0:.0f}" y="{y0:.0f}" width="{W}" height="{height[u]}" rx="4"/>',
-             f'<text class="nh" x="{x0 + W / 2:.0f}" y="{y0 + 14:.0f}" text-anchor="middle">{esc(n["label"])}</text>',
-             f'<text class="ns" x="{x0 + W / 2:.0f}" y="{y0 + 26:.0f}" text-anchor="middle">{esc(n["part"])}</text>']
-        for p in n['ports']:
-            px, py = pxy[p['id']]
-            west = p['side'] == 'WEST'
-            t.append(f'<rect class="port k-{p["kind"]}" x="{px - 3:.0f}" y="{py - 3:.0f}" width="6" height="6"/>')
-            cls = 'pl pw' if '=' in p['label'] else 'pl'
-            t.append(f'<text class="{cls}" x="{px + 7 if west else px - 7:.0f}" y="{py + 3:.0f}" text-anchor="{"start" if west else "end"}">{esc(p["label"])}</text>')
-        t.append('</g>')
-        boxes.append(''.join(t))
+    parts_svg = []
+    for uid, u in units.items():
+        g = geo[uid]
+        x0 = xcol[layer[uid]] + (colw[layer[uid]] - g['w']) / 2 + 30
+        y0 = ypos[uid]
+        w, h = g['w'], g['h']
+        ref = u['ref']
+        s = [f'<g class="unit" data-ref="{esc(ref)}"><title>{esc(ref)} {esc(u["part"])}</title>']
+        if u['type'] in GATE_SHAPES:
+            s.append(_shape(u['type'], x0, y0, w, h))
+            n = len(u['ins'])
+            for i, p in enumerate(u['ins']):
+                py = y0 + h * (i + 1) / (n + 1)
+                pxy[(ref, p)] = (x0 - 12, py)
+                s.append(f'<path class="stub" d="M{x0 - 12},{py}H{x0 + (4 if u["type"] in ("OR", "NOR") else 0)}"/>')
+                s.append(f'<text class="pn" x="{x0 - 12}" y="{py - 2}">{esc(p)}</text>')
+            for p in u['outs']:
+                pxy[(ref, p)] = (x0 + w + 12, y0 + h / 2)
+                s.append(f'<path class="stub" d="M{x0 + w},{y0 + h / 2}H{x0 + w + 12}"/>')
+                s.append(f'<text class="pn" x="{x0 + w + 12}" y="{y0 + h / 2 - 2}" text-anchor="end">{esc(p)}</text>')
+            s.append(f'<text class="cap" x="{x0 + w / 2 - 4}" y="{y0 + h + 11}" text-anchor="middle">{esc(ref)}</text>')
+        else:
+            s.append(f'<rect class="sym" x="{x0}" y="{y0}" width="{w}" height="{h}" rx="2"/>')
+            head = f'{ref} {u["title"]}'.strip() if not u['whole'] else ref
+            s.append(f'<text class="cap b" x="{x0 + w / 2}" y="{y0 + 12}" text-anchor="middle">{esc(head)}</text>')
+            s.append(f'<text class="cap" x="{x0 + w / 2}" y="{y0 + 23}" text-anchor="middle">{esc(u["part"])}</text>')
+            for side, lst in (('W', u['ins']), ('E', u['outs'])):
+                for i, p in enumerate(lst):
+                    py = y0 + 30 + i * PH + 5
+                    name, kind = m.pin_info((ref, p))
+                    if side == 'W':
+                        pxy[(ref, p)] = (x0 - 12, py)
+                        s.append(f'<path class="stub" d="M{x0 - 12},{py}H{x0}"/>')
+                        clk = name.startswith('CLK') or name in ('CP', 'LE')
+                        if clk:
+                            s.append(f'<path class="sym" d="M{x0},{py - 4}L{x0 + 6},{py}L{x0},{py + 4}"/>')
+                        s.append(f'<text class="pl" x="{x0 + (9 if clk else 4)}" y="{py + 3}">{esc(name)}</text>')
+                        s.append(f'<text class="pn" x="{x0 - 12}" y="{py - 2}">{esc(p)}</text>')
+                    else:
+                        pxy[(ref, p)] = (x0 + w + 12, py)
+                        s.append(f'<path class="stub" d="M{x0 + w},{py}H{x0 + w + 12}"/>')
+                        s.append(f'<text class="pl" x="{x0 + w - 4}" y="{py + 3}" text-anchor="end">{esc(name)}</text>')
+                        s.append(f'<text class="pn" x="{x0 + w + 12}" y="{py - 2}" text-anchor="end">{esc(p)}</text>')
+        # unmeasured inputs and power-tied pins
+        for p in u['ins'] + u['outs']:
+            n = (ref, p)
+            if n not in pxy:
+                continue
+            px, py = pxy[n]
+            r, mem = m.net_of(n)
+            pw = m.power(mem)
+            west = p in u['ins']
+            if pw:
+                s.append(f'<text class="pw" x="{px - 2 if west else px + 2}" y="{py + 3}" text-anchor="{"end" if west else "start"}">{pw}</text>')
+            elif len(mem) <= 1 and n not in m.measured:
+                s.append(f'<text class="unk" x="{px - 2 if west else px + 2}" y="{py + 3}" text-anchor="{"end" if west else "start"}">?</text>')
+        s.append('</g>')
+        parts_svg.append(''.join(s))
+    # wires
+    wsvg = []
+    for c in range(L):
+        for k, w in enumerate(chan_nets[c]):
+            cx = xcol[c] + colw[c] + 30 + 30 + 7 * k
+            pts = [pxy[d] for d in w['dst'] if d in pxy]
+            if w['src']:
+                sx, sy = pxy[w['src']]
+                d = f'M{sx:.0f},{sy:.0f}H{cx:.0f}'
+                ys = [sy]
+            else:
+                sy = sum(p[1] for p in pts) / len(pts)
+                d = ''
+                ys = []
+                wsvg.append(f'<g class="junc"><circle cx="{cx:.0f}" cy="{sy:.0f}" r="6"/><text x="{cx:.0f}" y="{sy + 3:.0f}" text-anchor="middle">?</text></g>')
+                ys.append(sy)
+            for tx, ty in pts:
+                ys.append(ty)
+                d += f'M{cx:.0f},{ty:.0f}H{tx:.0f}'
+            d += f'M{cx:.0f},{min(ys):.0f}V{max(ys):.0f}'
+            cls = 'wire nodrv' if w['nodrv'] else 'wire'
+            wsvg.insert(0, f'<path class="{cls}" data-net="{esc(w["net"])}" d="{d}"><title>{esc(w["net"])}</title></path>')
+            if len(ys) > 2:
+                wsvg.append(f'<circle class="dot" cx="{cx:.0f}" cy="{ys[0]:.0f}" r="2.5"/>')
     return (f'<svg id="logic" class="logic" viewBox="0 0 {totw:.0f} {toth:.0f}" data-w="{totw:.0f}" data-h="{toth:.0f}" role="img" '
-            f'aria-label="측정으로 확인한 핀 연결을 칩 단위로 그린 논리 회로도">'
-            f'<g class="wires">{"".join(wires)}</g><g class="nodes">{"".join(boxes)}</g></svg>')
+            f'aria-label="측정으로 확인한 연결을 게이트·플립플롭 단위로 그린 논리 회로도">'
+            f'<g class="wires">{"".join(wsvg)}</g><g class="units">{"".join(parts_svg)}</g></svg>')
 
 LOGIC_VIEW = r'''
 <div class="logic-wrap">
