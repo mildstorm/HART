@@ -70,6 +70,10 @@ d.text((14, 10), '슬롯 A12 단락(U33 핀 9 ↔ GND 0.7Ω) 찾기 — 뽑을 �
 d.text((14, 50), '앞면, 슬롯이 위쪽. 전원 끄고 작업. 매번 U33 소켓 9번 ↔ U30 핀 1(GND) 저항을 잰다.', font=font(17), fill=BLK)
 d.text((14, 76), '빨강 = A12 선 후보(먼저), 주황 = 가능성 낮은 후보, 파랑 S1-14 = 슬롯1 핀 14 위치(뒷면 정합으로 옮김, 추정)', font=font(17), fill=BLK)
 
+MAG = (200, 0, 200)
+for ref, tag in (('J1', '전원'), ('J2', 'FDD'), ('J3', 'FDD'), ('J9', '빈 소켓(게임 I/O)'), ('J10', '키보드')):
+    box(ref, MAG, tag, width=4)
+
 box('U33', RED, '0 (이미 뺌)')
 box('U5', RED, '1')
 box('U4', RED, '2')
@@ -115,6 +119,10 @@ for t, b, c in [
     ('나머지 소켓 칩은 이 다음에', False, GRY),
     ('아무 순서로 꽂으며 확인', False, GRY),
     ('82S129·82S123 자리 혼동 주의', False, RED),
+    ('', False, BLK),
+    ('자주색 = 커넥터 (참고용)', False, MAG),
+    ('키보드(J10)·FDD(J2·J3) 케이블도', False, BLK),
+    ('뽑은 상태에서 측정', False, BLK),
 ]:
     d.text((x, y), t, font=font(17, b), fill=c)
     y += 27
