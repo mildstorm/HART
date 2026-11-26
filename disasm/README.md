@@ -8,11 +8,13 @@
 | :--- | :--- | :--- | :--- | :--- |
 | [`U45_CD8.asm`](U45_CD8.asm) | 6502 어셈블리 | 8KB | `$C000–$DFFF` | 메인 CPU 시스템 ROM. $C300·$C800 Videx 80컬럼, $C600 내장 Disk II 부트, $D000 Applesoft BASIC 전반부 |
 | [`U46_EF5.asm`](U46_EF5.asm) | 6502 어셈블리 | 8KB | `$E000–$FFFF` | 메인 CPU 시스템 ROM. $E000 BASIC 후반부, $F800 Autostart Monitor, $FAA6 슬롯 6 즉시 부팅 |
-| [`U65_VD5.asm`](U65_VD5.asm) | 6502 어셈블리 | 8KB | U64 로컬 버스 | 보조 6502 실행 펌웨어. 화면 초기화, 비디오 제어, 화면 하단 기능키(F1–F12) 라벨 테이블(Apple/CPM) |
+| [`U65_VD5.asm`](U65_VD5.asm) | 6502 어셈블리 | 8KB | U64 로컬 버스 `$C000–$DFFF` | 보조 6502 실행 펌웨어. 화면 초기화, 비디오 제어, 키보드 스캔, 화면 하단 기능키(F1–F12) 라벨 테이블(Apple/CPM). 주석은 U64 주소 맵 기준 |
 | [`U70_CHRP4_font.txt`](U70_CHRP4_font.txt) | 폰트 분석 덤프 | 8KB | 비디오 시프터 | 문자 발생기 ROM. 4개 뱅크(영문 Normal/Inverse, 세미그래픽, 한글 자모 조합형) 아스키 아트 덤프 |
 | [`U17_U18_p6_sequencer.txt`](U17_U18_p6_sequencer.txt) | 상태머신 분석 | 256B | 내장 FDC | U17(상위 4비트 제어명령) + U18(하위 4비트 다음상태) = Disk II 16-섹터 시퀀서(P6, 341-0028) 전이표 |
 | [`U5_82S123_z80_map.txt`](U5_82S123_z80_map.txt) | 주소변환 분석 | 32B | Z80 버스 변환 | Microsoft SoftCard 호환 Z80 -> 6502 하드웨어 실시간 주소 변환표 및 설명 |
 | [`U50_U51_U36_U38_address_decode.txt`](U50_U51_U36_U38_address_decode.txt) | 진리표 분석 | 각 256B | 주소 디코더 | U50, U51, U36, U38 82S129 주소 디코드 PROM 4개의 전체 256 주소 진리표 |
+
+세 `.asm` 파일은 [`tools/disasm6502.py`](../tools/disasm6502.py)로 다시 만들 수 있습니다(`python tools/disasm6502.py`). 각 롬을 자기 코드가 가리키는 주소(JSR/JMP 대상, 벡터)에 놓고, 오퍼랜드 주석은 그 롬을 실행하는 CPU의 주소 맵으로 붙입니다. 2026-11-26에 다시 만들면서 고친 것: U65를 옛 추정 `$E000`이 아니라 `$C000` 기준으로 풀고 Apple 모니터 라벨 대신 U64 주소 맵(U68 칸, 키보드 행, 래치)을 붙임, U45 `$C000–$C0FF`(I/O 영역이라 보이지 않는 칩 내용)에 잘못 붙어 있던 I/O 라벨 제거, 벡터를 `.WORD`로 표시.
 
 ## 디스어셈블리 주요 발견 사항
 
