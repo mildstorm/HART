@@ -50,7 +50,7 @@ flowchart TD
 | **$C100–$C7FF** | 1.75KB | 내장 슬롯 ROM | **U45 (2764)** | 각 슬롯별 256B 펌웨어 ($C300 80컬럼, $C600 FDD) |
 | **$C800–$CFFF** | 2KB | 슬롯 확장 공용 ROM | **U45 (2764)** | Videx 호환 80컬럼 확장 드라이버 펌웨어 |
 | **$D000–$DFFF** | 4KB | Applesoft BASIC (전반부) | **U45 (2764)** | 기본 BASIC 롬 (또는 뱅크스위칭 16KB RAM) |
-| **$E000–$F7FF** | 6KB | Applesoft BASIC (후반부) | **U46 (2764)** | 기본 BASIC 롬 인터프리터 루틴. 단 `$E000–$E7FF`는 80컬럼 펌웨어가 **U68(공유 화면 RAM)**으로 씀 — 롬 대신 U68이 보이는 조건은 측정 중 ([13](13-u64-interface.md) 3.2절) |
+| **$E000–$F7FF** | 6KB | Applesoft BASIC (후반부) | **U46 (2764)** | 기본 BASIC 롬 인터프리터 루틴. 단 `$E000–$E7FF`는 80컬럼 펌웨어가 **U68(공유 화면 RAM)**으로 씀 — U51 O4 = 1(80컬럼 래치)일 때 `$E000–$EFFF` 창이 롬 대신 U68로 감 (U36 보정 덤프, [13](13-u64-interface.md) 3.2.1절). 롬 쪽은 U36이 U45·U46 /CE와 A12를 직접 골라 줌 |
 | **$F800–$FFFF** | 2KB | Apple II+ Autostart Monitor | **U46 (2764)** | 모니터 ROM (F800-FFFF), 리셋 핸들러($FA62) |
 
 ---

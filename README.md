@@ -28,7 +28,7 @@ S/N 506267 Apple II 호환 메인보드의 사진, 부품 분석, 회로도를 �
 | 뒷면 확대 사진 | 14장, 13장은 뒷면 기준 사진에 정합 완료 |
 | 앞면·뒷면 정합 | 완료 (2026-11-07). 비아 205개 기준 평균 오차 약 2px → [`analysis/back_on_front.jpg`](analysis/back_on_front.jpg) |
 | 핀 단위 결선 (넷리스트) | 진행 중. `data/netlist.csv` (U64 버스·클럭 분리, Φ0 배선, 슬롯 방향) |
-| ROM / PROM 덤프 | **11개 모두 덤프 및 분석 완료 (2026-11-23)**: 2764 4개(U45 $C000–$DFFF Videx·Disk II·BASIC, U46 $E000–$FFFF BASIC·Monitor, U65 U64 보조 CPU 펌웨어·기능키 바, U70 문자 발생기 ROM), 82S129 6개(U17·U18 Disk II 16-섹터 시퀀서 P6 4비트 분할 짝 확정, U50·U51·U36·U38 주소 디코드), 82S123 1개(U5 SoftCard 호환 Z80→6502 주소 변환표). 내장 FDD는 슬롯 6 동작 확정. 목록·분석: [`docs/11-rom-dump-list.md`](docs/11-rom-dump-list.md) |
+| ROM / PROM 덤프 | **11개 모두 덤프 및 분석 완료 (2026-11-23)**: 2764 4개(U45 $C000–$DFFF Videx·Disk II·BASIC, U46 $E000–$FFFF BASIC·Monitor, U65 U64 보조 CPU 펌웨어·기능키 바, U70 문자 발생기 ROM), 82S129 6개(U17·U18 Disk II 16-섹터 시퀀서 P6 4비트 분할 짝 확정, U50·U51·U36·U38 주소 디코드. **U36은 덤퍼 주소 점퍼가 돌아간 채 읽혀 2026-11-26 보정**, U38·U18·U17은 재덤프로 확인 예정), 82S123 1개(U5 SoftCard 호환 Z80→6502 주소 변환표). 내장 FDD는 슬롯 6 동작 확정. 목록·분석: [`docs/11-rom-dump-list.md`](docs/11-rom-dump-list.md) |
 | 키보드 (ZPC-40) | **정상 동작 확인 (2026-11-08)**. 키 입력 됨, Ctrl+RESET에 "삑". 케이블 결선 전부 확인. 일부 키는 스위치 접점 불량 → 아래 "키보드" |
 | 수리 (화면 안 나옴) | **화면 복구 (2026-11-07)**. 원인: 소켓 접촉 불량. 기록: [`docs/08-repair-log.md`](docs/08-repair-log.md) |
 | 수리 (가끔 안 켜짐) | **해결 (2026-11-17)**. 원인: 14MHz 발진 회로의 **트리머 콘덴서 불량** → 2다리 **50pF 세라믹 트리머로 교체** |
