@@ -13,7 +13,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')
 SX, SY = 2.09, 2.11
-BY_EYE = set('U2 U3 U25 U30 U39 U40 U41 U45 U46 U52 U53 U54 U55 U63 U64 U65 U67 U70 U85'.split())
+BY_EYE = {'U45'}   # set by hand from its pad rows (aligned with U46)
 
 im = Image.open(os.path.join(ROOT, 'photos/overview/front/202813_front-flat_layout-ref.jpg')).convert('RGB')
 d = ImageDraw.Draw(im)
@@ -32,7 +32,7 @@ for r in csv.reader(open(os.path.join(ROOT, 'data/bom.csv'), encoding='utf-8')):
         col = (255, 160, 0) if r[0] in BY_EYE else (0, 230, 0)
     d.rectangle(b, outline=col, width=4)
     d.text((b[0] + 3, b[1] + 2), r[0], font=f, fill=(255, 255, 0), stroke_width=2, stroke_fill=(0, 0, 0))
-d.text((20, 3290), '초록 = 다리 위치로 맞춘 칩, 주황 = 눈으로 확인한 칩, 자주 = 커넥터·슬롯·트랜지스터·기타',
+d.text((20, 3290), '초록 = 다리 위치로 맞춘 칩, 주황 = 손으로 맞춘 칩(U45), 자주 = 커넥터·슬롯·트랜지스터·기타',
        font=f, fill=(255, 255, 255), stroke_width=3, stroke_fill=(0, 0, 0))
 out = os.path.join(ROOT, 'analysis/bom_boxes_check.jpg')
 im.resize((im.width // 2, im.height // 2)).save(out, quality=88)
