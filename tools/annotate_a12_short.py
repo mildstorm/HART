@@ -44,7 +44,7 @@ def b2f(x, y):
 
 src = Image.open(FRONT).convert('RGB')
 im = src.resize((int(src.width * K), int(src.height * K)), Image.LANCZOS)
-PAD = 420
+PAD = 470
 cv = Image.new('RGB', (im.width + PAD, im.height + 120), WHT)
 cv.paste(im, (0, 110))
 d = ImageDraw.Draw(cv)
@@ -71,7 +71,7 @@ d.text((14, 50), '앞면, 슬롯이 위쪽. 전원 끄고 작업. 매번 U33 소
 d.text((14, 76), '빨강 = A12 선 후보(먼저), 주황 = 가능성 낮은 후보, 파랑 S1-14 = 슬롯1 핀 14 위치(뒷면 정합으로 옮김, 추정)', font=font(17), fill=BLK)
 
 MAG = (200, 0, 200)
-for ref, tag in (('J1', '전원'), ('J2', 'FDD'), ('J3', 'FDD'), ('J9', '빈 소켓(게임 I/O)'), ('J10', '키보드')):
+for ref, tag in (('J1', '전원'), ('J2', 'FDD'), ('J3', 'FDD'), ('J9', '빈 소켓'), ('J10', '키보드')):
     box(ref, MAG, tag, width=4)
 
 box('U33', RED, '0 (이미 뺌)')
@@ -92,7 +92,7 @@ for n, xb in ((1, 1855), (2, 1648), (3, 1442), (4, 1250)):
     d.rectangle((bb[0] - 2, bb[1] - 1, bb[2] + 2, bb[3] + 1), fill=WHT)
     d.text((cx, cy + 14), t, font=f, fill=BLU, anchor='mt')
 
-x = im.width + 16
+x = im.width + 60
 y = 130
 for t, b, c in [
     ('순서', True, BLK),
