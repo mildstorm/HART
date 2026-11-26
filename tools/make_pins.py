@@ -53,6 +53,19 @@ def chip_pins(P, box, npins, wide):
         rows = (y1 - inset, y0 + inset)        # bottom row first
         along0, along1 = x0 + cb.MARGIN + 10, x1 - cb.MARGIN - 10
     step = (along1 - along0) / (half - 1)
+    # Prefer the pads themselves over the box ends (a box may cover a longer package
+    # body, e.g. the ROMs): fit the 0.1" grid to the pads found on the two rows and
+    # take the half-pin window nearest the box centre.
+    ai, bi = (0, 1) if vertical else (1, 0)
+    on_rows = [P[(np.abs(P[:, ai] - r) < 9) & (P[:, bi] > along0 - 40) & (P[:, bi] < along1 + 40)] for r in rows]
+    along = np.concatenate([r[:, bi] for r in on_rows]) if on_rows else np.array([])
+    if len(along) >= 4:
+        off = np.angle(np.mean(np.exp(2j * np.pi * along / cb.PITCH))) / (2 * np.pi) * cb.PITCH
+        k = np.round((along - off) / cb.PITCH)
+        mid = (along0 + along1) / 2
+        s = min(range(int(k.min()) - half + 1, int(k.max()) + 1),
+                key=lambda s: (-((k >= s) & (k < s + half)).sum(), abs(off + (s + (half - 1) / 2) * cb.PITCH - mid)))
+        along0, along1, step = off + s * cb.PITCH, off + (s + half - 1) * cb.PITCH, cb.PITCH
     out = []
     for side, across in enumerate(rows):
         for i in range(half):
