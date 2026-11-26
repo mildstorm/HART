@@ -27,7 +27,7 @@ flowchart TD
         IO["$C000–$C0FF : 하드웨어 I/O 및 소프트스위치 (256B)"]
         SLOT["$C100–$C7FF : 내장 슬롯 ROM (U45 C/D8)<br/>($C300: Videx 80컬럼, $C600: Disk II 부트)"]
         EXT["$C800–$CFFF : 내장 슬롯 확장 ROM (2KB, U45 C/D8)<br/>(Videx VideoTerm 호환 확장 펌웨어)"]
-        BASIC1["$D000–$DFFF : Applesoft BASIC 전반부 (4KB, U45 C/D8)<br/>(U49 2Q = 0이면 롬이 꺼짐 → RAM, 추정)"]
+        BASIC1["$D000–$DFFF : Applesoft BASIC 전반부 (4KB, U45 C/D8)<br/>(U36 O4가 롬 창을 켬)"]
         BASIC2["$E000–$F7FF : Applesoft BASIC 후반부 (6KB, U46 EF5)"]
         MON["$F800–$FFFF : Apple II+ Autostart Monitor (2KB, U46 EF5)<br/>($FAA6: 슬롯 6 $C600 즉시 부팅 개조)"]
     end
@@ -49,7 +49,7 @@ flowchart TD
 | **$C000–$C0FF** | 256B | 하드웨어 I/O 및 소프트스위치 | 회로 로직 / FDC | I/O 레지스터, 키보드, 카세트, 스피커, FDC |
 | **$C100–$C7FF** | 1.75KB | 내장 슬롯 ROM | **U45 (2764)** | 각 슬롯별 256B 펌웨어 ($C300 80컬럼, $C600 FDD) |
 | **$C800–$CFFF** | 2KB | 슬롯 확장 공용 ROM | **U45 (2764)** | Videx 호환 80컬럼 확장 드라이버 펌웨어 |
-| **$D000–$DFFF** | 4KB | Applesoft BASIC (전반부) | **U45 (2764)** | 기본 BASIC 롬. U45 /CE = U35 2Y0, A12 = U36 O3. U49 2Q = 0이면 U35 2번 디코더가 꺼져 `$D000–$FFFF` 롬이 모두 꺼짐 → 그때 RAM이 보이는 것으로 추정 (RAM 쪽 선택 신호 미측정) |
+| **$D000–$DFFF** | 4KB | Applesoft BASIC (전반부) | **U45 (2764)** | 기본 BASIC 롬. U45 /CE = U35 2Y0, A12 = U36 O3. U35 2번 디코더 enable = U36 O4. U36 핀 3(X, R/W 추정) = 0(쓰기)이면 `$D000–$FFFF`가 모두 2Y3 쪽 → 랭귀지 카드 RAM 쓰기로 추정 (RAM 쪽 선택 신호 미측정) |
 | **$E000–$F7FF** | 6KB | Applesoft BASIC (후반부) | **U46 (2764)** | 기본 BASIC 롬 인터프리터 루틴. 단 `$E000–$E7FF`는 80컬럼 펌웨어가 **U68(공유 화면 RAM)**으로 씀 — U51 O4 = 1(80컬럼 래치)일 때 `$E000–$EFFF` 창이 롬 대신 U68로 감 (U36 보정 덤프, [13](13-u64-interface.md) 3.2.1절). 롬 쪽은 U36이 U45·U46 /CE와 A12를 직접 골라 줌 |
 | **$F800–$FFFF** | 2KB | Apple II+ Autostart Monitor | **U46 (2764)** | 모니터 ROM (F800-FFFF), 리셋 핸들러($FA62) |
 
@@ -75,7 +75,7 @@ flowchart TD
 | **$C057** | R/W | HIRESON | Hi-Res 그래픽 모드 선택 |
 | **$C058–$C05F** | R/W | AN0–AN3 | 어넌시에이터 0–3 On/Off 스위치 |
 | **$C060** | R | CASSETTE_IN | 카세트 테이프 입력 신호 읽기 (LM339 U3 출력) |
-| **$C080–$C08F** | R/W | LC_BANK | 슬롯 0 DEVICE SELECT(U23 Y0) → **U49(74LS175) 래치 클럭** (측정 2026-11-26). U49 2Q = 롬 디코더(U35 2번) 켜기, 3Q = `$E000`/`$F000` 창에 U46 대신 U45. D 입력(주소 비트) 미측정. /CLR은 리셋이 아닌 1kΩ 풀업 → [13](13-u64-interface.md) 3.2.1절 |
+| **$C080–$C08F** | R/W | LC_BANK | 슬롯 0 DEVICE SELECT(U23 Y0) → **U49(74LS175) 래치 클럭** (측정 2026-11-26). U49 2Q·3Q는 U36(핀 5·15)과 U50(핀 7)으로 감. 동작 중 U49 Q = 모두 0. D 입력(주소 비트) 미측정. /CLR은 리셋이 아닌 1kΩ 풀업 → [13](13-u64-interface.md) 3.2.1절 |
 | **$C0E0–$C0EF** | R/W | **SLOT6_FDC** | **내장 FDD 컨트롤러 소프트스위치 (슬롯 6)** |
 
 #### 내장 FDD 컨트롤러 레지스터 ($C0E0–$C0EF)
