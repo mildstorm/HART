@@ -1,0 +1,37 @@
+GAL16V8
+U50HART
+
+NC A0 A1 A2 A3 A4 A5 A6 A7 GND
+NC O1 O2 O3 O4 NC NC NC NC VCC
+
+O1 = /A1 * A3 * A4 * /A6
+   + /A1 * A3 * A4 * /A5
+   + A1 * /A4 * A5 * A6 * A7
+   + /A0 * /A1 * A3 * A4
+   + A1 * /A2 * A5 * A6 * A7
+   + /A1 * A3 * A4 * /A7
+   + A1 * /A3 * A5 * A6 * A7
+   + /A0 * A1 * A5 * A6 * A7
+
+O2 = /A1 * A2 * A3 * /A7
+   + /A1 * A2 * A3 * /A6
+   + /A1 * A3 * A4 * /A5 * A7
+   + /A1 * A2 * A3 * /A4
+   + /A0 * /A1 * A3 * A4 * A7
+   + /A1 * A3 * A4 * /A6 * A7
+   + A0 * A2 * A3 * /A4 * A5 * A6 * A7
+
+O3 = /A1 * /A3 * /A5
+   + /A1 * A3 * A5 * /A6
+   + /A1 * A3 * /A4 * A5
+   + /A0 * /A1 * A3 * A5
+   + /A1 * A3 * A5 * /A7
+   + A0 * A2 * A3 * /A4 * A5 * A6 * A7
+
+O4 = /A0 * /A1 * /A6
+
+DESCRIPTION
+
+Zung Won HART U50 (82S129 label 1) replacement, from rom/U50_1.bin (tools/u50_logic.py).
+Inputs A0-A7 = 82S129 pins 5 6 7 4 3 2 1 15, outputs O1-O4 = pins 12 11 10 9.
+Board signals: A0 A13 (buffered, U33-7), A1 A12 (buffered slot A12, U33-9), A2 U49 2Q (LC write enable), A3 A0 (U33-3), A4 R/W (buffered, U33-11), A5 A1 (U33-13), A6 NAND(A15,A14) (U34-3), A7 U49 1Q (LC pre-write).
