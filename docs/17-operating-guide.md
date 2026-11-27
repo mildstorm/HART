@@ -48,6 +48,8 @@ U64가 키보드를 직접 스캔하고 키 코드를 메인에 보냅니다(U68
 | CP/M | DIR | ERA | REN | SAVE | TYPE | STAT | WORKING | .MAC | .COM | DDT | COPY | FORMAT |
 | DOS | PR# | CATALOG | PRINT | RUN | LIST | LOAD | SAVE | READ | INPUT | DATA | OPEN | CLOSE |
 
+**CP/M 묶음의 F7 `WORKING`**: CP/M이 부팅돼도 CP/M 묶음이 저절로 뜨지 않고 Disp를 세 번 눌러야 나옴. F7을 누르면 `WORKING`이 입력되고(Return 없음), Return을 치면 CP/M이 `WORKING.COM`을 찾음. SoftCard CP/M 2.20B 디스크에는 없어 `WORKING?` 오류. 다른 낱말은 모두 SoftCard CP/M의 명령·프로그램과 맞으므로, **HART 전용 CP/M 디스크에 `WORKING.COM`이 있었던 흔적**으로 봄(내용은 알 수 없음).
+
 ## 4. 화면 모드
 
 | 명령 | 화면 | 메모 |

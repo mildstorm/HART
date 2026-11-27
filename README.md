@@ -114,8 +114,18 @@ S/N 506267 Apple II 호환 메인보드의 사진, 부품 분석, 회로도를 �
 - 꽂는 법: 글자 면 줄을 J10 왼쪽 줄에, GND 끝을 케이스 반대쪽으로
 - 꽂은 뒤 전원 켜기 전에 도통 확인: 키보드 단자 9 ↔ 슬롯1 25번 **통함**, 단자 16 ↔ 슬롯1 26번 **통함**, 단자 9 ↔ 단자 16 **안 통함**
 
+### 기능키 줄과 CP/M F7 "WORKING" (2026-11-28, 롬 실행으로 확인)
+
+**Disp**를 누르면 화면 맨 아래 줄에 기능키 줄이 뜨고, 누를 때마다 4묶음(BASIC 1 → BASIC 2 → CP/M → DOS)이 차례로 바뀝니다. **F1–F12**를 누르면 지금 보이는 낱말이 그대로 입력됩니다(U64 매크로). 4묶음 전체 표는 [`docs/17-operating-guide.md`](docs/17-operating-guide.md) 3절에 있습니다.
+
+* CP/M 묶음(Disp를 **세 번째** 눌렀을 때): `1DIR 2ERA 3REN 4SAVE 5TYPE 6STAT 7WORKING 8.MAC 9.COM 10DDT 11COPY 12FORMAT`.
+* CP/M이 부팅돼도 이 묶음이 저절로 나오지는 않습니다. 부팅 직후 아래 줄은 80컬럼 펌웨어의 빈 칸뿐이고, Disp를 눌러야 나옵니다. 어느 묶음이 보일지는 돌고 있는 프로그램과 상관없이 Disp를 누른 횟수로만 정해집니다.
+* **F7 = `WORKING`**: 누르면 프롬프트에 `WORKING`이 입력됩니다(Return은 붙지 않음, SoftCard CP/M에서 `A>WORKING` 확인). Return을 치면 CP/M은 **`WORKING.COM`**을 찾지만, Microsoft SoftCard CP/M 2.20B 디스크에는 없어 `WORKING?` 오류가 납니다.
+* 나머지 낱말(DIR·ERA·REN·SAVE·TYPE·STAT는 CP/M 내장 명령, COPY·FORMAT·DDT 등은 SoftCard 디스크의 프로그램)은 SoftCard CP/M과 맞습니다. **WORKING만 맞지 않으므로, HART 전용 CP/M 디스크에 `WORKING.COM`이 따로 들어 있었던 흔적**으로 봅니다(작업용 디스크 만들기나 작업 환경 설정용으로 추정, 롬에는 이름만 있어 내용은 알 수 없음).
+
 ### 조사 필요
 
+- [ ] **HART 전용 디스켓 찾기**: CP/M F7의 `WORKING.COM`(위), 광고의 624KB 대용량 드라이브용 DOS 등. "정원컴퓨터", "ZPC-40", "HART 컴퓨터"로 수소문
 - [ ] **안 눌리는 키 접점 청소**: 동작은 정상이고 일부 키만 스위치 접점 불량 (2026-11-08, 사용자 판단)
 - [ ] **Ctrl+RESET 뒤 화면이 그대로인 이유**: "삑"은 나지만 로고 화면 유지. 디스크 대기/모드 선택 화면으로 추정 → 기능키·Return·Disp·Vdx로 넘어가는지 시험
 - [ ] **Vdx 키**: Videx(Apple II용 80컬럼 카드 회사) 호환 80컬럼 화면 전환으로 추정. 눌러서 확인
