@@ -29,12 +29,13 @@ S/N 506267 Apple II 호환 메인보드의 사진, 부품 분석, 회로도를 �
 | 앞면·뒷면 정합 | 완료 (2026-11-07). 비아 205개 기준 평균 오차 약 2px → [`analysis/back_on_front.jpg`](analysis/back_on_front.jpg) |
 | 핀 단위 결선 (넷리스트) | 진행 중. `data/netlist.csv` (U64 버스·클럭 분리, Φ0 배선, 슬롯 방향) |
 | ROM / PROM 덤프 | **11개 모두 덤프 및 분석 완료 (2026-11-23)**: 2764 4개(U45 $C000–$DFFF Videx·Disk II·BASIC, U46 $E000–$FFFF BASIC·Monitor, U65 U64 보조 CPU 펌웨어·기능키 바, U70 문자 발생기 ROM), 82S129 6개(U17·U18 Disk II 16-섹터 시퀀서 P6 4비트 분할 짝 확정, U50·U51·U36·U38 주소 디코드. **U36은 덤퍼 주소 점퍼가 돌아간 채 읽혀 2026-11-26 보정 후 실기 측정과 일치 검증 완료**, U38·U36은 확인용 1회 재덤프 예정), 82S123 1개(U5 SoftCard 호환 Z80→6502 주소 변환표). 내장 FDD는 슬롯 6 동작 확정. 에뮬레이터 제작용 핵심 롬 일체 확보 완료. 목록·분석: [`docs/11-rom-dump-list.md`](docs/11-rom-dump-list.md) |
-| Z80 (CP/M) 서브시스템 | U2(Z80A) 실장 및 U5 주소 변환표(SoftCard 호환) 덤프 확인. **실제 CP/M 디스크 구동은 미확인** (기존 11-06 확인 기록 정정; 부팅 시 하단 CP/M 기능키 바 표시는 U64/U65 동작임). 슬롯 14번(A12) 단락(U50 불량) 교체 후 확인 필요 |
+| Z80 (CP/M) 서브시스템 | U2(Z80A) 실장 및 U5 주소 변환표(SoftCard 호환) 덤프 확인. **실기에서 CP/M 디스크 구동은 미확인** (기존 11-06 확인 기록 정정; 하단 CP/M 기능키 줄은 U64/U65 동작). 에뮬레이터에서는 Microsoft SoftCard CP/M 2.20B가 HART 80컬럼으로 부팅됨(2026-11-27). CP/M에서는 한글 불가(고해상도 화면이 CP/M 프로그램 영역과 겹침). U50 교체 후 실기 확인 필요 |
 | 키보드 (ZPC-40) | **정상 동작 확인 (2026-11-08)**. 키 입력 됨, Ctrl+RESET에 "삑". 케이블 결선 전부 확인. 일부 키는 스위치 접점 불량 → 아래 "키보드" |
 | 수리 (화면 안 나옴) | **화면 복구 (2026-11-07)**. 원인: 소켓 접촉 불량. 기록: [`docs/08-repair-log.md`](docs/08-repair-log.md) |
 | 수리 (가끔 안 켜짐) | **해결 (2026-11-17)**. 원인: 14MHz 발진 회로의 **트리머 콘덴서 불량** → 2다리 **50pF 세라믹 트리머로 교체** |
 | 남은 문제 | 4가지 (천천히 켜면 사각 격자, 오래 켜면 화면 지글거림, 키보드 일부 키, **슬롯 14번(A12) ↔ GND 단락 = U50 칩 불량, 교체 필요**) → 아래 "알려진 문제" |
-| 에뮬레이터 개발 | 11개 롬 덤프 및 `U64`↔`U30` 구조 분석을 바탕으로 STM32F769I-DISCO(`TARGET=HART`) 에뮬레이터 개발 진행 가능 상태 (잔여 결선 목록: [`docs/14-measure-todo.md`](docs/14-measure-todo.md)) |
+| 에뮬레이터 개발 | **STM32F769I-DISCO(`TARGET=HART`)에서 동작 (2026-11-28)**: U64가 U65를 실제로 실행(로고·키보드·기능키 줄), U68 공유 화면, 80컬럼(PR#3), 한글 40×24(PR#7), SoftCard CP/M. 롬을 돌려 알아낸 것은 [`docs/13-u64-interface.md`](docs/13-u64-interface.md) 3.4·3.5절, 실측으로 확인할 것은 [`docs/14-measure-todo.md`](docs/14-measure-todo.md) E절 |
+| 실기 사용법 | 켜기·RESET·키·Disp 기능키 4묶음·80컬럼·한글·CP/M: [`docs/17-operating-guide.md`](docs/17-operating-guide.md) (롬 실행으로 알아낸 것, 실기 미확인 표시 포함) |
 
 > **전원**: SMPS 단자·선 색·재는 곳은 [`analysis/power_reference.jpg`](analysis/power_reference.jpg) (보드 J1 핀별 전압·FDD 단자 핀 번호 포함). 이 기계는 **빨강 = +12V, 주황 = +5V** (일반 관례와 다름).
 
@@ -222,7 +223,8 @@ HART/
 │   ├── 13-u64-interface.md       메인 6502 ↔ U64 연결: U64 키보드 스캔, U68 공유 80컬럼 화면(주소 배선 측정), SELECT·U62 스위치, U65 주소 정정
 │   ├── 14-measure-todo.md        남은 도통 측정 목록과 방법 (다음 측정은 여기서 시작)
 │   ├── 15-nets.md                측정된 넷과 논리식 (자동 생성: python tools/netmodel.py)
-│   └── 16-chip-placement.md      칩 자리·부품·노치 방향 표 (다시 꽂기용, 자동 생성: python tools/draw_chip_map.py)
+│   ├── 16-chip-placement.md      칩 자리·부품·노치 방향 표 (다시 꽂기용, 자동 생성: python tools/draw_chip_map.py)
+│   └── 17-operating-guide.md     실기 사용법: 켜기·RESET·키·기능키 4묶음·PR#3·PR#7 한글·CP/M
 ├── rom/                          ROM 덤프 이미지 (ROMReader로 읽음, SHA-1은 docs/11)
 ├── disasm/                       ROM/PROM 디스어셈블리 소스 및 분석 (6502 역어셈블리, P6 시퀀서, 폰트 등)
 ├── schematic/
