@@ -15,6 +15,12 @@ counting left to right on the bottom row and right to left on the top row; a
 chip standing up has its notch at the bottom, pin 1 at the bottom-right, pins
 counting upward on the right row and downward on the left row. Chip boxes come
 from data/bom.csv (tools/check_bom_boxes.py fits them to the pad rows).
+
+Rule checked chip by chip on 2026-11-27 (analysis/chip_orientation_check.jpg:
+every chip turned so its predicted pin 1 is bottom-left reads upright): all TTL,
+PROM, DRAM, CPU and HM6116 markings agree; the four 2764 ROMs show their notch
+on the same side as the TTL chips in photos/zoom/front/212346_*; U17 and U84
+have no readable marking and follow the rule unchecked.
 """
 import csv
 import json
