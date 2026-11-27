@@ -11,7 +11,7 @@
     - **U70 "CHR P4"(2764, 8KB)**: **문자 발생(Character Generator) ROM**. 4개 뱅크(2KB×4)로 구성 (Bank 0 = 영문 Inverse, Bank 1 = 영문 Normal ASCII, Bank 2/3 = 세미그래픽 및 한글 자모 조합형 폰트).
 - [x] **U65 "VD5"(2764)의 내용**: U64 펌웨어 프로그램 확정 (위 항목 참조).
 - [x] **CPU 3개의 관계**: U30(Apple 프로그램), U2(CP/M), U64(화면·기능키·한글 보조 프로세서)가 각각 독립 동작 (확인)
-- [ ] **Z80 서브시스템 동작 방식**: CP/M 실행은 확인 (2026-11-06). **주소 전환은 확인 (2026-11-22)**: U5(82S123) 덤프가 Microsoft SoftCard와 같은 Z80→6502 매핑(Z80 $0–$A → 6502 +$1000, $B→$D, $C→$E, $D→$F, $E→$C, $F→$0) → [`11-rom-dump-list.md`](11-rom-dump-list.md). U65 롬 내에 CP/M용 기능키 바(`1DIR 2ERA 3REN 4SAVE 5TYPE 6STAT 7WORKING 8.MAC 9.COM DDT COPY FORMAT`)가 들어 있어 CP/M 구동 중에도 U64가 비디오/기능키를 지원함. 버스를 나누는 방식(SoftCard식 DMA인지)은 아직 미확인
+- [ ] **Z80 서브시스템 동작 방식**: 실제 CP/M 디스크 구동은 미확인 (기존 `2026-11-06` 확인 기록 정정 — CP/M 디스켓으로 동작 확인한 적 없음). **주소 전환은 확인 (2026-11-22)**: U5(82S123) 덤프가 Microsoft SoftCard와 같은 Z80→6502 매핑(Z80 $0–$A → 6502 +$1000, $B→$D, $C→$E, $D→$F, $E→$C, $F→$0) → [`11-rom-dump-list.md`](11-rom-dump-list.md). U65 롬 내에 CP/M용 기능키 바(`1DIR 2ERA 3REN 4SAVE 5TYPE 6STAT 7WORKING 8.MAC 9.COM DDT COPY FORMAT`)가 들어 있으나 이는 U64가 표시하는 것으로 Z80 구동 여부와는 무관함. 버스를 나누는 방식(SoftCard식 DMA인지)은 아직 미확인
 - [x] **HM6116(U68) 2KB SRAM의 용도**: 80컬럼 비디오 RAM(화면 버퍼) 확정 (2026-11-23). 메인·U64 공유, 주소 MUX = U47·U58·U59 (2026-11-24 측정).
 - [ ] **메인 CPU가 `$E000–$E7FF`에서 롬(U46) 대신 U68을 보는 조건**: SELECT = U51 O2, U62 Videx식 스위치(`$C3xx` 켜기) 등 일부 확인. 남은 측정 → [14](14-measure-todo.md) A·B절, 현황 → [13](13-u64-interface.md) 3.2절.
 - [x] **2764 "CHR P4"(U70)의 내용**: 문자 발생 ROM 확정. 영문 Normal/Inverse 및 세미그래픽·한글 자모 폰트 (2026-11-23).

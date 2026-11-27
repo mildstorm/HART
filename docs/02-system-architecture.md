@@ -38,7 +38,7 @@ flowchart LR
 | 블록 | 부품 | 내용 |
 | --- | --- | --- |
 | 메인 CPU | U30 UM6502(소켓), U29 74LS245, U31–U33 74LS367, R1 | 1.023MHz. 74LS367은 Apple II의 8T97 대체. U33 버퍼 하나는 CPU 클럭(Φ0) 공급용 (아래 "측정으로 확인한 결선") |
-| Z80 서브시스템 | U2 LH0080A, U1 74LS373, U4 74LS244, U5 82S123, U6–U7 74LS367, U8 74LS163, U9–U15 | CP/M 실행 (확인). 버스 공유 방식(SoftCard식 DMA 여부)은 미확인. **U5 = Z80→6502 주소 변환표 (덤프로 확인, 2026-11-22)**: Microsoft SoftCard와 같은 매핑 ($0–$A → +$1000, $B→$D, $C→$E, $D→$F, $E→$C, $F→$0) |
+| Z80 서브시스템 | U2 LH0080A, U1 74LS373, U4 74LS244, U5 82S123, U6–U7 74LS367, U8 74LS163, U9–U15 | CP/M 실행용 (실제 CP/M 디스크 구동은 미확인). 버스 공유 방식(SoftCard식 DMA 여부)은 미확인. **U5 = Z80→6502 주소 변환표 (덤프로 확인, 2026-11-22)**: Microsoft SoftCard와 같은 매핑 ($0–$A → +$1000, $B→$D, $C→$E, $D→$F, $E→$C, $F→$0) |
 | 두 번째 6502 | U64 UM6502 | 한글 폰트 처리, 화면 하단 기능키(F1–F12) 바 렌더링, 80컬럼 비디오를 총괄 제어하는 보조 CPU, 독립 동작 (확인). U65 롬이 U64 전용 펌웨어 |
 | DRAM | U39–U42, U52–U55 MN4164, U43/44/56/57 74LS153 | 64KB. CPU/비디오 주소와 ROW/COL을 멀티플렉싱 |
 | 시스템 ROM | U45 "C/D8", U46 "EF5", U63 74LS245 | **$C000–$FFFF 16KB (2026-11-23 덤프 분석 확정)**. U45 = $C000–$DFFF (내장 슬롯 ROM: $C300·$C800 Videx 80컬럼, $C600 Disk II 부트 + $D000–$DFFF Applesoft BASIC 전반부). U46 = $E000–$FFFF ($E000–$F7FF Applesoft BASIC 후반부 + $F800–$FFFF Autostart Monitor, 슬롯 6 즉시 부팅 개조 포함) |
